@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Import Data</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<style>
+:root{--bg:#E7EAE8;--panel:#fff;--ink:#1D2733;--muted:#5C6975;--line:#D2D8D5;--yellow:#F5B700;--green:#2E7D4F;--red:#B83227}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#141A20;--panel:#1D252D;--ink:#E5E9ED;--muted:#9AA6B1;--line:#303C47}}
+:root[data-theme="dark"]{--bg:#141A20;--panel:#1D252D;--ink:#E5E9ED;--muted:#9AA6B1;--line:#303C47}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 "Barlow",system-ui,sans-serif;padding:24px 16px}
+main{max-width:620px;margin:0 auto;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:24px}
+h1{margin:0 0 6px;font-size:26px}p{margin:8px 0;color:var(--muted)}
+.drop{margin-top:16px;border:2px dashed var(--line);border-radius:10px;padding:28px 16px;text-align:center;cursor:pointer}
+.drop.over{border-color:var(--yellow)}
+.bar{height:10px;background:var(--line);border-radius:5px;overflow:hidden;margin-top:16px}.bar i{display:block;height:100%;width:0;background:var(--green)}
+#log{margin-top:12px;font-size:14px;white-space:pre-wrap;color:var(--muted)}#log b{color:var(--ink)}.err{color:var(--red)}
+a{color:var(--ink)}
+</style></head><body>
+<main>
+  <h1>Import from the old tracker</h1>
+  <p>Drop the export file (<b>job-tracker-export.zip</b>) here. Everything in it is copied into the live tracker: homes, checklists, contacts, pipeline, notes and uploaded files. Running it again is safe; it updates rather than duplicates.</p>
+  <label class="drop" id="drop">Drop the .zip here, or tap to choose it<input type="file" id="pick" accept=".zip" hidden></label>
+  <div class="bar"><i id="bar"></i></div>
+  <div id="log">Signing in…</div>
+  <p style="margin-top:16px"><a href="./">← Back to the Job Tracker</a></p>
+</main>
+<script>
+(async () => {
+  const log = (t, cls) => { const el = document.getElementById("log"); el.innerHTML += `\n<span class="${cls || ""}">${t}</span>`; };
+  await window.claude.use("db");
+  const sb = window.jtSupabase;
+  document.getElementById("log").textContent = "Signed in. Choose the export file to start.";
+  const drop = document.getElementById("drop"), pick = document.getElementById("pick"), bar = document.getElementById("bar");
+  drop.ondragover = (e) => { e.preventDefault(); drop.classList.add("over"); };
+  drop.ondragleave = () => drop.classList.remove("over");
+  drop.ondrop = (e) => { e.preventDefault(); drop.classList.remove("over"); if (e.dataTransfer.files[0]) run(e.dataTransfer.files[0]); };
+  pick.onchange = () => pick.files[0] && run(pick.files[0]);
+  let busy = false;
+  async function run(file) {
+    if (busy) return; busy = true;
+    document.getElementById("log").textContent = "Reading " + file.name + "…";
+    try {
+      const zip = await JSZip.loadAsync(file);
+      const manifest = JSON.parse(await zip.file("data.json").async("string"));
+      const rows = [];
+      for (const [coll, docs] of Object.entries(manifest.collections || {}))
+        for (const [id, data] of Object.entries(docs)) rows.push({ coll, id, data });
+      const files = Object.entries(manifest.files || {});
+      const total = rows.length + files.length; let done = 0;
+      const step = () => { bar.style.width = Math.round(100 * ++done / total) + "%"; };
+      log(`<b>${rows.length} records and ${files.length} files to import.</b>`);
+      for (let i = 0; i < rows.length; i += 100) {
+        const chunk = rows.slice(i, i + 100);
+        const { error } = await sb.from("jt_docs").upsert(chunk);
+        if (error) throw error;
+        chunk.forEach(step);
+      }
+      log("Records imported.");
+      let failed = 0;
+      for (const [id, meta] of files) {
+        const entry = zip.file("files/" + id);
+        if (!entry) { failed++; step(); continue; }
+        const blob = new Blob([await entry.async("uint8array")], { type: meta.type || "application/octet-stream" });
+        const { error } = await sb.storage.from("jt-files").upload(id, blob, { contentType: blob.type, upsert: true });
+        if (error) { failed++; log(`Couldn't upload a file (${id}): ${error.message}`, "err"); }
+        step();
+      }
+      log(failed ? `<b>Done, but ${failed} file(s) didn't copy.</b> Run the import again to retry them.` : `<b>All done.</b> Open the Job Tracker to check it.`, failed ? "err" : "");
+    } catch (e) {
+      log("Import stopped: " + (e.message || e), "err");
+    } finally { busy = false; }
+  }
+})();
+</script>
+</body></html>

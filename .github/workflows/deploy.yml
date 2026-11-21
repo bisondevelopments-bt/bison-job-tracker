@@ -1,0 +1,110 @@
+name: Deploy Job Tracker
+
+# Runs on every push to main, or by hand from the Actions tab.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: deploy
+  cancel-in-progress: false
+
+jobs:
+  # 1. Database, file storage, server functions and the team login, in Supabase.
+  backend:
+    runs-on: ubuntu-latest
+    env:
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+      SUPABASE_URL: ${{ vars.SUPABASE_URL }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: supabase/setup-cli@v1
+        with:
+          version: latest
+      - name: Work out the project
+        run: |
+          ref=$(echo "$SUPABASE_URL" | sed -E 's#https://([a-z0-9]+)\.supabase\.co.*#\1#')
+          test -n "$ref" || { echo "Set the SUPABASE_URL variable"; exit 1; }
+          echo "REF=$ref" >> "$GITHUB_ENV"
+      - name: Set up database and storage
+        run: |
+          jq -n --rawfile q supabase/sql/job_tracker.sql '{query:$q}' > /tmp/q.json
+          code=$(curl -sS -o /tmp/out.json -w '%{http_code}' -X POST \
+            "https://api.supabase.com/v1/projects/$REF/database/query" \
+            -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" -H "Content-Type: application/json" \
+            --data-binary @/tmp/q.json)
+          cat /tmp/out.json; echo
+          test "$code" -lt 300
+      - name: Store server secrets
+        env:
+          AI_PROVIDER: ${{ vars.AI_PROVIDER }}
+          AI_MODEL_QUICK: ${{ vars.AI_MODEL_QUICK }}
+          AI_MODEL_DEFAULT: ${{ vars.AI_MODEL_DEFAULT }}
+          AI_MODEL_COMPLEX: ${{ vars.AI_MODEL_COMPLEX }}
+          GMAIL_USER: ${{ vars.GMAIL_USER }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          XAI_API_KEY: ${{ secrets.XAI_API_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
+        run: |
+          : > /tmp/secrets.env
+          for k in AI_PROVIDER AI_MODEL_QUICK AI_MODEL_DEFAULT AI_MODEL_COMPLEX GMAIL_USER ANTHROPIC_API_KEY XAI_API_KEY OPENAI_API_KEY GMAIL_APP_PASSWORD; do
+            v="${!k}"; [ -n "$v" ] && printf '%s=%s\n' "$k" "$v" >> /tmp/secrets.env
+          done
+          if [ -s /tmp/secrets.env ]; then supabase secrets set --project-ref "$REF" --env-file /tmp/secrets.env; fi
+          rm -f /tmp/secrets.env
+      - name: Deploy server functions
+        run: |
+          supabase functions deploy jt-ai --project-ref "$REF" --use-api
+          supabase functions deploy jt-mail --project-ref "$REF" --use-api
+      - name: Create or update the team login
+        env:
+          TEAM_EMAIL: ${{ vars.TEAM_EMAIL }}
+          TEAM_PASSWORD: ${{ secrets.TEAM_PASSWORD }}
+        run: |
+          set -e
+          if [ -z "$TEAM_EMAIL" ]; then echo "No TEAM_EMAIL variable yet, skipping"; exit 0; fi
+          key=$(curl -sS "https://api.supabase.com/v1/projects/$REF/api-keys?reveal=true" -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
+                | jq -r '[.[] | select(.name=="service_role" or .type=="secret")][0].api_key')
+          test -n "$key" && test "$key" != "null"
+          api="$SUPABASE_URL/auth/v1/admin/users"
+          id=$(curl -sS "$api?per_page=1000" -H "apikey: $key" -H "Authorization: Bearer $key" \
+               | jq -r --arg e "$(echo "$TEAM_EMAIL" | tr 'A-Z' 'a-z')" '.users[] | select(.email==$e) | .id')
+          if [ -z "$id" ]; then
+            test -n "$TEAM_PASSWORD" || { echo "Add the TEAM_PASSWORD secret to create the team login"; exit 1; }
+            jq -n --arg e "$TEAM_EMAIL" --arg p "$TEAM_PASSWORD" '{email:$e,password:$p,email_confirm:true,app_metadata:{jt:true}}' \
+              | curl -sS -f -o /dev/null -X POST "$api" -H "apikey: $key" -H "Authorization: Bearer $key" -H "Content-Type: application/json" --data-binary @-
+            echo "Team login created."
+          else
+            body=$(jq -n --arg p "$TEAM_PASSWORD" 'if $p=="" then {app_metadata:{jt:true}} else {password:$p,app_metadata:{jt:true}} end')
+            echo "$body" | curl -sS -f -o /dev/null -X PUT "$api/$id" -H "apikey: $key" -H "Authorization: Bearer $key" -H "Content-Type: application/json" --data-binary @-
+            echo "Team login updated."
+          fi
+
+  # 2. The website itself, on GitHub Pages.
+  site:
+    needs: backend
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build
+        env:
+          SUPABASE_URL: ${{ vars.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ vars.SUPABASE_ANON_KEY }}
+          TEAM_EMAIL: ${{ vars.TEAM_EMAIL }}
+        run: python3 scripts/build.py
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+      - id: deploy
+        uses: actions/deploy-pages@v4

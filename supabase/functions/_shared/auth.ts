@@ -1,5 +1,5 @@
 // Shared helpers for the Job Tracker server functions.
-import { createClient } from "npm:@supabase/supabase-js@2.45.4";
+import { createClient } from "npm:@supabase/supabase-js@2.118.0";
 
 export const cors = {
   "Access-Control-Allow-Origin": "*",

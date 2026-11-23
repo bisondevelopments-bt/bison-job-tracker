@@ -8,7 +8,7 @@ import json, os, re, shutil, sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SITE = os.path.join(ROOT, "site")
-SUPABASE_JS = "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"
+SUPABASE_JS = "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.js"
 
 url = os.environ.get("SUPABASE_URL", "").strip().rstrip("/")
 anon = os.environ.get("SUPABASE_ANON_KEY", "").strip()

@@ -99,7 +99,7 @@ async function openaiStyle(base: string, key: string, msgs: Msg[], tools: Tool[]
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: cors });
-  if (!(await requireJtUser(req))) return json({ code: "not_granted", message: "Sign in to the Job Tracker first." }, 401);
+  if (!requireJtUser(req)) return json({ code: "not_granted", message: "Sign in to the Job Tracker first." }, 401);
   try {
     const { messages, tools = [], tier = "default", json: wantJson = false } = await req.json();
     if (!Array.isArray(messages) || !messages.length) return json({ code: "invalid_request", message: "No messages" }, 400);

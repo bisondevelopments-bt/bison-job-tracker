@@ -15,7 +15,7 @@ const isEmail = (s: string) => /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(s);
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: cors });
-  const who = await requireJtUser(req);
+  const who = requireJtUser(req);
   if (!who) return json({ code: "not_granted", message: "Sign in to the Job Tracker first." }, 401);
   try {
     const a = await req.json();

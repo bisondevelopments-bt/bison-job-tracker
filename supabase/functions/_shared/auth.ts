@@ -1,5 +1,4 @@
 // Shared helpers for the Job Tracker server functions.
-import { createClient } from "npm:@supabase/supabase-js@2.118.0";
 
 export const cors = {
   "Access-Control-Allow-Origin": "*",
@@ -12,12 +11,17 @@ export function json(body: unknown, status = 200) {
 }
 
 // Only signed-in Job Tracker users may call these functions.
-export async function requireJtUser(req: Request) {
-  const auth = req.headers.get("Authorization") || "";
-  const sb = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_ANON_KEY")!, {
-    global: { headers: { Authorization: auth } },
-  });
-  const { data, error } = await sb.auth.getUser();
-  if (error || !data?.user) return null;
-  return data.user.app_metadata?.jt === true ? data.user : null;
+// Supabase checks the sign-in token's signature before the function runs (JWT verification is on by default),
+// so here we only read who it is and whether that login is marked for the Job Tracker.
+export function requireJtUser(req: Request) {
+  const token = (req.headers.get("Authorization") || "").replace(/^Bearer\s+/i, "");
+  const part = token.split(".")[1];
+  if (!part) return null;
+  try {
+    const claims = JSON.parse(atob(part.replace(/-/g, "+").replace(/_/g, "/").padEnd(Math.ceil(part.length / 4) * 4, "=")));
+    if (claims.role !== "authenticated" || (claims.exp && claims.exp * 1000 < Date.now())) return null;
+    return claims.app_metadata?.jt === true ? claims : null;
+  } catch {
+    return null;
+  }
 }

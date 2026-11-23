@@ -317,6 +317,12 @@ dialog{max-height:92vh;overflow:auto}
 .oq{background:var(--panel);border:1px solid var(--line);border-radius:8px;overflow:hidden}
 .oqh{display:flex;align-items:center;gap:12px;padding:10px 16px;background:var(--panel2);border-bottom:1px solid var(--line)}
 .oqh .sdot{margin:0}
+.oqh[data-oqh]{cursor:pointer}
+.oqtog{all:unset;cursor:pointer;display:grid;place-items:center;width:28px;height:28px;border-radius:6px;color:var(--muted);flex:none;margin-left:-6px}
+.oqtog:hover{background:var(--line);color:var(--ink)}.oqtog:focus-visible{outline:3px solid var(--yellow)}
+.oqtog svg{transition:transform .15s}.oq.closed .oqtog svg{transform:rotate(-90deg)}
+.oq.closed .oqlist{display:none}.oq.closed .oqh{border-bottom:0}
+.oqall{display:flex;justify-content:flex-end;margin:-6px 0 -6px}
 .oqhd{display:grid;gap:1px;min-width:0;flex:1}
 .oqhome{all:unset;cursor:pointer;font:700 19px/1.2 var(--head)}
 .oqhome:hover{text-decoration:underline}.oqhome:focus-visible{outline:3px solid var(--yellow);outline-offset:2px}
@@ -393,7 +399,7 @@ dialog{max-height:92vh;overflow:auto}
 .pnm .plink{font-size:12px}
 .pstat{flex:none;border:0;background:none;padding:2px 0;font-size:13px;font-weight:600;white-space:nowrap;cursor:pointer;font-variant-numeric:tabular-nums}
 .pstat:hover{text-decoration:underline}
-.pstat.s0{color:var(--muted)}.pstat.s1{color:#8A6400}.pstat.s2,.pstat.s3{color:var(--blue)}.pstat.s4{color:var(--green)}
+.pstat.s0{color:var(--muted)}.pstat.sbad{color:var(--red)}.pstat.s1{color:#8A6400}.pstat.s2,.pstat.s3{color:var(--blue)}.pstat.s4{color:var(--green)}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .pstat.s1{color:var(--yellow)}}
 :root[data-theme="dark"] .pstat.s1{color:var(--yellow)}
 .plist2{max-height:none}
@@ -546,8 +552,33 @@ dialog#mailDlg{width:min(600px,94vw);box-sizing:border-box}.maildlg{width:auto;m
 .careas summary{cursor:pointer;font:700 18px var(--head);padding:6px 0}
 /* area contacts */
 .areablock{margin-bottom:22px}
+.archbar{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px;margin:10px 0 0;padding:8px 12px;border-radius:8px;background:var(--panel2);border:1px solid var(--line);font-size:14px}
+.archbar.done{background:var(--yellow-soft,#FFF4CC);border-color:var(--yellow)}.archbar span{flex:1 1 280px}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .archbar.done{background:rgba(245,184,0,.12)}}
+:root[data-theme="dark"] .archbar.done{background:rgba(245,184,0,.12)}
+.archlist{list-style:none;margin:0;padding:0 12px;background:var(--panel);border:1px solid var(--line);border-radius:8px;max-width:900px}
+.archlist li{display:flex;align-items:center;gap:12px;padding:8px 0;border-top:1px solid var(--line)}.archlist li:first-child{border-top:0}
+.archopen{all:unset;cursor:pointer;flex:1;min-width:0;display:grid}.archopen:hover b{text-decoration:underline}.archopen:focus-visible{outline:3px solid var(--yellow);border-radius:4px}
+.archopen b,.archopen small{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
 .areah{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 12px;margin-bottom:8px}
 .areah h3{font-size:19px}
+.acaddbtn{margin-left:auto;align-self:center}
+#areaAsk{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);z-index:80;width:min(520px,calc(100% - 32px));background:var(--panel);color:var(--ink);border:1px solid var(--line);border-radius:12px;box-shadow:0 12px 32px rgba(0,0,0,.22);padding:14px 16px}
+#areaAsk p{margin:0 0 10px;font-size:14.5px;line-height:1.4}#areaAsk div{display:flex;flex-wrap:wrap;gap:8px}
+.acsearch{margin:0 0 10px;max-width:520px}.acsearch #acres{display:grid;margin:4px 0}
+.acsug{display:flex;flex-wrap:wrap;align-items:center;gap:6px 8px;margin:0 0 10px}
+.acsugb{all:unset;cursor:pointer;display:inline-flex;align-items:baseline;gap:6px;border:1px dashed var(--line);border-radius:8px;padding:4px 6px 4px 10px;font-size:13.5px;background:var(--panel)}
+.acsugb small{color:var(--muted)}.acsugb span{color:var(--blue);font-weight:600;font-size:12.5px;padding:2px 6px;border-radius:6px;background:var(--panel2)}.acsugb:hover{border-style:solid}.acsugb:focus-visible{outline:3px solid var(--yellow)}
+.acrows{list-style:none;margin:0;padding:0 12px;background:var(--panel);border:1px solid var(--line);border-radius:8px;max-width:1000px}
+.acrows li{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(150px,1fr) minmax(0,1.4fr) auto;gap:4px 12px;align-items:center;padding:6px 0;border-top:1px solid var(--line);font-size:14px}.acrows li:first-child{border-top:0}
+.acnm{all:unset;display:grid;cursor:pointer;min-width:0}button.acnm:hover b{text-decoration:underline}button.acnm:focus-visible{outline:3px solid var(--yellow);border-radius:4px}
+.acnm b,.acnm small{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.acnm small{color:var(--muted);font-size:12.5px}.aclegacy .acnm small{color:var(--amber,#9a6700)}
+.acrolein{border:1px solid transparent;background:none;border-radius:6px;padding:4px 6px;font:inherit;font-size:13.5px;color:var(--ink);min-width:0}.acrolein:hover,.acrolein:focus{border-color:var(--line);background:var(--panel2)}
+.acph{display:flex;flex-wrap:wrap;gap:2px 12px;min-width:0}.acph a{color:var(--blue);text-decoration:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.acph a:hover{text-decoration:underline}
+.acact{display:flex;align-items:center;gap:6px;justify-content:flex-end}
+@media (max-width:700px){.acrows li{grid-template-columns:minmax(0,1fr) auto}.acrolein{grid-column:1/-1;grid-row:2}.acph{grid-column:1/-1}}
+
 .acgroup{display:grid;gap:6px;padding:8px 0;border-bottom:1px solid var(--line)}
 .acgroup:last-of-type{border-bottom:0}
 .aclist{list-style:none;margin:0;padding:0;display:grid;gap:8px}
@@ -605,6 +636,71 @@ dialog#mailDlg{width:min(600px,94vw);box-sizing:border-box}.maildlg{width:auto;m
 .sctable .scadd td{background:var(--panel2)}
 .sctable .scempty td{color:var(--muted);padding:16px}
 .scaddbtn{margin-top:12px}
+.sublines{list-style:none;margin:0;padding:0;background:var(--panel);border:1px solid var(--line);border-radius:8px;display:grid;grid-template-columns:repeat(auto-fill,minmax(360px,1fr));column-gap:20px;padding:0 12px}
+.sublines>li{display:grid;grid-template-columns:130px 1fr;gap:2px 10px;align-items:center;padding:3px 0;border-bottom:1px solid var(--line);min-height:32px;font-size:14px}
+.sltrade{font-weight:600}.sublines>li:not(.has) .sltrade{color:var(--muted);font-weight:500}
+.slsubs{display:flex;flex-wrap:wrap;gap:4px 6px;align-items:center;min-width:0}
+.slsub{display:inline-flex;align-items:baseline;gap:6px;flex-wrap:nowrap;min-width:0;max-width:100%}.slsub a{white-space:nowrap}
+.slsub a{color:var(--blue);text-decoration:none;font-variant-numeric:tabular-nums;font-size:13px}.slsub a:hover{text-decoration:underline}
+.slsub small{display:none}.slsub .bx{align-self:center}
+.sladd{all:unset;cursor:pointer;color:var(--blue);font-size:13px;font-weight:600;padding:2px 0}.sladd:hover{text-decoration:underline}.sladd:focus-visible{outline:3px solid var(--yellow);outline-offset:2px}
+.sublines>li.open{grid-column:1/-1}.slpick{grid-column:1/-1}.slpick .sqbox{margin:2px 0 6px}
+.slother{margin:14px 0 6px;font-size:14px}
+.slname{all:unset;cursor:pointer;display:inline-flex;gap:6px;align-items:baseline;border-radius:4px;min-width:0;overflow:hidden}.slname b,.slname span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.slname span{flex:0 1 auto}.slname:hover b{text-decoration:underline}.slname:focus-visible{outline:3px solid var(--yellow);outline-offset:2px}
+#ccPanel{position:fixed;inset:0;z-index:60;pointer-events:none}#ccPanel.open{pointer-events:auto}#ccPanel.open .menuscrim{opacity:1}
+.ccsheet{position:absolute;top:0;right:0;bottom:0;width:min(400px,94%);background:var(--cc-bg);color:var(--ink);box-shadow:-12px 0 30px rgba(0,0,0,.2);transform:translateX(100%);transition:transform .22s ease;overflow-y:auto;padding-bottom:24px}
+#ccPanel.open .ccsheet{transform:none}
+.cchead{display:flex;justify-content:space-between;padding:14px 16px 0}
+.cclink{all:unset;cursor:pointer;color:var(--cc-blue);font-size:16px;padding:4px 2px}.cclink:focus-visible{outline:3px solid var(--yellow);border-radius:4px}
+.cctop{text-align:center;padding:4px 16px 16px;background:linear-gradient(var(--cc-top),var(--cc-bg))}
+.ccav{width:96px;height:96px;border-radius:50%;margin:6px auto 10px;display:grid;place-items:center;font:600 38px/1 -apple-system,BlinkMacSystemFont,"SF Pro Display",var(--font);color:#fff;background:linear-gradient(#A6ABB6,#868B95)}
+.cctop h2{margin:0;font:600 26px/1.2 -apple-system,BlinkMacSystemFont,"SF Pro Display",var(--font);letter-spacing:-.01em}
+.ccsub{margin:2px 0 0;font-size:15px}
+.ccacts{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:16px}
+.ccact{display:grid;justify-items:center;gap:3px;padding:9px 4px 7px;border-radius:10px;background:var(--cc-card);color:var(--cc-blue);text-decoration:none;font-size:12px}
+.ccact:hover{filter:brightness(.97)}.ccact.off{color:var(--muted);opacity:.5}
+.ccbody{display:grid;gap:14px;padding:0 16px}
+.ccgrp{background:var(--cc-card);border-radius:10px;overflow:hidden}
+.ccperson{padding:10px 14px 6px;display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 8px}.ccperson small{color:var(--muted);font-size:13px}.ccperson .ccmain{color:var(--green)}
+.ccrow{display:grid;gap:1px;padding:8px 14px;border-top:1px solid var(--line)}.ccgrp>.ccrow:first-child,.ccperson+.ccrow{border-top:0}
+.ccperson+.ccrow{border-top:1px solid var(--line)}
+.ccrow small{font-size:13px;color:var(--ink)}
+.ccrow a{color:var(--cc-blue);text-decoration:none;font-size:16px;word-break:break-word}.ccrow span{font-size:16px;white-space:pre-wrap}
+.ccblue{color:var(--cc-blue)!important}.ccdanger{all:unset;cursor:pointer;display:block;width:100%;box-sizing:border-box;padding:11px 14px;color:var(--red);font-size:16px}.ccdanger.armed{font-weight:700}
+:root{--cc-bg:#F2F2F7;--cc-card:#FFFFFF;--cc-top:#E4E5EA;--cc-blue:#0A6CDB}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--cc-bg:#111113;--cc-card:#1C1C1E;--cc-top:#2A2A2E;--cc-blue:#4EA1FF}}
+:root[data-theme="dark"]{--cc-bg:#111113;--cc-card:#1C1C1E;--cc-top:#2A2A2E;--cc-blue:#4EA1FF}
+@media (prefers-reduced-motion:reduce){.ccsheet{transition:none}}
+.ccerow{display:grid;grid-template-columns:auto 64px 1fr;align-items:center;gap:8px;padding:6px 14px;border-top:1px solid var(--line)}.ccgrp>.ccerow:first-child,.ccgrp>.ccplus:first-child{border-top:0}
+.ccerow small{font-size:13px;color:var(--muted)}.ccsp{width:20px}
+.ccerow.ccwide{grid-template-columns:1fr;gap:6px;padding:10px 14px}
+.ccerow.ccph{grid-template-columns:auto 1fr}
+.ccin{width:100%;box-sizing:border-box;border:0;background:transparent;font:inherit;font-size:16px;color:var(--ink);padding:6px 0;outline:none}
+.ccin:focus{box-shadow:inset 0 -2px 0 var(--cc-blue)}
+textarea.ccin{resize:vertical;border:1px solid var(--line);border-radius:8px;padding:8px}
+.ccpname{font-weight:600}
+.cced-name{text-align:center;font:600 22px/1.2 -apple-system,BlinkMacSystemFont,"SF Pro Display",var(--font);background:var(--cc-card);border-radius:10px;padding:10px;margin-top:4px}
+.ccminus,.ccplus{all:unset;cursor:pointer;display:inline-flex;align-items:center;gap:10px}.ccminus:focus-visible,.ccplus:focus-visible{outline:3px solid var(--yellow);border-radius:50%}
+.ccplus{display:flex;padding:11px 14px;border-top:1px solid var(--line);font-size:16px;color:var(--ink)}
+.cctypes{display:flex;flex-wrap:wrap;gap:6px}.cctypes button{all:unset;cursor:pointer;font-size:13px;padding:5px 11px;border-radius:999px;border:1px solid var(--line);color:var(--muted)}.cctypes button.on{background:var(--cc-blue);border-color:var(--cc-blue);color:#fff}
+.ccdone{font-weight:600}
+.ccval{all:unset;cursor:pointer;color:var(--cc-blue);font-size:16px;word-break:break-word}.ccval:focus-visible{outline:3px solid var(--yellow);border-radius:4px}
+.ccask{position:fixed;inset:0;z-index:70;display:flex;align-items:flex-end;justify-content:flex-end;background:rgba(0,0,0,.25)}
+.ccaskbox{width:min(400px,94%);padding:8px;box-sizing:border-box;display:grid;gap:8px;animation:ccup .18s ease}
+.ccaskgrp{background:var(--cc-card);border-radius:13px;overflow:hidden;display:grid}
+.ccaskgrp>a,.ccaskgrp>button{all:unset;cursor:pointer;display:block;text-align:center;padding:15px 12px;font-size:17px;color:var(--cc-blue);border-top:1px solid var(--line)}
+.ccaskgrp>:first-child{border-top:0}.ccaskgrp>a:focus-visible,.ccaskgrp>button:focus-visible{background:var(--cc-bg)}
+.ccaskgrp .cccancel{font-weight:600}
+@keyframes ccup{from{transform:translateY(30px);opacity:0}to{transform:none;opacity:1}}
+@media (prefers-reduced-motion:reduce){.ccaskbox{animation:none}}
+
+/* stop iPhone Safari from enlarging text in long rows, so every name is the same size */
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+.cco .cmain{display:flex;align-items:center;gap:4px 8px;flex-wrap:wrap}.cco .cmain b{min-width:0;overflow-wrap:anywhere}.cco .cmain .cchev{margin-left:auto;flex:none;color:var(--muted)}
+
+
+.slhead{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 0 8px}.slhead p{margin:0;font-size:14px}.sltop .sqbox{margin:0 0 10px;max-width:none}
+@media (max-width:640px){.sublines{grid-template-columns:1fr}.sublines>li{grid-template-columns:110px 1fr}}
 .ulist{list-style:none;margin:0;padding:0;display:grid}
 .urow{display:flex;align-items:center;gap:4px 12px;flex-wrap:wrap;padding:8px 0;border-bottom:1px solid var(--line);font-size:15px}.urow:last-child{border-bottom:0}
 .ulab{width:150px;flex:none;color:var(--muted);font-size:14px;font-weight:600}
@@ -658,7 +754,37 @@ table td:nth-child(n+2),table th:nth-child(n+2){border-left:1px solid var(--line
 .ttable .phrow td{padding:6px 12px;border-left:0}
 .phrow h3{font-size:15px}.phrow .n{font-size:12px}
 .ttable .phrow td.phcol{font-size:12px;font-weight:700;color:var(--muted);white-space:nowrap;vertical-align:bottom}
-.ttable .tn{white-space:nowrap;max-width:420px;overflow:hidden;text-overflow:ellipsis}
+.ttable .tn{white-space:nowrap;max-width:560px;overflow:hidden;text-overflow:ellipsis}
+.ttable th.c-mat,.ttable thead th:nth-child(n+4){width:1%;white-space:nowrap}
+/* phones: each task is one wrapping line, name first and given the room; empty date chips shrink to a calendar icon */
+@media (max-width:640px){
+ .tablewrap{overflow:visible}
+ .ttable{min-width:0;display:block;border:0}
+ .ttable thead{display:none}
+ .ttable tbody{display:block}
+ .ttable tr{display:flex;flex-wrap:wrap;align-items:center;gap:4px 6px;padding:8px 10px;border-bottom:1px solid var(--line)}
+ .ttable td{display:block;border:0!important;padding:0!important;background:none}
+ .ttable td:empty{display:none}
+ .ttable tr>td:first-child{width:28px;flex:none}
+ .ttable tr>td.tn{flex:0 0 calc(100% - 34px);min-width:0;white-space:normal;max-width:none;overflow:visible;font-size:16px;line-height:1.3}
+ .ttable tr>td:nth-child(3){margin-left:34px}.ttable tr>td:nth-child(3):empty+td{margin-left:34px}
+ .ttable .tn small{display:block;margin:2px 0 0}
+ .ttable tr>td:nth-child(n+3){flex:none}
+ .ttable tr.subtr{padding:5px 10px 5px 22px;border-bottom:0}
+ .ttable tr.subtr+tr:not(.subtr){border-top:1px solid var(--line)}
+ .ttable tr.subtr td{font-size:15px}
+ .ttable tr.subtr .tn{padding-left:30px!important;font-size:15px;flex-basis:100%}
+ .ttable tr.subtr>td:first-child{display:none}
+ .ttable tr.subtr>td:nth-child(3),.ttable tr.subtr>td:nth-child(3):empty+td{margin-left:30px}
+ .ttable tr.subtr .tn::before{left:10px}
+ .ttable tr.phrow{display:block;padding:12px 10px 8px;background:var(--panel2);border-bottom:1px solid var(--line)}
+ .ttable tr.phrow td{display:block}.ttable tr.phrow h3{display:inline;margin-right:8px}.ttable .phrow td.phcol{display:none}
+ .ttable tr.addtr{display:block;padding:6px 10px 6px 38px}
+ .ttable .echip:not(.set){padding:0;width:30px;height:28px;justify-content:center}
+ .ttable tr td,.ttable tr.subtr td{box-shadow:none!important;border-bottom:0!important}
+ .echip:not(.set) span{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+ .schcell{flex-direction:row;align-items:center;gap:6px}
+}.ttable td:nth-child(3){padding-right:6px}
 .ttable .tn small{display:inline;margin-left:8px;font-size:12px}
 .lastnote{display:inline;margin-left:8px;font-size:12px;vertical-align:baseline}
 .cbox input{width:18px;height:18px;border-width:1.5px}
@@ -682,6 +808,20 @@ table td:nth-child(n+2),table th:nth-child(n+2){border-left:1px solid var(--line
 .ttable tr:has(+ tr.subtr) td{border-bottom-color:transparent!important}
 .ttable tr.subtr:has(+ tr:not(.subtr)) td{border-bottom:1px solid var(--line)!important}
 .ttable tr.subtr+tr:not(.subtr) td{border-top:0}
+@media (max-width:640px){
+ .ttable tr.subtr:has(+ tr:not(.subtr)) td,.ttable tr:has(+ tr.subtr) td{border-bottom:0!important}
+ .ttable tr.subtr:has(+ tr:not(.subtr)){border-bottom:1px solid var(--line)}
+ .ttable tr.phrow>td:first-child{width:auto}
+ .ttable tr.phrow .linkbtn{text-align:left}
+ /* sub-tasks have no material, so their date icons sit on the same line as the name */
+ .ttable tr.subtr{flex-wrap:nowrap}
+ .ttable tr.subtr .tn{flex:1 1 auto}
+ .ttable tr.subtr>td:nth-child(3),.ttable tr.subtr>td:nth-child(3):empty+td{margin-left:0}
+ /* inspection sub-tasks carry a schedule pill and Pass/Fail, so they wrap like a main task */
+ .ttable tr.subtr:has(>td:nth-child(3):not(:empty)){flex-wrap:wrap}
+ .ttable tr.subtr:has(>td:nth-child(3):not(:empty)) .tn{flex:0 0 100%}
+ .ttable tr.subtr:has(>td:nth-child(3):not(:empty))>td:nth-child(3){margin-left:30px}
+}
 .pill,.hstat{font-size:12px;padding:1px 8px}
 td .bar{height:7px}
 .tiles{gap:10px;margin-top:10px}.tile{padding:9px 12px}.tile b{font-size:24px;margin-top:2px}.tile b.sm{font-size:18px}
@@ -692,7 +832,7 @@ td .bar{height:7px}
 .clist li{padding:5px 14px}
 .hlist .hl-h{cursor:default;font-size:12px;font-weight:600;color:var(--muted);padding:2px 0 4px}
 .hlist .hl-h:hover span:first-child{text-decoration:none}
-.hlist li{display:grid;grid-template-columns:minmax(0,2.2fr) minmax(0,1.6fr) 130px 64px 92px max-content;gap:12px;padding:5px 0;font-size:14px;align-items:center}
+.hlist li{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,220px) 124px 130px 112px;gap:12px;padding:5px 0;font-size:14px;align-items:center}
 .hsel{position:relative;display:inline-flex;align-items:center;gap:6px;border:1px solid;border-radius:14px;padding:0 8px;font-size:12.5px;font-weight:700;justify-self:end;cursor:pointer}
 .hlist .hl-h span:last-child{text-align:right}
 .hsel i{width:8px;height:8px;border-radius:50%;background:currentColor;flex:none}
@@ -704,15 +844,22 @@ td .bar{height:7px}
 .hsel.risk{color:#8A6400;background:var(--yellow-soft);border-color:var(--yellow)}
 .hsel.behind{color:var(--red);background:var(--red-soft);border-color:var(--red)}
 .hsel:focus-within{outline:3px solid var(--yellow);outline-offset:2px}
+.hlist .hl-h>span{white-space:nowrap}
 .hl-n{display:flex;align-items:center;gap:8px;min-width:0}.hl-n>span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .hl-n small{margin-left:8px;font-size:12px}.hl-n .sdot{margin:0;box-shadow:none}
 .hl-ph{color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.hl-pr{display:flex;align-items:center;gap:8px}.hl-pr .bar{flex:1}.hl-pr b{font-size:12px;min-width:30px;text-align:right}
+.hl-pr{display:flex;align-items:center;gap:8px;min-width:0}.hl-pr .bar{flex:none;width:80px}.hl-pr b{font-size:12px;min-width:30px;text-align:right}
 .hlist .due{text-align:right}
+.hl-due{display:flex;justify-content:flex-end;align-items:center;gap:8px;white-space:nowrap}.hl-dueh,.hl-prh{text-align:right}.hlist .hl-pr{justify-content:flex-end}.hl-pr b{text-align:right!important}
 .hl-ops{cursor:pointer}.hl-ops:hover{border-color:var(--blue)}
 .panel h3 .linkbtn{font:600 13px var(--font);margin-left:8px}
 .ovlist li{padding:5px 0;font-size:14px}.panel{padding:12px 14px}.panel h3{font-size:16px;margin-bottom:6px}.counts b{font-size:22px}
+/* squeezed: the home name keeps its room; the bar shrinks, then Next up and Progress drop out */
+@media (max-width:1180px){.hlist li{grid-template-columns:minmax(0,1fr) minmax(0,160px) 64px 130px 112px}.hl-pr .bar{display:none}.hl-pr b{text-align:left}}
+@media (max-width:1000px){.hlist li{grid-template-columns:minmax(0,1fr) 64px 130px 112px}.hl-ph,.hlist .hl-h>:nth-child(2){display:none}}
 @media (max-width:820px){.hlist li{grid-template-columns:minmax(0,1fr) 92px 140px}.hl-ph,.hl-pr,.hl-late,.hlist .hl-h{display:none}}
+/* phone: just the home and its status */
+@media (max-width:560px){.hlist li{grid-template-columns:minmax(0,1fr) auto}.hlist li>.hl-due{display:none}}
 @media (max-width:1300px){.ttable .tn{white-space:normal}}
 .subtog{display:flex;align-items:center;gap:6px;width:100%;background:none;border:0;text-align:left;cursor:pointer;color:#8FA0AE;font-weight:600}
 .subtog:hover{color:#E9EDF0}.subtog .chev{flex:none;transition:transform .15s;transform:rotate(90deg)}.subtog[aria-expanded="false"] .chev{transform:none}
@@ -739,6 +886,8 @@ td .bar{height:7px}
 .pstartcell{display:inline-flex;flex-direction:row;align-items:center;gap:6px;white-space:nowrap}.pstartcell .pcount{min-width:56px;text-align:right}.pstartcell small{font-size:11px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;line-height:1.1;padding-right:4px}
 .ovgrid.hmas{grid-auto-rows:2px;row-gap:0;align-items:start}
 .ovgrid.hmas>.panel{margin-bottom:14px}
+.ovgrid.hmas>.ovstack{display:grid;gap:14px;margin-bottom:14px;align-content:start}
+@media (max-width:820px){.ovgrid.hmas{grid-auto-rows:auto}}
 .ptable tbody tr[data-pipe-open]{cursor:pointer}
 .ptable .phrow td{background:var(--panel2);padding:6px 12px;border-left:0}.ptable .phrow h3{font-size:15px;display:inline}.ptable .phrow .n{color:var(--muted);font-size:12px;margin-left:10px}
 .ptable tr.pon td{background:var(--panel2)}
@@ -798,7 +947,7 @@ td .bar{height:7px}
 .notes-tile .nnrow{display:flex;align-items:baseline;gap:8px;min-width:0}.notes-tile .nnrow .nnh{flex:1;min-width:0}
 .notes-tile .nnd{flex:none;display:inline;font:600 12px/1.35 var(--font);letter-spacing:0;text-transform:none;color:var(--muted);margin:0}
 .nn small{font-size:12px}
-@media (max-width:820px){.hometop{grid-template-columns:1fr 1fr}.ht-today,.notes-tile{grid-column:1/-1;grid-row:auto}}
+@media (max-width:820px){.hometop{grid-template-columns:1fr 1fr}.ht-today,.notes-tile{grid-column:1/-1;grid-row:auto}.notes-tile:not(.open){height:auto;min-height:0}}
 .nicon{display:inline-flex;vertical-align:-2px;margin-left:6px;color:var(--blue)}
 .pqai{flex:1 1 100%;order:6;display:block;line-height:1.4}
 .pqwarn{background:var(--yellow-soft);border:1px solid var(--yellow);border-radius:6px;padding:4px 8px}
@@ -946,13 +1095,13 @@ dialog.cimdlg{width:min(1180px,96vw)}
    done = Completed, start/end = dates, pf = Pass/Fail, na = N/A            */
 const ORD=["ready","ordered","drop","done"], DAT=["start","end","done"], INS=["isched","pf"];
 const LABEL={expStart:"Expected start",ready:"Ready to order",ordered:"Ordered",drop:"Verified drop",done:"Completed",start:"Start",end:"End",pf:"Pass / Fail",na:"N/A",isched:"Inspection scheduled",delivDate:"Delivery",schedDate:"Scheduled for"};
-const INSP=["Inspection",INS];
+const INSP=["Call in inspection",INS,undefined,"inspection"];   // key stays "inspection" so saved results carry over
 const SCHEDULE=[
  {id:"p1",name:"Phase 1: Pre-Build",dates:false,tasks:[
-  ["Pre-Build",["done"],[["Apply for septic permit",["done"],{sewer:"septic"}],["Pay Sewer Tap",["done"],{sewer:"sewer"}],"Apply for building permit","Confirm 911 address","Set up electrical account/temp pole","Set up water tap","Set up gas (if needed)","Have dumpster dropped","Have portajohn dropped","Call 811"]]]},
+  ["Pre-Build",["done"],[["Apply for septic permit",["done"],{sewer:"septic"}],["Pay Sewer Tap",["done"],{sewer:"sewer"}],"Apply for building permit","Confirm 911 address","Set up electrical account/temp pole",["Apply for water tap",["done"],undefined,"set-up-water-tap"],"Set up gas (if needed)","Have dumpster dropped","Have portajohn dropped","Call 811"]]]},
  {id:"p2",name:"Phase 2: Site Work",dates:true,tasks:[
-  ["Stake Out Site",DAT,[],{homeType:"mfg"}],
-  ["Site prep/excavation",["done"],["Sign/Mailbox","Cut in driveway","Rough in Grade","Mark Water Meter","Temp Pole","Mark Power Line/HVAC","Set up Delivery Location"]],
+  ["Mark Home Location",DAT,[],undefined,"stake-out-site"],
+  ["Site prep/excavation",["done"],[["Install Property Marker",["done"],undefined,"sign-mailbox"],"Cut in driveway","Rough in Grade","Mark Water Meter","Temp Pole","Mark Power Line/HVAC","Set up Delivery Location"]],
   ["Install Footers",["done"],["Porch Post Piers",INSP]],
   ["Install Block",["done"],["Seal Block"],{foundation:"crawl",homeType:"site"}],
   ["Vapor Barrier",ORD,[],{foundation:"crawl",homeType:"site"}],
@@ -974,7 +1123,7 @@ const SCHEDULE=[
   ["Fireplace",["ready","ordered","drop","start","end","done"],[],{extras:"fireplace"}],
   ["Electrical Trim out",["done"]],["Electrical State Final",["ready","ordered","pf","done"]],["Insulation Trimout",["done"]],
   ["HVAC Trim out",["done"]],["HVAC State Final",["ready","ordered","pf","done"]],["Plumbing Trim out",DAT],["Paint Trim Out",DAT],
-  ["Punchout",DAT,["Closet Shelves","Transition Strips","Toiletries","Mirrors","Door Knobs/Stops","Exterior Door Hinges"]],
+  ["Punchout",DAT,["Mailbox","Closet Shelves","Transition Strips","Toiletries","Mirrors","Door Knobs/Stops","Exterior Door Hinges","Confirm all utilities"]],
   ["Appliances",ORD],["Garage Door",["done"]]]},
  {id:"p5",home:"site",name:"Phase 5: Sale Prep",dates:false,tasks:[
   ["Final Clean",DAT],["Exterior Final",DAT,["Final Grade","Final Driveway","Landscaping",["Shrubs",["done"],{extras:"shrubs"}],"Seed and Straw"]],
@@ -988,7 +1137,7 @@ const SCHEDULE=[
  {id:"m4",home:"mfg",name:"Phase 4: Home Install",dates:true,tasks:[
   ["Set Up Home",DAT],["Interior Trim Out",DAT],["Tie In Siding",DAT],["Build Decks",DAT],
   ["Install HVAC",DAT,[INSP]],["Connect Septic",DAT,[INSP],{sewer:"septic"}],["Connect Sewer",DAT,[INSP],{sewer:"sewer"}],["Connect Electric",DAT,[INSP]],
-  ["Connect Plumbing",DAT],["Install Gutters",DAT],["Install Vapor Barrier",DAT],["Install Drainage",DAT],["Install Landscaping",DAT]]},
+  ["Connect Plumbing",DAT,[INSP]],["Install Gutters",DAT],["Install Vapor Barrier",DAT],["Install Drainage",DAT],["Install Landscaping",DAT]]},
  {id:"m5",home:"mfg",name:"Phase 5: Close Out",dates:false,tasks:[
   ["Final Clean",DAT],["Final Grade",DAT],
   ["Close Out",["done"],["File NOC","Pick Up Dumpster","Pick Up Port-a-john","Order Termite Treatment"]]]}
@@ -1041,7 +1190,11 @@ const ROLES=["Building inspector","Electrical inspector","Plumbing inspector","M
 function normCounty(s){return(s||"").trim().replace(/\s+county$/i,"").trim()}
 function areaKeysOf(place){const k=[];if(!place)return k;
   if(place.county)k.push({id:"county-"+slug(normCounty(place.county)),name:normCounty(place.county)+" County",kind:"county"});
-  if(place.city&&place.inCity!==false)k.push({id:"city-"+slug(place.city),name:"City of "+place.city.trim(),kind:"city"});return k}
+  if(place.city&&place.inCity!==false)k.push({id:"city-"+slug(place.city),name:"City of "+place.city.trim(),kind:"city"});
+  // statewide offices (TDEC, state electrical inspectors) apply to every home in the state
+  if(place.county||place.city){const st=stateArea(place.state);if(st)k.push(st)}return k}
+const STATES={TN:"Tennessee",KY:"Kentucky"};
+function stateArea(code){const c=String(code||"TN").trim().toUpperCase().slice(0,2),n=STATES[c]||(c.length===2?c:"");return n?{id:"state-"+c.toLowerCase(),name:n+" (statewide)",kind:"state"}:null}
 /* ZIP -> [state, county, city] for Tennessee and Kentucky, bundled in the page (no lookups, no tokens) */
 let ZIPS=null;
 function zipInfo(z){if(!ZIPS){try{ZIPS=JSON.parse(document.getElementById("zipdata").textContent)}catch(e){ZIPS={}}}return ZIPS[z]||null}
@@ -1067,7 +1220,23 @@ function splitAddress(){
   set("opt-area-city",m[2].trim());set("opt-area-state",m[3].toUpperCase());set("opt-area-zip",m[4]);zipFill();
 }
 function areaKeys(j){return areaKeysOf(optVal(j,"area")||null)}
-function areaContacts(id){const a=areas.find(x=>x.id===id);return a?Object.entries(a.contacts||{}).filter(([,c])=>c).sort((x,y)=>(x[1].order||0)-(y[1].order||0)):[]}
+function areaContacts(id){const a=areas.find(x=>x.id===id);return a?Object.entries(a.contacts||{}).filter(([,c])=>c).sort((x,y)=>(x[1].order||0)-(y[1].order||0)).map(([k,c])=>[k,acResolve(c)]).filter(([,c])=>c):[]}
+// a county entry linked to Contacts shows that contact's current name, phone and email
+function acResolve(c){if(!c.cid)return c;const k=contacts.find(x=>x.id===c.cid);if(!k)return null;const ppl=peopleOf(k),pp=ppl.find(x=>x.phone)||ppl[0]||{};
+  return{...c,name:k.company||k.name||pp.name||"",person:k.company?(pp.name||""):"",phone:k.phone||pp.phone||"",email:k.email||(ppl.find(x=>x.email)||{}).email||"",notes:k.notes||"",linked:true}}
+const normArea=v=>{let x=String(v||"").toLowerCase().replace(/^city of\s+/,"").replace(/\s*\(statewide\)$/,"").replace(/\s+(statewide|state)$/,"").replace(/\s+(county|co\.?)$/,"").trim();
+  if(x==="tn"||x==="statewide"||x==="state of tennessee")x="tennessee";if(x==="ky"||x==="state of kentucky")x="kentucky";return x};
+// best county role for a contact, from its trades, then its type
+function guessRole(k){const tr=String(k.role||"").split(/[,;]+/).map(x=>x.trim().toLowerCase()).filter(Boolean);
+  for(const t of tr){const r=ROLES.find(r=>r.toLowerCase()===t)||ROLES.find(r=>r.toLowerCase().startsWith(t)||t.startsWith(r.toLowerCase().split(/[ /]/)[0]));if(r&&r!=="Other")return r}
+  const ty=Array.isArray(k.types)?k.types:[k.type];return ty.includes("Inspector")?"Building inspector":ty.includes("Utility")?"":ty.includes("Office")?"Codes / permits office":""}
+function acLinked(aid){return new Set(areaContacts(aid).map(([,c])=>c.cid).filter(Boolean))}
+function acAttach(aid,cid,role){const a=allAreas().find(x=>x.id===aid),k=contacts.find(x=>x.id===cid);if(!a||!k)return Promise.resolve();
+  if(acLinked(aid).has(cid)){toast("Already on "+a.name);return Promise.resolve()}
+  return areaWrite(a,{contacts:{["c-"+uid()]:{cid,role:role||guessRole(k),order:Date.now()}}}).then(()=>toast("Attached to "+a.name)).catch(report)}
+// contacts whose Area names this county and who are inspectors, utilities or offices
+function acSuggest(a){const n=normArea(a.name),have=acLinked(a.id);if(!n)return[];
+  return contacts.filter(k=>!have.has(k.id)&&normArea(k.area)===n&&(Array.isArray(k.types)?k.types:[k.type]).some(t=>t==="Inspector"||t==="Utility"||t==="Office"))}
 function asked(job,o){return!o.when||Object.entries(o.when).every(([k,v])=>optVal(job,k)===v)}
 function optLabel(job,id){const o=OPTIONS.find(x=>x.id===id),v=optVal(job,id);
   if(o.type==="number")return +v>0?v+" days":"Not set";
@@ -1077,8 +1246,8 @@ function optLabel(job,id){const o=OPTIONS.find(x=>x.id===id),v=optVal(job,id);
   const c=o.choices.find(([x])=>x===v);return c?c[1]:"Not set"}
 // a task (or sub-task) with a condition shows only when the home's answer matches; unanswered questions show every option's tasks
 function applies(job,t){return!t.cond||Object.entries(t.cond).every(([k,v])=>{const a=optVal(job,k);if(a==="")return true;const want=[].concat(v);return Array.isArray(a)?want.some(x=>a.includes(x)):want.includes(a)})}
-SCHEDULE.forEach(p=>{p.items=p.tasks.map(([name,f,subs,cond])=>{const key=p.id+"-"+slug(name);
-  return{key,name,f,cond,phase:p.id,subs:(subs||[]).map(s=>{const[n,sf,sc]=Array.isArray(s)?s:[s,["done"]];return{key:key+"--"+slug(n),name:n,f:sf||["done"],cond:sc}})}})});
+SCHEDULE.forEach(p=>{p.items=p.tasks.map(([name,f,subs,cond,okey])=>{const key=p.id+"-"+(okey||slug(name));
+  return{key,name,f,cond,phase:p.id,subs:(subs||[]).map(s=>{const[n,sf,sc,ok]=Array.isArray(s)?s:[s,["done"]];return{key:key+"--"+(ok||slug(n)),name:n,f:sf||["done"],cond:sc}})}})});
 
 let db=null,offline=false,loaded=false;
 let jobs=[],team=[];
@@ -1093,6 +1262,9 @@ function avatar(name){if(!name)return`<span class="av all" aria-hidden="true">Al
   const ini=name.trim().split(/\s+/).map(w=>w[0]).slice(0,2).join("").toUpperCase(),c=AV_COLORS[[...name].reduce((a,ch)=>a+ch.charCodeAt(0),0)%AV_COLORS.length];
   return`<span class="av" style="background:${c}" aria-hidden="true">${esc(ini)}</span>`}
 let collapsedSubs=new Set();try{collapsedSubs=new Set(JSON.parse(localStorage.getItem("jt_collapsed")||"[]"))}catch(e){}
+let oqClosed=new Set();try{oqClosed=new Set(JSON.parse(localStorage.getItem("jt_oqclosed")||"[]"))}catch(e){}
+const saveOq=()=>lsSet("jt_oqclosed",JSON.stringify([...oqClosed]));
+const oqTog=(k,name)=>`<button type="button" class="oqtog" data-oqtog="${k}" aria-expanded="${!oqClosed.has(k)}" aria-label="${oqClosed.has(k)?"Show":"Hide"} items for ${esc(name)}"><svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>`;
 function lsGet(k){try{return localStorage.getItem(k)}catch(e){return null}}
 function lsSet(k,v){try{localStorage.setItem(k,v)}catch(e){}}
 const $=s=>document.querySelector(s);
@@ -1122,7 +1294,8 @@ function toast(m){const t=$("#toast");t.textContent=m;t.style.display="block";cl
 const TPL_DEF={days:120,preDays:7,pipeTodos:["Plans finalized","Selections made","Financing confirmed","Septic permit applied for"],t:{},s:{},add:{},adds:{}};
 let tplStr="",TPL=JSON.parse(JSON.stringify(TPL_DEF));
 function tplParse(str){let o={};try{o=str?JSON.parse(str):{}}catch(e){}return{...JSON.parse(JSON.stringify(TPL_DEF)),...o}}
-const defNoMat=t=>/^install footers$/i.test(String(t.name||"").trim());
+// tasks with nothing to order: no "To order" pill (Settings can still turn it on per task)
+const defNoMat=t=>/^(install footers|mark home location|site prep\/excavation|(install )?vapor barrier|exterior final)$/i.test(String(t.name||"").trim());
 // one phase's tasks with the template applied. all=true keeps removed tasks (Settings shows them greyed out)
 function tplPhase(T,p,all){
   const subsOf=(t)=>t.subs.map((s,i)=>{const o=T.s[s.key]||{};return{...s,name:o.name||s.name,ord:o.ord??i*10,hide:!!o.hide}})
@@ -1167,7 +1340,7 @@ function tplMove(kind,key,dir){
   list.forEach((x,n)=>{(kind==="t"?tRec:sRec)(x.key).ord=n*10});tplSave()}
 let setTab=lsGet("jt_settab")||"site";
 /* Menu: the three-line button at the top of the sidebar opens a panel that slides over. Settings lives here; add more items to MENU as needed. */
-const MENU=[{go:"library",label:"Document library",hint:"Foundation packets and plans you reuse on many homes",icon:`<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5V5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z"/><path d="M8 7h7M8 11h7"/></svg>`},{go:"settings",label:"Settings",hint:"Task templates, days per task, pipeline to-dos",icon:`<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3h.1a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8v.1a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>`}];
+const MENU=[{go:"archive",label:"Archived homes",hint:"Finished homes taken off everyday screens",icon:`<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="5" rx="1"/><path d="M5 9v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V9M10 13h4"/></svg>`},{go:"library",label:"Document library",hint:"Foundation packets and plans you reuse on many homes",icon:`<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5V5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z"/><path d="M8 7h7M8 11h7"/></svg>`},{go:"settings",label:"Settings",hint:"Task templates, days per task, pipeline to-dos",icon:`<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3h.1a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8v.1a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>`}];
 function menuPanel(open){
   let m=document.getElementById("menuPanel");
   if(!m){m=document.createElement("div");m.id="menuPanel";m.innerHTML=`<div class="menuscrim" data-menu="close"></div><nav class="menusheet" aria-label="Menu"><div class="menuh"><b>Menu</b><button type="button" class="x" data-menu="close" aria-label="Close menu">×</button></div><div class="menulist"></div></nav>`;document.body.appendChild(m)}
@@ -1293,7 +1466,7 @@ function setSub(job,key,f,v){
 function render(){
   const a=document.activeElement,keep=a&&a.dataset&&a.dataset.keep?{k:a.dataset.keep,v:a.value,s:(()=>{try{return[a.selectionStart,a.selectionEnd]}catch(_){return null}})()}:null;
   const sc=$("main").scrollTop,tb=$(".todobox"),tsc=tb?tb.scrollTop:0;
-  renderSide();renderMain();refreshDrawer();scrollOrders();packHome();
+  renderSide();renderMain();refreshDrawer();scrollOrders();packHome();if(typeof ccOpen==="function"&&ccOpen()&&!ccDraft)ccPaint();
   $("main").scrollTop=sc;{const t2=$(".todobox");if(t2)t2.scrollTop=tsc}
   if(keep){const el=document.querySelector(`[data-keep="${CSS.escape(keep.k)}"]`);if(el){if(el.value!==keep.v)el.value=keep.v;el.focus();if(keep.s&&keep.s[0]!=null)try{el.setSelectionRange(keep.s[0],keep.s[1])}catch(_){}}}
 }
@@ -1335,7 +1508,7 @@ function renderMain(){
   const m=$("#main");
   if(!offline&&!loaded){m.innerHTML=`<div class="empty"><h3>Loading homes…</h3></div>`;return}
   if(view.mode==="job"&&!jobs.find(j=>j.id===view.jobId))view={mode:"home"};
-  m.innerHTML=view.mode==="library"?libraryHTML():view.mode==="settings"?settingsHTML():view.mode==="home"?homeHTML():view.mode==="pipeline"?pipelineHTML():view.mode==="overview"?overviewHTML():view.mode==="mine"?mineHTML():view.mode==="areas"||view.mode==="contacts"?contactsHTML():view.mode==="ops"?opsHTML():jobHTML();
+  m.innerHTML=view.mode==="archive"?archiveHTML():view.mode==="library"?libraryHTML():view.mode==="settings"?settingsHTML():view.mode==="home"?homeHTML():view.mode==="pipeline"?pipelineHTML():view.mode==="overview"?overviewHTML():view.mode==="mine"?mineHTML():view.mode==="areas"||view.mode==="contacts"?contactsHTML():view.mode==="ops"?opsHTML():jobHTML();
 }
 
 function homesTable(list){
@@ -1443,6 +1616,7 @@ function startFromPipe(id){const p=pipeline.find(x=>x.id===id);if(!p)return;
 /* Home page boxes keep their left-right order, but each one tucks up under the box above it (no gaps) */
 function packHome(){const g=document.querySelector(".hmas");if(!g)return;
   for(const p of g.children){p.style.gridRowEnd="";}
+  if(matchMedia("(max-width:820px)").matches)return;   // one column on phones and small tablets: no packing needed
   for(const p of g.children){p.style.gridRowEnd="span "+Math.ceil((p.getBoundingClientRect().height+14)/2)}}
 window.addEventListener("resize",()=>{clearTimeout(window.__pk);window.__pk=setTimeout(packHome,80)});
 if(document.fonts&&document.fonts.ready)document.fonts.ready.then(packHome);
@@ -1493,8 +1667,7 @@ function homeHTML(){
     return`<li data-job="${j.id}"><span class="hl-n"><i class="sdot s-${v}" title="${statusName(v)}"></i><span><b>${esc(j.name)}</b><small class="dim">${esc([j.subdivision||"Scattered lot",j.pm,j.super].filter(Boolean).join(" · "))}</small></span></span>
      <span class="hl-ph">${s.next?esc(s.next.name):"All done"}</span>
      <span class="hl-pr"><span class="bar"><i style="width:${s.pct}%"></i></span><b>${s.pct}%</b></span>
-     <span class="hl-late">${s.late?`<span class="pill">${s.late} late</span>`:""}</span>
-     <span class="due ${u.cls}">${esc(u.big)}</span>
+     <span class="hl-due">${s.late?`<span class="pill hl-late">${s.late} late</span>`:""}<span class="due ${u.cls}">${esc(u.big)}</span></span>
      <label class="hsel ${v}"><i aria-hidden="true"></i><span class="hst" aria-hidden="true">${statusName(v)}</span><select data-hsj="${j.id}" aria-label="Status for ${esc(j.name)}">
       ${STATUSES.map(([k,l])=>`<option value="${k}" ${v===k?"selected":""}>${l}</option>`).join("")}</select></label></li>`};
   const more=(n,max)=>n>max?`<p class="dim small" style="margin:6px 0 0">+ ${n-max} more</p>`:"";
@@ -1507,7 +1680,7 @@ function homeHTML(){
    <div class="body">
    <div class="ovgrid hmas" style="margin-top:12px">
     <section class="panel" style="grid-column:1/-1"><h3>Homes</h3>
-     <ul class="ovlist hlist"><li class="hl-h" aria-hidden="true"><span>Home</span><span>Next up</span><span>Progress</span><span></span><span>Days until due</span><span>Status</span></li>
+     <ul class="ovlist hlist"><li class="hl-h" aria-hidden="true"><span>Home</span><span>Next up</span><span class="hl-prh">Progress</span><span class="hl-dueh">Days until due</span><span>Status</span></li>
      ${[...by.behind,...by.risk,...by.track].map(hrow).join("")}</ul></section>
     <section class="panel"><h3 class="phead"><button type="button" class="plink2" data-go="pipeline" title="Open the Pipeline page">Pipeline</button>${pipeSorted().length?`<small class="phcol">Est. start</small>`:""}</h3>${pipeSorted().length?`<ul class="ovlist">${pipeSorted().slice(0,6).map(p=>`<li data-go="pipeline"><span><b>${esc(String(p.name).replace(/,.*$/,""))}</b>${p.subdivision?` · ${esc(p.subdivision)}`:""}</span><span class="pstartcell"><input type="date" class="pdate ${p.expStart?(p.expStart<TODAY?"late":""):"unset"}" data-pstart="${p.id}" value="${esc(p.expStart||"")}" aria-label="Estimated start for ${esc(p.name)}">${p.expStart?(()=>{const d=diff(TODAY,p.expStart);return`<b class="pcount ${d<0?"late":d<=14?"soon":""}">${d===0?"Today":d>0?d+" day"+(d===1?"":"s"):-d+" day"+(d===-1?"":"s")+" ago"}</b>`})():""}</span></li>`).join("")}</ul>${more(pipeSorted().length,6)}`:`<p class="dim">Nothing under contract yet. <button class="linkbtn plain" data-act="addpipe">Add to pipeline</button></p>`}</section>
     <section class="panel"><h3>Coming up, next 14 days</h3>${up.length?`<ul class="ovlist">${up.slice(0,10).map(({j,t})=>`<li data-open="${j.id}|${t.key}"><span><b>${short(j.name)}</b> · ${esc(t.name)}</span>${dueCell(j,t)}</li>`).join("")}</ul>${more(up.length,10)}`:`<p class="dim">No open tasks end in the next two weeks.</p>`}</section>
@@ -1572,10 +1745,37 @@ function headerMeta(j){
    <span>${addr?`<span class="sel">${esc(addr)}</span> <button type="button" class="linkbtn plain" data-copy="${esc(addr)}">Copy</button>`:`<span class="dim">No address yet</span> <button type="button" class="linkbtn plain" data-act="editjob">Add address</button>`}</span>
    <span>Permit #: ${j.permit?`<b class="sel">${esc(j.permit)}</b> <button type="button" class="linkbtn plain" data-copy="${esc(j.permit)}">Copy</button>`:`<span class="dim">Not entered</span> <button type="button" class="linkbtn plain" data-act="editjob">Add permit #</button>`}</span></div>`;
 }
+
+/* ===== Archive: finished homes leave the sidebar, Home, Ops queue and counts, but stay readable from Menu > Archived homes ===== */
+const canArchive=()=>!isSup(me)&&!isExc(me);
+const homeDone=(j,s)=>(s||stats(j)).pct>=100||!!S(j,"p5-certificate-of-occupancy").done;
+function archBanner(j,s){
+  if(j.archived)return`<div class="archbar"><span><b>Archived</b>${j.archivedOn?" on "+fmt(j.archivedOn):""}${j.archivedBy?" by "+esc(j.archivedBy):""}. It's off everyone's lists; nothing here was deleted.</span>${canArchive()?`<button type="button" class="btn sm" data-arch="restore">Restore home</button>`:""}</div>`;
+  if(canArchive()&&homeDone(j,s))return`<div class="archbar done"><span><b>This home is finished.</b> Archive it to take it off your screens. You can still open it any time.</span><button type="button" class="btn sm primary" data-arch="archive">Archive home</button></div>`;
+  return"";
+}
+function archiveJob(j){store.patch(j.id,{archived:true,archivedOn:TODAY,archivedBy:me||""}).then(()=>{view={mode:"home"};render();toast(`${j.name} archived. Find it under Menu, Archived homes.`)}).catch(report)}
+function restoreJob(j){store.patch(j.id,{archived:false}).then(()=>toast(`${j.name} is back on your lists`)).catch(report)}
+let archQ="";
+function archiveHTML(){
+  const all=jobs.filter(j=>j.archived).sort((a,b)=>(b.archivedOn||"").localeCompare(a.archivedOn||"")||(a.name||"").localeCompare(b.name||""));
+  const q=archQ.trim().toLowerCase(),list=all.filter(j=>!q||[j.name,j.subdivision,j.pm,j.super,(optVal(j,"area")||{}).county].join(" ").toLowerCase().includes(q));
+  let h=`<div class="top"><div class="toprow"><h2>Archived homes</h2></div><p class="dim" style="margin:4px 0 0">Finished homes, kept with all their tasks, notes, docs and subs. Open one to look something up, or restore it to put it back on everyone's lists.</p></div><div class="body">`;
+  if(!all.length)return h+`<div class="empty"><h3>Nothing archived yet</h3><p>When a home is finished, open it and tap Archive home.</p></div></div>`;
+  h+=`<input id="archq" class="search" data-keep="archq" value="${esc(archQ)}" placeholder="Search archived homes…" aria-label="Search archived homes" style="max-width:420px;margin-bottom:10px">`;
+  h+=`<ul class="archlist">${list.map(j=>`<li><button type="button" class="archopen" data-job="${j.id}"><b>${esc(j.name)}</b><small class="dim">${esc([j.subdivision||"Scattered lot",j.pm].filter(Boolean).join(" · "))}</small></button>
+    <span class="dim small">${j.archivedOn?"Archived "+fmt(j.archivedOn):""}</span>${canArchive()?`<button type="button" class="linkbtn plain" data-archrestore="${j.id}">Restore</button>`:""}</li>`).join("")||`<li class="dim">No archived homes match.</li>`}</ul>`;
+  return h+`</div>`;
+}
+document.addEventListener("click",e=>{
+  const b=e.target.closest("[data-arch]");if(b){const j=jobs.find(x=>x.id===view.jobId);if(!j)return;e.stopPropagation();b.dataset.arch==="archive"?archiveJob(j):restoreJob(j);return}
+  const r=e.target.closest("[data-archrestore]");if(r){e.stopPropagation();const j=jobs.find(x=>x.id===r.dataset.archrestore);if(j)restoreJob(j)}
+},true);
+document.addEventListener("input",e=>{if(e.target.id==="archq"){archQ=e.target.value;const pos=e.target.selectionStart;render();const f=document.getElementById("archq");if(f){f.focus();try{f.setSelectionRange(pos,pos)}catch(_){}}}});
 function jobHTML(){
   const j=jobs.find(x=>x.id===view.jobId),s=stats(j);
   let h=`<div class="top"><div class="toprow">${renaming===j.id?`<input id="nameEdit" class="nameedit" data-keep="home-name" aria-label="Home name" value="${esc(j.name)}">`:`<h2><button type="button" class="namebtn" data-rename="${j.id}" title="Click to rename">${esc(j.name)}<span class="pen" aria-hidden="true">Edit</span></button></h2>`}<div class="topright">${dueChip(j)}${statusDisplay(j)}</div></div>
-  ${headerMeta(j)}
+  ${headerMeta(j)}${archBanner(j,s)}
   <div class="tabs">${["overview","list","timeline","subs","docs"].map(t=>`<button data-tab="${t}" class="${view.tab===t?"on":""}">${{overview:"Overview",list:"Tasks",board:"Board",timeline:"Timeline",subs:"Subs"+(subList(j).length?` (${subList(j).length})`:""),docs:"Docs"+(docList(j).length?` (${docList(j).length})`:"")}[t]}</button>`).join("")}
   <div class="right">${view.tab==="list"?`<label class="toggle"><input type="checkbox" id="hideDone" ${hideDone?"checked":""}> Hide done</label>`:""}<button class="btn" data-act="editjob">Edit home</button></div></div></div><div class="body">`;
   if(view.tab==="board")view.tab="list";
@@ -1588,10 +1788,12 @@ function jobHTML(){
 // Material toggle: grey "Ready to order" (not requested) -> yellow Ready to order (sent to operations) -> Ordered -> On site -> back to grey
 // tasks that never need materials ordered: no Ready to order pill
 const MAT_STEPS=[["","Ready to order"],["ready","Ready to order"],["ordered","Ordered"],["drop","On site"]];
+// the task list's Material column shows the short form so the Task column gets the room
+const pillShort=l=>l.replace(/^Ready to /,"To ").replace(/^Inspection scheduled$/,"Scheduled");
 function matStage(x){return x.drop?3:x.ordered?2:x.ready?1:0}
 function matBtn(j,t){
   const i=matStage(S(j,t.key)),[c,l]=MAT_STEPS[i],tip=["Tap to send to operations to order","Tap when ordered","Tap when it's on site","Tap to clear"][i];
-  return`<button type="button" class="matbtn ${c||"none"}" data-mat="${j.id}|${t.key}" title="${tip}" aria-label="Material for ${esc(t.name)}: ${i?l:"not requested"}. ${tip}"><i></i>${l}</button>`;
+  return`<button type="button" class="matbtn ${c||"none"}" data-mat="${j.id}|${t.key}" title="${tip}" aria-label="Material for ${esc(t.name)}: ${i?l:"not requested"}. ${tip}"><i></i>${pillShort(l)}</button>`;
 }
 /* two dates side by side in the pop-up */
 function cycleMat(ref){
@@ -1614,7 +1816,7 @@ function schStage(x){return x.sched==="completed"?2:x.sched==="scheduled"?1:0}
 const INSP_STEPS=[["none","Ready to schedule"],["ready","Ready to schedule"],["scheduled","Inspection scheduled"]];
 function inspStage(x){return x.isched==="req"?1:x.isched?2:0}
 function inspBtn(j,s){const i=inspStage(S(j,s.key)),[c,l]=INSP_STEPS[i];
-  return`<button type="button" class="matbtn sch ${c}" data-isched="${j.id}|${s.key}" title="${["Tap to send to operations to schedule","Tap when the inspection is scheduled","Tap to clear"][i]}" aria-label="${esc(s.name)}: ${i===0?"not requested":l}"><i></i>${l}</button>`}
+  return`<button type="button" class="matbtn sch ${c}" data-isched="${j.id}|${s.key}" title="${["Tap to send to operations to schedule","Tap when the inspection is scheduled","Tap to clear"][i]}" aria-label="${esc(s.name)}: ${i===0?"not requested":l}"><i></i>${pillShort(l)}</button>`}
 function cycleInsp(ref){
   const[jid,key]=ref.split("|"),j=jobs.find(x=>x.id===jid);if(!j)return;
   const n=(inspStage(S(j,key))+1)%3,v=["","req","sched"][n];
@@ -1682,7 +1884,9 @@ const AC_FIELDS=[["role","Role","Building inspector"],["name","Name","Jim Smith"
 function allAreas(){
   const m=new Map(areas.map(a=>[a.id,{id:a.id,name:a.name,kind:a.kind}]));
   activeJobs().forEach(j=>areaKeys(j).forEach(k=>{if(!m.has(k.id))m.set(k.id,k)}));
-  return[...m.values()].sort((a,b)=>(a.kind===b.kind?0:a.kind==="county"?-1:1)||a.name.localeCompare(b.name));
+  const tn=stateArea("TN");if(!m.has(tn.id))m.set(tn.id,tn);
+  const rank={state:0,county:1,city:2};
+  return[...m.values()].sort((a,b)=>((rank[a.kind]??3)-(rank[b.kind]??3))||a.name.localeCompare(b.name));
 }
 function areaWrite(a,patch){
   const exists=areas.some(x=>x.id===a.id);
@@ -1703,7 +1907,7 @@ function roleChips(r){const l=String(r||"").split(/[,;/]+/).map(x=>x.trim()).fil
 function allContacts(){
   const out=[];
   for(const c of contacts){const ppl=peopleOf(c),leg=ppl.length===1&&ppl[0].legacy;out.push({src:"company",id:c.id,people:ppl,name:c.company?"":(c.name||(ppl[0]&&ppl[0].name)||""),company:c.company||"",type:c.type||"Other",types:Array.isArray(c.types)&&c.types.length?c.types:[c.type||"Other"],role:c.role||"",phone:leg?"":(c.phone||""),email:leg?"":(c.email||""),notes:c.notes||"",where:c.area||""});}
-  for(const a of allAreas())for(const[cid,c]of areaContacts(a.id))out.push({src:"area",aid:a.id,id:cid,name:c.name||"",company:"",type:areaType(c.role),role:c.role||"",phone:c.phone||"",email:c.email||"",notes:c.notes||"",where:a.name});
+  for(const a of allAreas())for(const[cid,c]of areaContacts(a.id))if(!c.linked)out.push({src:"area",aid:a.id,id:cid,name:c.name||"",company:"",type:areaType(c.role),role:c.role||"",phone:c.phone||"",email:c.email||"",notes:c.notes||"",where:a.name});
   const seen=new Set(out.map(c=>((c.company||c.name)+"|"+c.phone).toLowerCase()));
   for(const j of activeJobs())for(const[sid,sc]of subList(j)){if(sc.cid&&contacts.some(c=>c.id===sc.cid))continue;const key=((sc.company||sc.contact)+"|"+(sc.phone||"")).toLowerCase();if(seen.has(key))continue;seen.add(key);
     out.push({src:"sub",jid:j.id,id:sid,name:sc.contact||"",company:sc.company||"",type:"Sub",role:sc.trade||"",phone:sc.phone||"",email:"",notes:sc.notes||"",where:j.name})}
@@ -1725,16 +1929,11 @@ function contactsHTML(){
     const deep=q.length>1;
     h+=`<ul class="clist">${list.map(c=>{const key=(c.src||"")+":"+(c.id||c.jid||c.company||c.name),open=cOpen.has(key)||(deep&&!String(c.company||c.name||"").toLowerCase().includes(q)),ppl=(c.people||[]).filter(x=>x.name||x.phone||x.email);
       const edit=c.src==="company"?`<button type="button" class="linkbtn plain" data-cedit="${c.id}">Edit</button>`:c.src==="area"?`<button type="button" class="linkbtn plain" data-go="areas">Edit in county list</button>`:`<button type="button" class="linkbtn plain" data-job="${c.jid}" data-subs="1">Open home's Subs tab</button>`;
-      return`<li class="cco ${open?"open":""}"><button type="button" class="cmain" data-ctog="${esc(key)}" aria-expanded="${open}">
-      <svg class="cchev" width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M4 2l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      <b>${esc(c.company||c.name||"(no name)")}</b>${roleChips(c.role)}<small>${esc([(c.types||[c.type]).join(", "),c.where].filter(Boolean).join(" · "))}</small></button></li>
-      ${open?`<li class="cdet"><div class="cdetin">
-        ${c.phone||c.email||(!c.people&&c.company&&c.name)?`<div class="cdrow"><span class="cpn"><b>${esc(!c.people&&c.company&&c.name?c.name:"Office")}</b></span><span class="cvals">${cv(c.phone)}${cv(c.email)}</span></div>`:""}
-        ${ppl.map(x=>`<div class="cdrow"><span class="cpn"><b>${esc(x.name||"(no name)")}</b>${x.role?`<span class="cprole">${esc(x.role)}</span>`:""}</span><span class="cvals">${cv(x.phone)}${cv(x.email)}</span></div>`).join("")}
-        ${!c.phone&&!c.email&&!ppl.length?`<p class="dim cdnone">No phone or email yet.</p>`:""}
-        ${c.notes?`<p class="cnotes">${esc(c.notes)}</p>`:""}
-        <div class="cdacts">${edit}${c.src==="company"&&c.company?`<button type="button" class="linkbtn plain" data-addto="${c.id}">+ Person</button>`:""}</div></div></li>`:""}`}).join("")}</ul>`}
-  h+=`<details class="careas"${view.mode==="areas"?" open":""}><summary>Inspectors and offices by county / city</summary>${areasHTML(true)}</details>`;
+      const hit=deep&&!String(c.company||c.name||"").toLowerCase().includes(q)?ppl.find(x=>[x.name,x.role,x.phone,x.email].join(" ").toLowerCase().includes(q)):null;
+      return`<li class="cco"><button type="button" class="cmain" data-copen="${esc(key)}" aria-haspopup="dialog">
+      <b>${esc(c.company||c.name||"(no name)")}</b>${roleChips(c.role)}<small>${esc([hit?hit.name:"",(c.types||[c.type]).join(", "),c.where].filter(Boolean).join(" · "))}</small>
+      <svg class="cchev" width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M4 2l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button></li>`}).join("")}</ul>`}
+  h+=`<details class="careas" data-careas="1"${view.mode==="areas"||careasOpen?" open":""}><summary>Inspectors and offices by county / city</summary>${areasHTML(true)}</details>`;
   return h+`</div>`;
 }
 const PROLES=["Owner","Project manager","Superintendent","Estimator","Office","Billing","Sales","Foreman","Inspector"];
@@ -1901,19 +2100,53 @@ $("#contactForm").addEventListener("click",e=>{
 
 function areasHTML(embedded){
   const list=allAreas();
-  let h=embedded?`<p class="dim" style="margin:8px 0 12px;max-width:65ch">Inspectors, permit offices and utilities for each county and city you build in. Each home's Overview shows the ones for its area.</p><datalist id="roleList">${ROLES.map(r=>`<option value="${esc(r)}">`).join("")}</datalist><div>`:`<div class="top"><h2>Area contacts</h2><p class="dim" style="margin:6px 0 0;max-width:65ch">Inspectors, permit offices and utilities for each county and city you build in. Each home shows the contacts for its area. Add them as they come up.</p></div><div class="body">
+  let h=embedded?`<p class="dim" style="margin:8px 0 12px;max-width:65ch">Inspectors, permit offices and utilities: statewide ones (like TDEC or state electrical inspectors) apply to every home in that state; county and city ones apply to homes there. Each home's Overview shows the ones for its area.</p><datalist id="roleList">${ROLES.map(r=>`<option value="${esc(r)}">`).join("")}</datalist><div>`:`<div class="top"><h2>Area contacts</h2><p class="dim" style="margin:6px 0 0;max-width:65ch">Inspectors, permit offices and utilities for each county and city you build in. Each home shows the contacts for its area. Add them as they come up.</p></div><div class="body">
   <datalist id="roleList">${ROLES.map(r=>`<option value="${esc(r)}">`).join("")}</datalist>`;
   if(!list.length)return h+`<div class="empty"><h3>No areas yet</h3><p>Areas appear here once a home has a county or city. Set one from a home's Edit home screen.</p></div></div>`;
   for(const a of list){
-    const homes=activeJobs().filter(j=>areaKeys(j).some(k=>k.id===a.id)),cs=areaContacts(a.id),dr=acDraft[a.id]||{};
-    h+=`<section class="areablock" id="area-${a.id}"><div class="areah"><h3>${esc(a.name)}</h3><span class="dim small">${homes.length} home${homes.length===1?"":"s"}${homes.length?": "+homes.slice(0,4).map(j=>esc(j.name)).join(", ")+(homes.length>4?"…":""):""}</span></div>
-    <div class="tablewrap"><table class="sctable"><thead><tr>${AC_FIELDS.map(([,l])=>`<th>${l}</th>`).join("")}<th></th></tr></thead><tbody>
-    ${cs.length?contactRowsHTML(a.id,cs):`<tr class="scempty"><td colspan="6">No contacts yet. Add the first one in the row below.</td></tr>`}
-    <tr class="scadd">${AC_FIELDS.map(([f,l,ph])=>`<td><input class="cell new" id="acnew-${a.id}-${f}" data-acnew="${a.id}" data-acnf="${f}" ${f==="role"?'list="roleList"':""} placeholder="${ph}" value="${esc(dr[f]||"")}" aria-label="New contact ${l}"></td>`).join("")}
-    <td><button type="button" class="btn primary" data-acadd="${a.id}">Add</button></td></tr></tbody></table></div></section>`;
+    const homes=activeJobs().filter(j=>areaKeys(j).some(k=>k.id===a.id)),cs=areaContacts(a.id),sug=acSuggest(a),open=acOpen===a.id;
+    h+=`<section class="areablock" id="area-${a.id}"><div class="areah"><h3>${esc(a.name)}</h3><span class="dim small">${homes.length} home${homes.length===1?"":"s"}${homes.length?": "+homes.slice(0,4).map(j=>esc(j.name)).join(", ")+(homes.length>4?"…":""):""}</span>
+      ${open?"":`<button type="button" class="btn sm primary acaddbtn" data-acopen="${a.id}">+ Add</button>`}</div>
+    ${open?`<div class="sqbox acsearch"><input id="acq" data-acq="${a.id}" value="${esc(acQ)}" placeholder="Search your contacts…" autocomplete="off" aria-label="Search contacts to attach to ${esc(a.name)}"><div id="acres">${acResHTML(a.id)}</div><button type="button" class="linkbtn plain" data-acclose="1">Cancel</button></div>`:""}
+    ${sug.length?`<div class="acsug"><span class="dim small">In your contacts for ${esc(a.name)}:</span>${sug.map(k=>`<button type="button" class="acsugb" data-acatt="${a.id}|${k.id}" title="Attach to ${esc(a.name)}"><b>${esc(k.company||k.name)}</b>${k.role?`<small>${esc(k.role)}</small>`:""}<span>Attach</span></button>`).join("")}${sug.length>1?`<button type="button" class="linkbtn plain" data-acattall="${a.id}">Attach all ${sug.length}</button>`:""}</div>`:""}
+    ${cs.length?`<ul class="acrows">${cs.map(([eid,c])=>{const tel=String(c.phone||"").replace(/[^\d+]/g,"");
+      return`<li class="${c.linked?"":"aclegacy"}"><div class="acwho">${c.linked?`<button type="button" class="acnm" data-copen="company:${c.cid}"><b>${esc(c.name||"(no name)")}</b>${c.person?`<small>${esc(c.person)}</small>`:""}</button>`:`<span class="acnm"><b>${esc(c.name||"(no name)")}</b><small>Not in Contacts</small></span>`}</div>
+       <input class="acrolein" list="roleList" data-acrole="${a.id}|${eid}" value="${esc(c.role||"")}" placeholder="Role" aria-label="Role for ${esc(c.name||"contact")} in ${esc(a.name)}">
+       <span class="acph">${c.phone?`<a href="tel:${esc(tel)}">${esc(fmtPhone(c.phone))}</a>`:""}${c.email?`<a href="mailto:${esc(c.email)}">${esc(c.email)}</a>`:""}</span>
+       <span class="acact">${c.linked?"":`<button type="button" class="linkbtn plain" data-acmk="${a.id}|${eid}">Make contact</button>`}<button type="button" class="bx" data-acrm="${a.id}|${eid}" aria-label="Remove ${esc(c.name||"contact")} from ${esc(a.name)}" title="Remove from ${esc(a.name)}">×</button></span></li>`}).join("")}</ul>`:open||sug.length?"":`<p class="dim small" style="margin:0">Nobody attached yet. Tap + Add to pick from your contacts.</p>`}
+    </section>`;
   }
   return h+`</div>`;
 }
+
+/* county sections: + Add searches Contacts and links the pick; old typed-in rows can become real contacts */
+let acOpen=null,acQ="",careasOpen=false;
+document.addEventListener("toggle",e=>{if(e.target.dataset&&e.target.dataset.careas)careasOpen=e.target.open},true);
+function acResHTML(aid){
+  const have=acLinked(aid),q=acQ.trim().toLowerCase();
+  const list=contacts.filter(k=>!have.has(k.id)&&(!q||[k.company,k.name,k.role,k.area,...peopleOf(k).map(x=>x.name)].join(" ").toLowerCase().includes(q)))
+    .sort((x,y)=>{const t=k=>(Array.isArray(k.types)?k.types:[k.type]).some(t=>t==="Inspector"||t==="Utility"||t==="Office")?0:1;return t(x)-t(y)||String(x.company||x.name).localeCompare(String(y.company||y.name))}).slice(0,8);
+  if(!list.length)return`<p class="dim small" style="margin:6px 0">${q?"No contacts match. Add them on the Contacts list first.":"No more contacts to attach."}</p>`;
+  return list.map(k=>`<button type="button" class="sqrow" data-acpick="${aid}|${k.id}"><b>${esc(k.company||k.name)}</b><small class="dim">${esc([k.role,k.area].filter(Boolean).join(" · "))}</small></button>`).join("");
+}
+async function acMake(aid,eid){
+  const a=allAreas().find(x=>x.id===aid),raw=((areas.find(x=>x.id===aid)||{}).contacts||{})[eid];if(!a||!raw)return;
+  const ty=areaType(raw.role),pid="p"+uid();
+  // typed-in county rows were usually a person at an office, so they become a person contact
+  const d={company:"",name:raw.name||"",types:[ty],type:ty,role:raw.role||"",phone:raw.phone||"",email:raw.email||"",area:a.name,notes:raw.notes||"",people:{}};
+  try{const cid=await contactStore.add(d);await areaWrite(a,{contacts:{[eid]:{cid,role:raw.role||"",order:raw.order||Date.now(),name:null,phone:null,email:null,notes:null}}});toast("Added to Contacts")}catch(e){report(e)}
+}
+document.addEventListener("click",e=>{
+  const o=e.target.closest("[data-acopen]");if(o){acOpen=o.dataset.acopen;acQ="";render();setTimeout(()=>{const f=document.getElementById("acq");if(f)f.focus()},0);return}
+  if(e.target.closest("[data-acclose]")){acOpen=null;render();return}
+  const pk=e.target.closest("[data-acpick]");if(pk){const[aid,cid]=pk.dataset.acpick.split("|");acOpen=null;acAttach(aid,cid);return}
+  const at=e.target.closest("[data-acatt]");if(at){const[aid,cid]=at.dataset.acatt.split("|");acAttach(aid,cid);return}
+  const al=e.target.closest("[data-acattall]");if(al){const a=allAreas().find(x=>x.id===al.dataset.acattall);if(!a)return;const patch={};acSuggest(a).forEach((k,i)=>{patch["c-"+uid()]={cid:k.id,role:guessRole(k),order:Date.now()+i}});areaWrite(a,{contacts:patch}).then(()=>toast("Attached")).catch(report);return}
+  const mk=e.target.closest("[data-acmk]");if(mk){const[aid,eid]=mk.dataset.acmk.split("|");acMake(aid,eid);return}
+});
+document.addEventListener("input",e=>{const t=e.target;if(t.dataset&&t.dataset.acq){acQ=t.value;const r=document.getElementById("acres");if(r)r.innerHTML=acResHTML(t.dataset.acq)}});
+document.addEventListener("keydown",e=>{const t=e.target;if(t.dataset&&t.dataset.acq){if(e.key==="Escape"){acOpen=null;render()}else if(e.key==="Enter"){const b=document.querySelector("#acres [data-acpick]");if(b){e.preventDefault();b.click()}}}});
+document.addEventListener("change",e=>{const t=e.target;if(t.dataset&&t.dataset.acrole){const[aid,eid]=t.dataset.acrole.split("|"),a=allAreas().find(x=>x.id===aid);if(a)areaWrite(a,{contacts:{[eid]:{role:t.value.trim()}}}).catch(report)}});
 function addAreaContact(areaId){
   const a=allAreas().find(x=>x.id===areaId),d={};if(!a)return;
   AC_FIELDS.forEach(([f])=>{d[f]=((acDraft[areaId]||{})[f]||"").trim()});
@@ -1944,7 +2177,7 @@ function utilLearned(x,kind,k){
   if(top)return{...top.u,why:`Used on ${top.n} home${top.n===1?"":"s"} ${top.where}`,src:"learned"};
   // a county/city contact saved on the Areas page with this role
   const role=UROLES.find(r=>r[0]===k)[3];
-  for(const a of areaKeysOf(p.county?{county:p.county,city:p.city}:null))for(const[,c]of areaContacts(a.id))if((c.role||"")===role)return{company:"",contact:c.name||"",phone:c.phone||"",email:c.email||"",why:"Saved for "+a.name,src:"area"};
+  for(const a of areaKeysOf(p.county?{county:p.county,city:p.city,state:p.state}:null))for(const[,c]of areaContacts(a.id))if((c.role||"")===role)return c.linked?{company:c.name,contact:c.person||"",phone:c.phone||"",email:c.email||"",cid:c.cid,why:"Saved for "+a.name,src:"area"}:{company:"",contact:c.name||"",phone:c.phone||"",email:c.email||"",why:"Saved for "+a.name,src:"area"};
   const g=x.utilsAI&&x.utilsAI.key===placeKey(p)&&x.utilsAI.roles&&x.utilsAI.roles[k];
   if(g&&g.name)return{company:g.name,contact:"",phone:g.phone||"",email:"",website:g.website||"",why:"Claude's best guess"+(g.sure==="high"?"":", please check")+(g.note?": "+g.note:""),src:"claude",sure:g.sure};
   return null}
@@ -1999,7 +2232,19 @@ async function utilSet(kind,id,k,r){
           people:r.contact?{[pid]:{name:r.contact,role:"",phone:r.phone||"",email:r.email||"",order:Date.now()}}:{}})}}
     utilPick=null;
     await xPatch(kind,id,{utils:{[k]:{company:r.company||"",contact:r.contact||"",phone:r.phone||"",email:r.email||"",cid,by:me||"",on:TODAY}}});
-    toast(`${role[1]}: ${r.company||r.contact}`)}catch(e){report(e)}}
+    toast(`${role[1]}: ${r.company||r.contact}`);
+    const areasHere=(kind==="job"?areaKeys(x):areaKeysOf(placeOf(x,kind))).filter(a=>!acLinked(a.id).has(cid));
+    if(cid&&areasHere.length)askAreaLink(cid,role[3],areasHere)}catch(e){report(e)}}
+// after picking an inspector or utility for a home: offer to save them for that county/city so the next home there gets them
+function askAreaLink(cid,role,list){
+  const k=contacts.find(c=>c.id===cid);if(!k)return;let el=document.getElementById("areaAsk");if(el)el.remove();
+  el=document.createElement("div");el.id="areaAsk";el.setAttribute("role","dialog");el.setAttribute("aria-live","polite");
+  el.innerHTML=`<p>Link <b>${esc(k.company||k.name)}</b> to ${list.map(a=>esc(a.name)).join(" or ")} as <b>${esc(role)}</b>? Future homes there will suggest them.</p>
+    <div>${list.map(a=>`<button type="button" class="btn sm primary" data-arlink="${a.id}">Link to ${esc(a.name)}</button>`).join("")}<button type="button" class="btn sm" data-arlink="">Not now</button></div>`;
+  document.body.appendChild(el);
+  el.addEventListener("click",ev=>{const b=ev.target.closest("[data-arlink]");if(!b)return;const aid=b.dataset.arlink;el.remove();if(aid)acAttach(aid,cid,role)});
+  setTimeout(()=>{const f=el.querySelector("button");if(f)f.focus()},50);
+}
 function utilPickHTML(){const u=utilPick;
   if(u.mode==="new"){const d=u.d;return`<div class="sqbox ubox"><div class="sqgrid">
      <label class="f">Company / office<input id="un-company" data-keep="un-company" data-uf="company" value="${esc(d.company)}"></label>
@@ -2143,7 +2388,7 @@ document.addEventListener("click",e=>{const a=e.target.closest&&e.target.closest
 
 /* ===== Permit copies: a dropped permit file goes to Docs (Permits) and links to the Permits box ===== */
 function permitFor(name){const m=/^apply for (.+?) permit/i.exec(name||"");if(!m)return"";const w=m[1].toLowerCase();
-  return /septic|sewer/.test(w)?"sewer":/build/.test(w)?"building":/electric/.test(w)?"electrical":/plumb/.test(w)?"plumbing":/fram/.test(w)?"framing":""}
+  return /septic|sewer/.test(w)?"sewer":/build/.test(w)?"building":/electric/.test(w)?"electrical":/plumb/.test(w)?"plumbing":/\bgas\b/.test(w)?"gas":""}
 function permitLabel(j,id){const sw=optVal(j,"sewer");return id==="sewer"&&sw?(sw==="septic"?"Septic":"Sewer"):(PERMITS.find(p=>p[0]===id)||[,id])[1]}
 let permitFor_=null;
 function askPermitCopy(jid,pid){
@@ -2202,20 +2447,22 @@ function ordersHTML(j){
 function scrollOrders(){document.querySelectorAll('.ostlist[data-autoscroll]').forEach(ul=>{const nx=ul.querySelector(".onext");ul.scrollTop=nx?nx.offsetTop:ul.scrollHeight})}
 
 /* ===== Permits: where each permit is in the process ===== */
-const PERMITS=[["building","Building"],["sewer","Septic / Sewer"],["electrical","Electrical"],["plumbing","Plumbing"],["hvac","HVAC"],["framing","Framing"]];
+const PERMITS=[["building","Building"],["sewer","Septic / Sewer"],["electrical","Electrical"],["plumbing","Plumbing"],["hvac","HVAC"],["gas","Gas"]];
 // Permits: one line each, name on the left, one status on the right. Tap the status to move it along:
 // Not applied -> Applied -> Rough-in passed -> Final pulled -> Final passed -> back. Fixed order; passed ones are dimmed.
 // "Applied" also comes straight from the Pre-Build checklist (Apply for building permit, Apply for septic permit, Pay Sewer Tap).
 const PERMIT_APPLY={building:["p1-pre-build--apply-for-building-permit"],sewer:["p1-pre-build--apply-for-septic-permit","p1-pre-build--pay-sewer-tap"]};
 function permitApplied(j,id){return(PERMIT_APPLY[id]||[]).some(k=>S(j,k).done)}
-const PERMIT_STEPS=["Not applied","Applied","Rough-in passed","Final pulled","Final passed"];
+// rough-in inspections moved to their own Inspections panel, so trade permits go straight from Applied to Final pulled
+const PERMIT_STEPS=["Not applied","Applied","Final pulled","Final passed"];
 // the building permit is the initial permit: it's closed out when the CO is issued
 const BUILDING_STEPS=["Not applied","Applied","Pulled","CO received"];
 // septic / sewer: the permit is pulled, then passed (septic by the state) - no rough-in or final-pulled steps
 const SEPTIC_STEPS=["Not applied","Applied","Pulled","State passed"],SEWER_STEPS=["Not applied","Applied","Pulled","Passed"];
 const stepsFor=(id,j)=>id==="building"?BUILDING_STEPS:id==="sewer"?(j&&optVal(j,"sewer")==="sewer"?SEWER_STEPS:SEPTIC_STEPS):PERMIT_STEPS;
 // saved as {stage, on:{1:date,...}}; older saves used applied / pulled / final flags
-function permitSaved(p,id){const last=stepsFor(id).length-1;return p.stage!==undefined?Math.min(+p.stage,last):p.final?last:(p.pulled||p.applied)?1:0}
+const oldTrade=(p,id)=>stepsFor(id)===PERMIT_STEPS&&p.stage!==undefined&&p.sv!==2;
+function permitSaved(p,id){const last=stepsFor(id).length-1;if(oldTrade(p,id)){const o=+p.stage;return Math.min(o>=2?o-1:o,last)}return p.stage!==undefined?Math.min(+p.stage,last):p.final?last:(p.pulled||p.applied)?1:0}
 // inspections on the Tasks tab move the permit along (one way: the permit can also be set by hand, never lower than its inspections)
 // rough: a rough-in inspection passed -> Rough-in passed. final: a final inspection requested/scheduled -> Final pulled; passed -> Final passed.
 const PERMIT_LINKS={
@@ -2227,17 +2474,17 @@ const PERMIT_LINKS={
 };
 function permitFromTasks(j,id){
   const L=PERMIT_LINKS[id]||{},last=stepsFor(id).length-1,keys=new Set(allItems(j).flatMap(t=>[t.key,...t.subs.map(s=>s.key)]));let st=permitApplied(j,id)?1:0;
-  if((L.rough||[]).some(k=>keys.has(k)&&S(j,k).pf==="pass"))st=Math.max(st,2);
+  if(id==="sewer"&&manualSt(j,"sewer")===2)st=Math.max(st,last);
   for(const k of L.final||[]){if(!keys.has(k))continue;const x=S(j,k),sub=k.includes("--");
     if(x.pf==="pass"||(!sub&&x.done))st=Math.max(st,last);
     else if(stepsFor(id)===PERMIT_STEPS&&(x.isched||(!sub&&(x.ordered||schStage(x)>=1))))st=Math.max(st,last-1)}
   return st;
 }
 function permitStage(j,id){const p=(j.permits||{})[id]||{};return Math.max(permitSaved(p,id),permitFromTasks(j,id))}
-function permitDate(p,st,last){return(p.on||{})[st]||(st===1?p.appliedOn||p.pulledOn:st===last?p.finalOn:"")||""}
+function permitDate(p,st,last){if(p.sv!==2&&last===PERMIT_STEPS.length-1&&p.stage!==undefined&&st>=2)st=st+1;return(p.on||{})[st]||(st===1?p.appliedOn||p.pulledOn:st===last?p.finalOn:"")||""}
 function permitsHTML(j){
   const P=j.permits||{},sw=optVal(j,"sewer");
-  return`<section class="panel"><h3>Permits</h3><ul class="ostlist plist2">${PERMITS.map(([id,l])=>{
+  return`<section class="panel"><h3>Permits</h3><ul class="ostlist plist2">${PERMITS.filter(([id])=>id!=="gas"||!allItems(j).some(t=>/gas-rough-in$/.test(t.key)&&isNA(j,t))).map(([id,l])=>{
     const p=P[id]||{},st=permitStage(j,id),name=id==="sewer"&&sw?(sw==="septic"?"Septic":"Sewer"):l,doc=p.doc&&(j.docs||{})[p.doc];
     const extra=[id==="building"&&j.permit?"#"+esc(j.permit):"",doc?`<a class="plink" href="${esc(docHref(doc))}" target="_blank" rel="noopener">View permit</a>`:assetsApi?`<button type="button" class="linkbtn plain plink" data-paddcopy="${id}">Add copy</button>`:""].filter(Boolean).join(" · ");
     const steps=stepsFor(id,j),last=steps.length-1,dd=permitDate(p,st,last),label=steps[st]+(st&&dd?" · "+fmt(dd):"");
@@ -2245,10 +2492,49 @@ function permitsHTML(j){
     return`<li class="${st===last?"pdone":""}"><span class="pnm"><b>${esc(name)}</b>${extra?` <small class="dim">${extra}</small>`:""}</span>
       <button type="button" class="pstat ${cls}" data-pcycle="${id}" title="${st<last?"Tap to mark "+steps[st+1].toLowerCase():"Tap to clear"}">${label}</button></li>`}).join("")}</ul></section>`;
 }
+/* ===== Inspections: rough-in and other inspections on this home, read from the task list ===== */
+// Fixed order: footers, (under-slab), septic/sewer, HVAC, plumbing, electrical, (gas), framing, final.
+const INSP_ORDER=["footers","underslab","sewer","hvac","plumbing","electrical","gas","framing","other","final"];
+const MANUAL_INSP=["Not scheduled","Scheduled","Passed"];
+function inspCat(key){return /install-footers/.test(key)?"footers":/under-slab/.test(key)?"underslab":/septic|sewer/.test(key)?"sewer":/hvac/.test(key)?"hvac":/plumbing/.test(key)?"plumbing":/electric/.test(key)?"electrical":/gas/.test(key)?"gas":"other"}
+// manual rows are stored as insx.<id> = {st:0|1|2, on}; framing falls back to an old framing permit that had reached Rough-in passed
+function manualSt(j,id){const fi=(j.insx||{})[id];if(fi)return+fi.st||0;const fp=(j.permits||{})[id]||{};return id==="framing"&&fp.stage!==undefined&&fp.sv!==2&&+fp.stage>=2?2:0}
+function inspRows(j){
+  const out=[],site=optVal(j,"homeType")!=="mfg",sw=optVal(j,"sewer");
+  for(const t of allItems(j)){if(isNA(j,t))continue;
+    if(t.f&&t.f.includes("pf")&&/rough/i.test(t.name))out.push({cat:inspCat(t.key),t,key:t.key,name:t.name});
+    for(const s of t.subs||[])if(s.f&&s.f.includes("pf"))out.push({cat:inspCat(t.key),t,key:s.key,name:/^(call in )?inspection$/i.test(s.name)?t.name.replace(/^(Install|Connect) /,"").replace(/^Electric$/,"Electrical"):t.name+" · "+s.name})}
+  if(!out.some(r=>r.cat==="sewer"))out.push({cat:"sewer",manual:"sewer",name:sw==="sewer"?"Sewer":"Septic"});
+  if(site)out.push({cat:"framing",manual:"framing",name:"Framing"});
+  const co=allItems(j).find(t=>t.key==="p5-certificate-of-occupancy");
+  out.push(co?{cat:"final",co,name:"Final"}:{cat:"final",manual:"final",name:"Final"});
+  return out.map((r,i)=>({...r,i})).sort((a,b)=>INSP_ORDER.indexOf(a.cat)-INSP_ORDER.indexOf(b.cat)||a.i-b.i);
+}
+function inspectionsHTML(j){
+  const rows=inspRows(j).map(r=>{let lab,cls,done=false,btn;
+    if(r.manual){const st=manualSt(j,r.manual),d=((j.insx||{})[r.manual]||{}).on||"";done=st===2;
+      lab=MANUAL_INSP[st]+(st&&d?" · "+fmt(d):"");cls=["s0","s2","s4"][st];
+      btn=`data-icycle="${r.manual}" title="${st<2?"Tap to mark "+MANUAL_INSP[st+1].toLowerCase():"Tap to clear"}"`}
+    else if(r.co){const x=S(j,r.co.key);done=!!x.done;lab=done?"Passed"+(x.doneOn?" · "+fmt(x.doneOn):""):"Not passed";cls=done?"s4":"s0";
+      btn=`data-open="${j.id}|${r.co.key}" title="Passes when Certificate of Occupancy is checked off"`}
+    else{const x=S(j,r.key);done=x.pf==="pass";
+      if(done){lab="Passed"+(x.doneOn?" · "+fmt(x.doneOn):"");cls="s4"}
+      else if(x.pf==="fail"){lab="Failed";cls="sbad"}
+      else if(x.isched&&x.isched!=="req"){lab="Scheduled"+(x.schedDate?" · "+fmt(x.schedDate):"");cls=x.schedDate&&x.schedDate<TODAY?"sbad":"s2"}
+      else if(x.isched==="req"){lab="Sent to ops";cls="s1"}
+      else{lab="Not scheduled";cls="s0"}
+      btn=`data-open="${j.id}|${r.t.key}" title="Open ${esc(r.t.name)}"`}
+    return`<li class="${done?"pdone":""}"><span class="pnm"><b>${esc(r.name)}</b></span><button type="button" class="pstat ${cls}" ${btn}>${esc(lab)}</button></li>`});
+  return`<section class="panel"><h3>Inspections</h3><ul class="ostlist plist2">${rows.join("")}</ul></section>`;
+}
+function cycleInspX(id){
+  const j=jobs.find(x=>x.id===view.jobId);if(!j)return;const n=(manualSt(j,id)+1)%MANUAL_INSP.length;
+  store.patch(j.id,{insx:{[id]:{st:n,on:n?TODAY:""}}}).catch(report);
+}
 function cyclePermit(id){
   const j=jobs.find(x=>x.id===view.jobId);if(!j)return;
   const steps=stepsFor(id,j),n=(permitStage(j,id)+1)%steps.length;
-  const patch={stage:n,on:n?{[n]:TODAY}:{1:"",2:"",3:"",4:""}};
+  const patch={stage:n,on:n?{[n]:TODAY}:{1:"",2:"",3:"",4:""}};if(steps===PERMIT_STEPS)patch.sv=2;
   if(n===0&&permitFromTasks(j,id)>0)toast("It stays at "+steps[permitFromTasks(j,id)]+" because of the matching checklist item or inspection");
   store.patch(j.id,{permits:{[id]:patch}}).catch(report);
 }
@@ -2320,7 +2606,7 @@ function overviewTabHTML(j){
   const mc=[0,0,0,0];its.forEach(t=>{if(!isDone(j,t))mc[matStage(S(j,t.key))]++});
   const sc=[0,0,0];its.forEach(t=>sc[schStage(S(j,t.key))]++);
   return optsBanner(j)+todayHTML(needsToday(j),false)+`<div class="ovgrid hmas">
-   ${permitsHTML(j)}
+   <div class="ovstack">${permitsHTML(j)}${inspectionsHTML(j)}</div>
    ${ordersHTML(j)}
    ${boardHTML(j)}
    <section class="panel"><h3>Coming up, next 14 days</h3>${up.length?`<ul class="ovlist">${up.map(t=>item(t,dueCell(j,t))).join("")}</ul>`:`<p class="dim">No open tasks end in the next two weeks. Add end dates in a task's side panel to see them here.</p>`}</section>
@@ -2515,17 +2801,29 @@ const SC_FIELDS=[["trade","Trade","Framing"],["company","Company","ABC Framing L
 const TRADES=["Excavation","Concrete / Footers","Block","Framing","Roofing","Windows & Doors","Siding","Gutters","Septic / Sewer","Plumbing","HVAC","Electrical","Gas","Insulation","Drywall","Cabinets","Trim","Flooring","Tile","Paint","Appliances","Garage Door","Cleaning","Landscaping"];
 let scDraft={};
 function subList(j){return Object.entries(j.subcons||{}).filter(([k,v])=>v).sort((a,b)=>(a[1].order||0)-(b[1].order||0))}
+// Which trades a home needs, read from its own task list (N/A tasks and options not on this home drop out)
+const TRADE_TASKS=[["Excavation",/site-prep|stake-out-site|bush-hog|final-grade|exterior-final/],["Concrete / Footers",/footers|pour-slab|concrete|install-piers/],["Block",/install-block/],
+ ["Septic / Sewer",/septic|sewer/],["Home Set-up",/set-up-home|tie-in-siding/],["Framing",/lumber-package|install-decks|build-decks/],["Roofing",/roofing/],["Siding",/p3-siding/],["Gutters",/gutters/],
+ ["Plumbing",/plumbing|water-line/],["HVAC",/hvac/],["Electrical",/electric/],["Gas",/gas-rough/],["Insulation",/insulation|vapor-barrier/],["Drywall",/drywall/],["Cabinets",/cabinets/],
+ ["Trim",/door-trim|interior-trim/],["Flooring",/floors/],["Tile",/-tile/],["Paint",/paint/],["Garage Door",/garage-door/],["Cleaning",/final-clean/],["Landscaping",/landscaping/]];
+function tradeLines(j){const keys=allItems(j).filter(t=>!isNA(j,t)).flatMap(t=>[t.key,...(t.subs||[]).map(x=>x.key)]);return TRADE_TASKS.filter(([,re])=>keys.some(k=>re.test(k))).map(([t])=>t)}
+const hasTrade=(str,t)=>String(str||"").toLowerCase().split(/[,;]+/).map(x=>x.trim()).some(x=>x===t.toLowerCase()||(t==="Septic / Sewer"&&/septic|sewer/.test(x))||(t==="Concrete / Footers"&&/concrete|footer/.test(x)));
+// a sub sits on the line it was connected to; older subs (no line saved) sit on every line their trade names
+function subsOnLine(j,t){return subList(j).filter(([,s])=>s.line?s.line===t:hasTrade(s.trade,t))}
 function subsHTML(j){
-  const list=subList(j);
-  let h=`<datalist id="tradeList">${TRADES.map(t=>`<option value="${esc(t)}">`).join("")}</datalist>
-  <p class="dim" style="margin:0 0 12px">Subcontractors working on ${esc(j.name)}. Click any field to edit it; changes save when you leave the box.</p>
-  <div class="tablewrap"><table class="sctable"><thead><tr>${SC_FIELDS.map(([,l])=>`<th>${l}</th>`).join("")}<th></th></tr></thead><tbody>`;
-  if(!list.length)h+=`<tr class="scempty"><td colspan="6">No subs on this home yet. Tap <b>+ Add</b> to pick one from your contacts.</td></tr>`;
-  for(const[id,s]of list){
-    h+=`<tr>${SC_FIELDS.map(([f,l])=>`<td><input class="cell" id="sc-${id}-${f}" data-sc="${id}" data-scf="${f}" ${f==="trade"?'data-tradepick="1" autocomplete="off"':""} value="${esc(s[f]||"")}" aria-label="${l}"></td>`).join("")}
-    <td><button type="button" class="linkbtn" data-scrm="${id}">Remove</button></td></tr>`;
-  }
-  return h+`</tbody></table></div>${subAddHTML(j)}`;
+  const lines=tradeLines(j),list=subList(j),placed=new Set();
+  const chip=([id,s])=>{placed.add(id);const tel=String(s.phone||"").replace(/[^\d+]/g,"");
+    return`<span class="slsub"><button type="button" class="slname" data-ccard="${id}" title="Contact card"><b>${esc(s.company||s.contact||"Sub")}</b>${s.company&&s.contact?`<span class="dim">${esc(s.contact)}</span>`:""}</button>${s.phone?`<a href="tel:${esc(tel)}">${esc(fmtPhone(s.phone))}</a>`:""}<button type="button" class="bx" data-scrm="${id}" aria-label="Remove ${esc(s.company||s.contact||"sub")}" title="Remove from this home">×</button></span>`};
+  const top=subAdd&&subAdd.job===j.id&&!subAdd.line;
+  let h=`<div class="slhead"><p class="dim">Trades this home needs, from its task list.</p>${top?"":`<button type="button" class="btn sm primary" data-act="subadd">+ Add</button>`}</div>${top?`<div class="sltop">${subAddHTML(j)}</div>`:""}<ul class="sublines">`;
+  for(const t of lines){const on=subsOnLine(j,t),open=subAdd&&subAdd.job===j.id&&subAdd.line===t;
+    h+=`<li class="${on.length?"has":""} ${open?"open":""}"><span class="sltrade">${esc(t)}</span><div class="slsubs">${on.map(chip).join("")}
+      ${open?"":`<button type="button" class="sladd" data-subline="${esc(t)}" ${on.length?`aria-label="Add another ${esc(t)} sub" title="Add another"`:""}>${on.length?"+":"+ Connect sub"}</button>`}</div>
+      ${open?`<div class="slpick">${subAddHTML(j)}</div>`:""}</li>`}
+  h+=`</ul>`;
+  const other=list.filter(([id])=>!placed.has(id));
+  if(other.length)h+=`<h3 class="slother">Other subs on this home</h3><ul class="sublines">${other.map(x=>`<li class="has"><span class="sltrade">${esc(x[1].trade||"No trade")}</span><div class="slsubs">${chip(x)}</div></li>`).join("")}</ul>`;
+  return h;
 }
 /* + Add: search the master contact list first; anything typed that isn't there becomes a new contact (saved to Contacts too) */
 let subAdd=null;
@@ -2534,8 +2832,9 @@ function subMatches(q){
   for(const c of contacts){const ppl=peopleOf(c),co=c.company||"";
     const rows=ppl.length?ppl.map(x=>({cid:c.id,pid:x.id,company:co,trade:c.role||"",contact:x.name||"",prole:x.role||"",phone:x.phone||"",email:x.email||"",type:c.type})):[{cid:c.id,company:co,trade:c.role||"",contact:c.name||"",phone:c.phone||"",email:c.email||"",type:c.type}];
     for(const r of rows){const hay=[r.company,r.trade,r.contact,r.prole,r.phone,r.email].join(" ").toLowerCase();if(!q||q.split(/\s+/).every(w=>hay.includes(w)))out.push(r)}}
-  // subs first, then everyone else
-  return out.sort((a,b)=>((a.type==="Sub"?0:1)-(b.type==="Sub"?0:1))||(a.company||a.contact).localeCompare(b.company||b.contact,undefined,{sensitivity:"base"})).slice(0,8)}
+  // the line's trade first, then other subs, then everyone else
+  const ln=subAdd&&subAdd.line,tr=r=>ln&&hasTrade(r.trade,ln)?0:1;
+  return out.sort((a,b)=>(tr(a)-tr(b))||((a.type==="Sub"?0:1)-(b.type==="Sub"?0:1))||(a.company||a.contact).localeCompare(b.company||b.contact,undefined,{sensitivity:"base"})).slice(0,8)}
 function subResHTML(){
   const q=subAdd.q.trim(),m=subMatches(q);subAdd.m=m;
   return m.map((r,i)=>`<button type="button" class="sqrow ${i===subAdd.i?"on":""}" data-sqpick="${i}"><b>${esc(r.company||r.contact)}</b>${r.company&&r.contact?`<span>${esc(r.contact)}${r.prole?` · ${esc(r.prole)}`:""}</span>`:""}${r.trade?roleChips(r.trade):""}<small>${esc(r.phone)}</small></button>`).join("")
@@ -2558,10 +2857,11 @@ function subAddHTML(j){
    <div class="docrow" style="justify-content:flex-end"><button type="button" class="btn" data-act="subaddx">Cancel</button></div></div>`}
 function subPick(r){
   const j=jobs.find(x=>x.id===view.jobId);if(!j||!r)return;
-  if(subList(j).some(([,s])=>s.cid===r.cid&&(s.pid||"")===(r.pid||""))){toast("Already on this home");return}
+  const line=subAdd&&subAdd.line||"";
+  if(subList(j).some(([,s])=>s.cid===r.cid&&(s.pid||"")===(r.pid||"")&&(!line||(s.line?s.line===line:hasTrade(s.trade,line))))){toast(line?"Already connected for "+line:"Already on this home");return}
   subAdd=null;
-  store.patch(j.id,{subcons:{["s-"+uid()]:{trade:r.trade||"",company:r.company||"",contact:r.contact||"",phone:r.phone||"",notes:"",cid:r.cid,pid:r.pid||"",order:Date.now()}}}).then(()=>toast(`${r.company||r.contact} added`)).catch(report)}
-function subNew(){subAdd={mode:"new",job:subAdd.job,d:{company:subAdd.q.trim(),trade:"",contact:"",phone:"",email:""}};render();setTimeout(()=>{const el=$("#sqn-trade");if(el)el.focus()},0)}
+  store.patch(j.id,{subcons:{["s-"+uid()]:{trade:r.trade||line||"",company:r.company||"",contact:r.contact||"",phone:r.phone||"",notes:"",cid:r.cid,pid:r.pid||"",line,order:Date.now()}}}).then(()=>toast(`${r.company||r.contact} added`)).catch(report)}
+function subNew(){subAdd={mode:"new",job:subAdd.job,line:subAdd.line||"",d:{company:subAdd.q.trim(),trade:subAdd.line||"",contact:"",phone:"",email:""}};render();setTimeout(()=>{const el=$("#sqn-trade");if(el)el.focus()},0)}
 async function subNewSave(){
   const d=subAdd.d;Object.keys(d).forEach(k=>d[k]=String(d[k]||"").trim());
   if(!d.company&&!d.contact){toast("Enter a company or a contact name");return}
@@ -2569,6 +2869,139 @@ async function subNewSave(){
     const cid=await contactStore.add({company:d.company,name:d.company?"":d.contact,type:"Sub",types:["Sub"],role:d.trade,phone:"",email:"",area:"",notes:"",order:Date.now(),people:(d.contact||d.phone||d.email)?{[pid]:person}:{}});
     subPick({cid,pid:(d.contact||d.phone||d.email)?pid:"",company:d.company,trade:d.trade,contact:d.contact,phone:d.phone});
     toast(`${d.company||d.contact} added here and to Contacts`)}catch(e){report(e)}}
+
+/* ===== Contact card: slides in from the right when a sub's name is tapped (styled after the iPhone contact card) ===== */
+const CC_IC={msg:'<svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M12 4C7 4 3 7.1 3 11c0 2.2 1.3 4.2 3.4 5.5L6 20l3.8-2.3c.7.2 1.4.3 2.2.3 5 0 9-3.1 9-7s-4-7-9-7z" fill="currentColor"/></svg>',
+ call:'<svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M6.6 10.8a15.1 15.1 0 006.6 6.6l2.2-2.2a1 1 0 011-.25 11.4 11.4 0 003.6.57 1 1 0 011 1V20a1 1 0 01-1 1A17 17 0 013 4a1 1 0 011-1h3.5a1 1 0 011 1c0 1.25.2 2.45.57 3.57a1 1 0 01-.25 1z" fill="currentColor"/></svg>',
+ mail:'<svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M3 6.5A1.5 1.5 0 014.5 5h15A1.5 1.5 0 0121 6.5v11a1.5 1.5 0 01-1.5 1.5h-15A1.5 1.5 0 013 17.5zm2 .9v.2l7 4.6 7-4.6v-.2z" fill="currentColor"/></svg>'};
+let ccSub=null,ccKey=null,ccDraft=null;   // ccSub: a sub on the open home; ccKey: a row on the Contacts tab; ccDraft: edit mode
+const telOf=v=>String(v||"").replace(/[^\d+]/g,"");
+const fmtPhone=v=>{const d=String(v||"").replace(/\D/g,"").replace(/^1(?=\d{10}$)/,"");return /^\d{10}$/.test(d)?`(${d.slice(0,3)}) ${d.slice(3,6)}-${d.slice(6)}`:String(v||"")};
+const initials=n=>String(n||"?").replace(/\b(LLC|Inc|Co|Corp|and|&)\b\.?/gi,"").trim().split(/\s+/).filter(Boolean).slice(0,2).map(w=>w[0]).join("").toUpperCase()||"?";
+const ccKeyOf=c=>(c.src||"")+":"+(c.id||c.jid||c.company||c.name);
+// one shape for every card: a company contact, a county/area contact, or a sub saved only on a home
+function ccModel(){
+  if(ccSub){const j=jobs.find(x=>x.id===view.jobId),s=j&&(j.subcons||{})[ccSub];if(!s)return null;
+    const c=s.cid&&contacts.find(x=>x.id===s.cid),ppl=c?peopleOf(c):[];
+    if(!c&&(s.contact||s.phone))ppl.push({id:"sub",name:s.contact||"",phone:s.phone||"",email:""});
+    ppl.sort((a,b)=>(a.id===s.pid?-1:0)-(b.id===s.pid?-1:0));
+    const line=s.line||s.trade||"";
+    return{c,title:(c&&(c.company||c.name))||s.company||s.contact||"Sub",ppl,pid:s.pid,line,role:c&&c.role,area:c&&c.area,notes:[c&&c.notes,s.notes].filter(Boolean).join("\n"),
+      phone:c&&!ppl.some(x=>x.legacy)?c.phone:"",email:c&&!ppl.some(x=>x.legacy)?c.email:"",facts:[["trade on this home",line||"Not set"]],
+      danger:`<button type="button" class="ccdanger" data-ccrm="${ccSub}">Remove from ${esc(j.name)}</button>`}}
+  const e=allContacts().find(x=>ccKeyOf(x)===ccKey);if(!e)return null;
+  const c=e.src==="company"?contacts.find(x=>x.id===e.id):null,ppl=c?peopleOf(c).filter(x=>!x.legacy||c.company):[];
+  if(!c&&e.name&&e.company)ppl.push({id:"x",name:e.name,phone:e.phone,email:e.email});
+  const own=!c&&!e.company;
+  return{c,title:e.company||e.name||"(no name)",ppl,line:"",role:e.role,area:e.where,notes:e.notes,phone:own||c?e.phone:"",email:own||c?e.email:"",types:(e.types||[e.type]).join(", "),
+    facts:[],extra:e.src==="area"?`<button type="button" class="ccdanger ccblue" data-go="areas" data-ccard="close">Edit in county list</button>`:e.src==="sub"?`<button type="button" class="ccdanger ccblue" data-job="${e.jid}" data-subs="1" data-ccard="close">Open ${esc(e.where)}'s Subs tab</button>`:"",
+    danger:""}
+}
+function ccardHTML(){
+  if(ccDraft)return ccEditHTML();
+  const m=ccModel();if(!m)return"";const{c,ppl}=m;
+  const main=ppl.find(x=>x.phone)||{},ph=main.phone||m.phone||"",mail=(ppl.find(x=>x.email)||{}).email||m.email||"";
+  const act=(k,l,href)=>href?`<a class="ccact" href="${esc(href)}">${CC_IC[k]}<span>${l}</span></a>`:`<span class="ccact off" aria-disabled="true">${CC_IC[k]}<span>${l}</span></span>`;
+  const row=(lab,val,href)=>{const k=/^tel:/.test(href||"")?"tel":/^mailto:/.test(href||"")?"mail":"";
+    return`<div class="ccrow"><small>${esc(lab)}</small>${k?`<button type="button" class="ccval" data-ccask="${k}|${esc(href.replace(/^(tel|mailto):/,""))}|${esc(val)}">${esc(val)}</button>`:href?`<a href="${esc(href)}">${esc(val)}</a>`:`<span>${esc(val)}</span>`}</div>`};
+  let g="";
+  if(m.phone||m.email)g+=`<div class="ccgrp">${m.phone?row(ppl.length?"office":"phone",fmtPhone(m.phone),"tel:"+telOf(m.phone)):""}${m.email?row("email",m.email,"mailto:"+m.email):""}</div>`;
+  for(const x of ppl){if(!x.name&&!x.phone&&!x.email)continue;
+    g+=`<div class="ccgrp">${x.name?`<div class="ccperson"><b>${esc(x.name)}</b>${x.role?`<small>${esc(x.role)}</small>`:""}${ccSub&&x.id===m.pid?`<small class="ccmain">On this home</small>`:""}</div>`:""}${x.phone?row("mobile",fmtPhone(x.phone),"tel:"+telOf(x.phone)):""}${x.email?row("email",x.email,"mailto:"+x.email):""}</div>`}
+  const facts=[...m.facts,...(m.types?[["type",m.types]]:[]),...(m.role&&m.role!==m.line?[["trades",m.role]]:[]),...(m.area?[["area",m.area]]:[])];
+  if(facts.length)g+=`<div class="ccgrp">${facts.map(([a,b])=>row(a,b)).join("")}</div>`;
+  if(m.notes)g+=`<div class="ccgrp">${row("notes",m.notes)}</div>`;
+  if(!ph&&!mail)g+=`<p class="dim" style="text-align:center;margin:0">No phone or email yet.${c?" Tap Edit to add them.":""}</p>`;
+  if(m.extra)g+=`<div class="ccgrp">${m.extra}</div>`;
+  if(m.danger)g+=`<div class="ccgrp">${m.danger}</div>`;
+  const sub=ppl[0]&&ppl[0].name&&m.title!==ppl[0].name?ppl[0].name:"";
+  return`<div class="cchead"><button type="button" class="cclink" data-ccard="close">Close</button>${c?`<button type="button" class="cclink" data-ccedit="${c.id}">Edit</button>`:"<span></span>"}</div>
+   <div class="cctop"><div class="ccav" aria-hidden="true">${esc(initials(m.title))}</div><h2 id="ccTitle">${esc(m.title)}</h2>${sub?`<p class="ccsub">${esc(sub)}</p>`:""}${m.line||m.role?`<p class="ccsub dim">${esc(m.line||m.role)}</p>`:""}
+    <div class="ccacts">${act("msg","message",ph?"sms:"+telOf(ph):"")}${act("call","call",ph?"tel:"+telOf(ph):"")}${act("mail","mail",mail?"mailto:"+mail:"")}</div></div>
+   <div class="ccbody">${g}</div>`;
+}
+/* edit mode: every field is a box on the card; red minus takes a line away, green plus adds one */
+
+// tapping a phone number offers Call / Text; tapping an email offers Email; both offer Copy (like iOS)
+function ccAsk(k,v,label){
+  const m=document.getElementById("ccPanel");if(!m)return;let a=m.querySelector(".ccask");if(a)a.remove();
+  const opts=k==="tel"?[["Call "+label,"tel:"+v],["Text "+label,"sms:"+v]]:[["Email "+label,"mailto:"+v]];
+  a=document.createElement("div");a.className="ccask";a.setAttribute("role","dialog");a.setAttribute("aria-label","Contact "+label);
+  a.innerHTML=`<div class="ccaskbox"><div class="ccaskgrp">${opts.map(([t,h])=>`<a href="${esc(h)}" data-ccaskx="1">${esc(t)}</a>`).join("")}<button type="button" data-cccopy="${esc(k==="tel"?label:v)}">Copy</button></div><div class="ccaskgrp"><button type="button" class="cccancel" data-ccaskx="1">Cancel</button></div></div>`;
+  m.querySelector(".ccsheet").appendChild(a);setTimeout(()=>{const f=a.querySelector("a,button");if(f)f.focus()},30);
+}
+document.addEventListener("click",e=>{
+  const q=e.target.closest("[data-ccask]");if(q){e.stopPropagation();const[k,v,l]=q.dataset.ccask.split("|");ccAsk(k,v,l);return}
+  const cp=e.target.closest("[data-cccopy]");if(cp){e.stopPropagation();const t=cp.dataset.cccopy;(navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(()=>toast("Copied"),()=>toast(t));cp.closest(".ccask").remove();return}
+  const x=e.target.closest("[data-ccaskx]");if(x){const a=x.closest(".ccask");setTimeout(()=>a&&a.remove(),0);if(x.tagName==="BUTTON")e.stopPropagation();return}
+  const bg=e.target.classList&&e.target.classList.contains("ccask");if(bg){e.stopPropagation();e.target.remove()}
+},true);
+document.addEventListener("keydown",e=>{if(e.key==="Escape"){const a=document.querySelector("#ccPanel .ccask");if(a){a.remove();e.stopPropagation()}}},true);
+function ccStartEdit(id){
+  const c=contacts.find(x=>x.id===id);if(!c)return;const leg=peopleOf(c).some(x=>x.legacy);
+  ccDraft={id,company:c.company||"",types:Array.isArray(c.types)&&c.types.length?[...c.types]:[c.type||"Sub"],role:c.role||"",phone:leg?"":c.phone||"",email:leg?"":c.email||"",area:c.area||"",notes:c.notes||"",
+    people:peopleOf(c).map(x=>({pid:x.legacy?"":x.id,name:x.name||"",role:x.role||"",phone:x.phone||"",email:x.email||""})),showPhone:!!(!leg&&c.phone),showEmail:!!(!leg&&c.email)};
+  ccPaint();setTimeout(()=>{const f=document.querySelector("#ccPanel .cced-name");if(f)f.focus()},60)}
+function ccEditHTML(){
+  const d=ccDraft,inp=(f,v,ph,type)=>`<input class="ccin" data-cce="${f}" ${type?`type="${type}"`:""} value="${esc(v)}" placeholder="${esc(ph)}" aria-label="${esc(ph)}">`;
+  const minus=(attr,label)=>`<button type="button" class="ccminus" ${attr} aria-label="${esc(label)}" title="${esc(label)}"><svg viewBox="0 0 20 20" width="20" height="20" aria-hidden="true"><circle cx="10" cy="10" r="9" fill="#FF3B30"/><path d="M5.5 10h9" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/></svg></button>`;
+  const plus=(attr,label)=>`<button type="button" class="ccplus" ${attr}><svg viewBox="0 0 20 20" width="20" height="20" aria-hidden="true"><circle cx="10" cy="10" r="9" fill="#34C759"/><path d="M5.5 10h9M10 5.5v9" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/></svg><span>${esc(label)}</span></button>`;
+  const line=(lab,body,rm)=>`<div class="ccerow">${rm||'<span class="ccsp"></span>'}<small>${esc(lab)}</small>${body}</div>`;
+  const pin=(i,f,v,ph,type)=>`<input class="ccin" data-ccp="${i}|${f}" ${type?`type="${type}"`:""} value="${esc(v)}" placeholder="${esc(ph)}" aria-label="${esc(ph)}">`;
+  let g=`<div class="ccgrp">${d.showPhone?line("office",inp("phone",d.phone,"Office phone","tel"),minus('data-ccx="phone"',"Remove office phone")):""}${d.showEmail?line("email",inp("email",d.email,"Office email","email"),minus('data-ccx="email"',"Remove office email")):""}
+    ${d.showPhone?"":plus('data-ccadd="phone"',"add office phone")}${d.showEmail?"":plus('data-ccadd="email"',"add office email")}</div>`;
+  d.people.forEach((x,i)=>{g+=`<div class="ccgrp"><div class="ccerow ccph">${minus(`data-ccpx="${i}"`,"Remove "+(x.name||"this person"))}<input class="ccin ccpname" data-ccp="${i}|name" value="${esc(x.name)}" placeholder="Name" aria-label="Name"></div>
+    ${line("role",pin(i,"role",x.role,"Owner, Office, Foreman…"))}${line("mobile",pin(i,"phone",x.phone,"Phone","tel"))}${line("email",pin(i,"email",x.email,"Email","email"))}</div>`});
+  g+=`<div class="ccgrp">${plus('data-ccadd="person"',"add person")}</div>`;
+  g+=`<div class="ccgrp"><div class="ccerow ccwide"><small>type</small><div class="cctypes">${CTYPES.map(t=>`<button type="button" class="${d.types.includes(t)?"on":""}" data-cctype="${t}" aria-pressed="${d.types.includes(t)}">${t}</button>`).join("")}</div></div>
+    ${line("trades",`<input class="ccin" data-cce="role" data-tradepick="1" autocomplete="off" value="${esc(d.role)}" placeholder="Pick trades" aria-label="Trades">`)}
+    ${line("area",`<input class="ccin" data-cce="area" list="ccAreaList" value="${esc(d.area)}" placeholder="County or area they cover" aria-label="Area"><datalist id="ccAreaList">${allAreas().map(a=>`<option value="${esc(a.name)}">`).join("")}</datalist>`)}</div>
+   <div class="ccgrp"><div class="ccerow ccwide"><small>notes</small><textarea class="ccin" data-cce="notes" rows="3" placeholder="Pay terms, best time to call…" aria-label="Notes">${esc(d.notes)}</textarea></div></div>
+   <div class="ccgrp"><button type="button" class="ccdanger" data-ccdel="${d.id}">Delete Contact</button></div>`;
+  return`<div class="cchead"><button type="button" class="cclink" data-cccancel="1">Cancel</button><button type="button" class="cclink ccdone" data-ccsave="1">Done</button></div>
+   <div class="cctop cctop-ed"><div class="ccav" aria-hidden="true">${esc(initials(d.company||(d.people[0]||{}).name))}</div>
+    <input class="ccin cced-name" data-cce="company" value="${esc(d.company)}" placeholder="Company" aria-label="Company"></div>
+   <div class="ccbody">${g}</div>`;
+}
+async function ccSave(){
+  const d=ccDraft,old=contacts.find(x=>x.id===d.id);if(!old){ccDraft=null;ccPaint();return}
+  const people={},keep=new Set();let k=0;
+  for(const x of d.people){const v={name:x.name.trim(),role:x.role.trim(),phone:x.phone.trim(),email:x.email.trim()};if(!v.name&&!v.phone&&!v.email)continue;const pid=x.pid||"p"+uid();keep.add(pid);people[pid]={...v,order:++k}}
+  for(const pid of Object.keys(old.people||{}))if(!keep.has(pid))people[pid]=null;
+  if(!d.company.trim()&&!Object.values(people).some(v=>v&&v.name)){toast("Enter a company or a person's name");return}
+  const seen=new Set(),role=d.role.split(/[,;]+/).map(x=>x.trim()).filter(x=>x&&!seen.has(x.toLowerCase())&&seen.add(x.toLowerCase())).join(", ");
+  const types=d.types.length?d.types:["Other"];
+  const patch={company:d.company.trim(),name:"",types,type:types[0],role,phone:d.showPhone?d.phone.trim():"",email:d.showEmail?d.email.trim():"",area:d.area.trim(),notes:d.notes.trim(),people};
+  ccDraft=null;try{await contactStore.update(d.id,patch);
+    const ar=allAreas().find(a=>normArea(a.name)===normArea(patch.area));
+    if(ar&&patch.area&&normArea(patch.area)!==normArea(old.area)&&!acLinked(ar.id).has(d.id))await acAttach(ar.id,d.id);else toast("Saved")}catch(e){report(e)}ccPaint();
+}
+function ccPaint(){const m=document.getElementById("ccPanel");if(!m)return;const sh=m.querySelector(".ccsheet"),y=sh.scrollTop;sh.innerHTML=ccardHTML();sh.scrollTop=ccDraft?y:0;if(!ccDraft&&!ccModel())ccard(null)}
+function ccard(id,key){
+  let m=document.getElementById("ccPanel");
+  if(!m){m=document.createElement("div");m.id="ccPanel";m.innerHTML=`<div class="menuscrim" data-ccard="close"></div><aside class="ccsheet" role="dialog" aria-modal="true" aria-labelledby="ccTitle"></aside>`;document.body.appendChild(m);
+    m.addEventListener("input",e=>{const t=e.target;if(!ccDraft)return;if(t.dataset.cce)ccDraft[t.dataset.cce]=t.value;else if(t.dataset.ccp){const[i,f]=t.dataset.ccp.split("|");ccDraft.people[+i][f]=t.value}})}
+  if(id||key){ccSub=id||null;ccKey=key||null;ccDraft=null;ccPaint();requestAnimationFrame(()=>m.classList.add("open"));setTimeout(()=>{const f=m.querySelector(".cclink");if(f)f.focus()},60)}
+  else{ccSub=null;ccKey=null;ccDraft=null;closeTradePick&&tpFor&&closeTradePick();m.classList.remove("open")}
+}
+const ccOpen=()=>!!(ccSub||ccKey);
+document.addEventListener("click",e=>{
+  if(e.target.closest("#tradePick"))return;
+  const b=e.target.closest("[data-ccard]");if(b){if(!b.dataset.go&&!b.dataset.job)e.stopPropagation();if(ccDraft&&b.dataset.ccard==="close"&&b.classList.contains("menuscrim")){toast("Tap Done to save, or Cancel");return}ccard(b.dataset.ccard==="close"?null:b.dataset.ccard);return}
+  const co=e.target.closest("[data-copen]");if(co){e.stopPropagation();ccard(null,co.dataset.copen);return}
+  if(!e.target.closest("#ccPanel"))return;
+  const ed=e.target.closest("[data-ccedit]");if(ed){e.stopPropagation();ccStartEdit(ed.dataset.ccedit);return}
+  if(e.target.closest("[data-cccancel]")){ccDraft=null;ccPaint();return}
+  if(e.target.closest("[data-ccsave]")){if(tpFor)closeTradePick();setTimeout(ccSave,0);return}
+  const ad=e.target.closest("[data-ccadd]");if(ad&&ccDraft){const w=ad.dataset.ccadd;if(w==="person")ccDraft.people.push({pid:"",name:"",role:"",phone:"",email:""});else ccDraft[w==="phone"?"showPhone":"showEmail"]=true;ccPaint();
+    setTimeout(()=>{const f=w==="person"?[...document.querySelectorAll("#ccPanel .ccpname")].pop():document.querySelector(`#ccPanel [data-cce="${w}"]`);if(f)f.focus()},30);return}
+  const x=e.target.closest("[data-ccx]");if(x&&ccDraft){const w=x.dataset.ccx;ccDraft[w]="";ccDraft[w==="phone"?"showPhone":"showEmail"]=false;ccPaint();return}
+  const px=e.target.closest("[data-ccpx]");if(px&&ccDraft){ccDraft.people.splice(+px.dataset.ccpx,1);ccPaint();return}
+  const ty=e.target.closest("[data-cctype]");if(ty&&ccDraft){const t=ty.dataset.cctype,l=ccDraft.types;l.includes(t)?l.splice(l.indexOf(t),1):l.push(t);ccPaint();return}
+  const dl=e.target.closest("[data-ccdel]");if(dl){e.stopPropagation();if(confirmTap(dl,"Tap again to delete")){const id=dl.dataset.ccdel;ccard(null);contactStore.del(id).then(()=>toast("Deleted")).catch(report)}return}
+  const rm=e.target.closest("[data-ccrm]");if(rm){e.stopPropagation();if(confirmTap(rm,"Tap again to remove")){const id=rm.dataset.ccrm;ccard(null);store.patch(view.jobId,{subcons:{[id]:null}}).then(()=>toast("Sub removed")).catch(report)}}
+},true);
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&ccOpen()&&!tpFor){if(ccDraft){ccDraft=null;ccPaint()}else ccard(null);e.stopPropagation()}},true);
 /* trade picker: any trade box opens a list to tick several trades; typing still works for anything not listed */
 let tpFor=null;
 function openTradePick(inp){
@@ -2645,7 +3078,7 @@ function addTodo(){
 }
 let addOpen=null;
 function listHTML(j){
-  let h=optsBanner(j)+`<div class="tablewrap"><table class="ttable"><thead><tr><th><span class="dim" aria-label="Done"></span></th><th>Task</th><th>Material</th><th><span class="vh">Est. Start Date</span></th><th><span class="vh">Est. Completion Date</span></th><th>Status</th></tr></thead><tbody>`;
+  let h=optsBanner(j)+`<div class="tablewrap"><table class="ttable"><thead><tr><th><span class="dim" aria-label="Done"></span></th><th>Task</th><th class="c-mat">Material</th><th><span class="vh">Est. Start Date</span></th><th><span class="vh">Est. Completion Date</span></th><th>Status</th></tr></thead><tbody>`;
   for(const p of phasesFor(j)){
     const all=isExc(me)?phaseItems(j,p).filter(excSees):phaseItems(j,p),app=all.filter(t=>!isNA(j,t)),d=app.filter(t=>isDone(j,t)).length;
     if(isExc(me)&&!all.length)continue;
@@ -2808,7 +3241,7 @@ function jobDialog(edit){
   ${edit&&(j.tpl||"")!==tplStr?`<div class="tplup"><span><b>Task template</b><small class="dim">This home uses the task list from when it was started. The template has changed since.</small></span><button type="button" class="btn sm" data-tplup="${j.id}">Update to current template</button></div>`:""}
   <div class="opts"><b>Home options</b><small>${edit?"Changing an answer swaps the tasks that go with it. Progress on hidden tasks is kept if you switch back.":"These set which tasks this home's schedule includes. You can change them later."}</small>
   ${OPTIONS.map(o=>`<fieldset ${o.when?`data-when='${JSON.stringify(o.when)}'`:""}><legend>${esc(o.q)}</legend>${optInputs(o,optVal(j,o.id),"seg")}</fieldset>`).join("")}</div>
-  <div class="acts">${edit?`<button type="button" class="btn danger" data-act="deljob" style="margin-right:auto">Delete home</button>`:""}<button type="button" class="btn" data-act="cancel">Cancel</button><button class="btn primary">${edit?"Save changes":"Add home"}</button></div>`;
+  <div class="acts">${edit?`<button type="button" class="btn danger" data-act="deljob">Delete home</button><button type="button" class="btn" data-act="archjob" style="margin-right:auto">${(jobs.find(x=>x.id===view.jobId)||{}).archived?"Restore home":"Archive home"}</button>`:""}<button type="button" class="btn" data-act="cancel">Cancel</button><button class="btn primary">${edit?"Save changes":"Add home"}</button></div>`;
   $("#jobForm").dataset.edit=edit?"1":"";
   syncEditWhen();
   $("#jobDlg").showModal();
@@ -2853,6 +3286,7 @@ $("#jobForm").addEventListener("click",e=>{
   if(a==="wback"&&wiz){wizCollect();wiz.i=Math.max(0,wiz.i-1);renderWiz();return}
   if(e.target.dataset.wgo!==undefined&&wiz){wiz.i=+e.target.dataset.wgo;renderWiz();return}
   if(a==="cancel"){$("#jobDlg").close();if(wiz){wiz=null;pendingDocs=[]}}
+  if(a==="archjob"){const j=jobs.find(x=>x.id===view.jobId);if(j){$("#jobDlg").close();j.archived?restoreJob(j):archiveJob(j)}return}
   if(a==="deljob"){const j=jobs.find(x=>x.id===view.jobId);if(j&&confirmTap(e.target,"Tap again to delete for good")){$("#jobDlg").close();view={mode:"home"};store.delJob(j.id).then(()=>toast("Home deleted")).catch(report)}}
 });
 
@@ -2894,9 +3328,9 @@ const isOps=name=>!!name&&roleOf(name)==="Operations";
 const pms=()=>team.filter(p=>(p.role||"Project manager")==="Project manager");
 const sups=()=>team.filter(p=>p.role==="Field supervisor");
 const isSup=name=>!!name&&roleOf(name)==="Field supervisor";
-// Excavation field supervisor: sees every home, but the task list only shows the dirt work (Site Work, plus the exterior finish at the end)
+// Excavation field supervisor: sees every home, but the task list only shows the dirt work (Site Work, Set Up Home on manufactured homes, plus the exterior finish at the end)
 const isExc=name=>!!name&&roleOf(name)==="Excavation field supervisor";
-const EXC_PHASE="p2",EXC_TASKS=new Set(["p5-exterior-final","m5-final-grade"]);
+const EXC_PHASE="p2",EXC_TASKS=new Set(["p5-exterior-final","m4-set-up-home","m5-final-grade"]);
 const excSees=t=>t.phase===EXC_PHASE||EXC_TASKS.has(t.key);
 let routed=false;
 function routeHome(){if(routed||!loaded)return;routed=true;if(isOps(me)&&view.mode==="home")view={mode:"ops"}}
@@ -2956,7 +3390,7 @@ function opsLine(r){
   if(kind==="insp"){name=t.name+" inspection";act=`<button type="button" class="btn primary" data-isched="${it.ref}">Mark scheduled</button>`}
   if(kind==="order")act=`<button type="button" class="btn primary" data-mat="${it.ref}">Mark ordered</button>`;
   if(kind==="ordered"){const dd=x.delivDate;meta=dd?(dd<TODAY?"Delivery was due "+fmt(dd)+", not on site yet":"Delivery "+fmt(dd)):"Ordered, no delivery date yet";act=`<button type="button" class="btn" data-mat="${it.ref}">Mark on site</button>`;if(dd&&dd<TODAY){cls="late";tag="Delivery late"}}
-  if(kind==="inspw"){const y=S(j,s?.key||it.s.key),sd=y.schedDate;name=t.name+" "+(/inspection/i.test(it.s.name)?it.s.name.toLowerCase():it.s.name+" inspection");
+  if(kind==="inspw"){const y=S(j,s?.key||it.s.key),sd=y.schedDate;name=t.name+" "+(/^(call in )?inspection$/i.test(it.s.name)?"inspection":/inspection/i.test(it.s.name)?it.s.name.toLowerCase():it.s.name+" inspection");
     if(y.pf==="fail"){tag="Failed";cls="late";meta="Failed. Schedule a re-inspection, then record the result."}
     else if(sd&&sd<TODAY){tag="No result";cls="late";meta="Was scheduled "+fmt(sd)+". Record pass or fail."}
     else meta=sd?"Scheduled "+fmt(sd):"Scheduled, no date set";
@@ -3000,11 +3434,12 @@ function opsHTML(){
   let h=`<div class="top"><div class="oqtop"><div class="oqtl"><h2>Ops queue</h2>
    <div class="oqsum">${(()=>{const pn=pipeOps().reduce((a,x)=>a+x.td.length,0);return pn?`<span class="oqtag pipe">Pipeline to-dos ${pn}</span>`:""})()}${["order","insp","check","todo","inspw","ordered"].filter(k=>n(k)>0).map(k=>`<span class="oqtag ${k}">${{order:"To order",insp:"Inspections to schedule",check:"Checklist items",todo:"To do",inspw:"Awaiting inspection result",ordered:"Awaiting delivery"}[k]} ${n(k)}</span>`).join("")}</div></div>${assetsApi?`<div class="oqdrop" data-drop="1"><b>Drop documents</b><span><label class="linkbtn plain filepick">or choose files<input type="file" id="docFiles" class="vh" multiple accept="${DOC_TYPES.join(",")}"></label></span><small>Claude reads each one and files it to the right home</small></div>`:""}</div>
    ${pendingDocs.length?`<div class="oqpq">${pqListHTML()}<div class="docrow" style="justify-content:flex-end"><button type="button" class="btn" data-act="pqclear">Clear</button><button type="button" class="btn primary" data-act="pqupload" ${uploading?"disabled":""}>${uploading?"Uploading…":`Upload ${pendingDocs.length} file${pendingDocs.length===1?"":"s"}`}</button></div></div>`:""}</div><div class="body opsgrid">`;
+  const po=pipeOps(),allK=[...po.map(x=>"p:"+x.p.id),...homes.map(x=>x.j.id)];
+  if(allK.length>1){const anyOpen=allK.some(k=>!oqClosed.has(k));h+=`<div class="oqall"><button type="button" class="linkbtn plain" data-oqall="${anyOpen?"close":"open"}">${anyOpen?"Collapse all":"Expand all"}</button></div>`}
   h+=inboxHTML();
-  const po=pipeOps();
   // pre-construction to-dos come first: they happen before a build starts
   for(const{p,td}of po){const days=p.expStart?Math.round((new Date(p.expStart)-new Date(TODAY))/864e5):null;
-    h+=`<section class="oq oqpipe"><div class="oqh"><span class="oqtag pipe">Pipeline</span>
+    const ck="p:"+p.id;h+=`<section class="oq oqpipe${oqClosed.has(ck)?" closed":""}"><div class="oqh" data-oqh="${ck}">${oqTog(ck,p.name)}<span class="oqtag pipe">Pipeline</span>
       <div class="oqhd"><button type="button" class="oqhome" data-oqpipe="${p.id}">${esc(p.name)}</button>
       <small class="dim">${[p.address||p.subdivision||"",p.super?"Super "+p.super:"",p.pm?"PM "+p.pm:""].filter(Boolean).map(esc).join(" · ")}</small></div>
       <span class="oqdue">${p.expStart?`${fmt(p.expStart)} <small class="dim">${days>=0?days+" days":"start passed"}</small>`:`<small class="dim">No start date</small>`}</span><span class="oqn">${td.length}</span></div>
@@ -3012,7 +3447,7 @@ function opsHTML(){
   if(!homes.length&&!po.length)return h+`<div class="empty"><h3>Nothing in the queue</h3><p>Items show up here as PMs mark materials Ready to order, inspections Ready to schedule, or assign Additional tasks to operations.</p></div></div>`;
   for(const{j,rows}of homes){
     const a=addrShort(j),u=dueSummary(j);
-    h+=`<section class="oq"><div class="oqh"><span class="sdot s-${homeStatus(j).v}" title="${statusName(homeStatus(j).v)}"></span>
+    h+=`<section class="oq${oqClosed.has(j.id)?" closed":""}"><div class="oqh" data-oqh="${j.id}">${oqTog(j.id,j.name)}<span class="sdot s-${homeStatus(j).v}" title="${statusName(homeStatus(j).v)}"></span>
       <div class="oqhd"><button type="button" class="oqhome" data-job="${j.id}">${esc(j.name)}</button>
       <small class="dim">${[a,j.permit?"Permit "+j.permit:"",j.pm?"PM "+j.pm:""].filter(Boolean).map(esc).join(" · ")}</small></div>
       <span class="oqdue ${u.cls}">${esc(u.big)}${homeDue(j).due?` <small class="dim">left</small>`:""}</span><span class="oqn">${rows.length}</span></div>
@@ -3072,6 +3507,8 @@ document.addEventListener("click",e=>{
   const pe=e.target.closest("[data-pipe-edit]");if(pe){pipeDialog(pe.dataset.pipeEdit);return}
   const pst=e.target.closest("[data-pipe-start]");if(pst){startFromPipe(pst.dataset.pipeStart);return}
   const prm=e.target.closest("[data-pipe-rm]");if(prm){if(confirmTap(prm,"Tap again to remove"))pstore.del(prm.dataset.pipeRm).then(()=>toast("Removed from the pipeline")).catch(report);return}
+  const oqa=e.target.closest("[data-oqall]");if(oqa){const o=opsItems(),ks=[...pipeOps().map(x=>"p:"+x.p.id),...opsRows(o).map(x=>x.j.id)];if(oqa.dataset.oqall==="close")ks.forEach(k=>oqClosed.add(k));else ks.forEach(k=>oqClosed.delete(k));saveOq();render();return}
+  const oqt=e.target.closest("[data-oqtog]")||(!e.target.closest("button,a,input,select,label")&&e.target.closest("[data-oqh]"));if(oqt){const k=oqt.dataset.oqtog||oqt.dataset.oqh;oqClosed.has(k)?oqClosed.delete(k):oqClosed.add(k);saveOq();render();return}
   const oqp=e.target.closest("[data-oqpipe]");if(oqp){pipeOpen=oqp.dataset.oqpipe;view={mode:"pipeline"};render();return}
   const ptr=e.target.closest("[data-ptdrm]");if(ptr){const[pid,tid]=ptr.dataset.ptdrm.split("|");pstore.patch(pid,{todos:{[tid]:null}}).catch(report);return}
   const sgb=e.target.closest("[data-subgrp]");if(sgb){const g=sgb.dataset.subgrp;collapsedSubs.has(g)?collapsedSubs.delete(g):collapsedSubs.add(g);lsSet("jt_collapsed",JSON.stringify([...collapsedSubs]));renderSide();const nb=document.querySelector(`[data-subgrp="${CSS.escape(g)}"]`);if(nb)nb.focus();return}
@@ -3079,6 +3516,7 @@ document.addEventListener("click",e=>{
   if(pfb){const{j,k,pf:v}=pfb.dataset;const job=jobs.find(x=>x.id===j);setSub(job,k,"pf",S(job,k).pf===v?"":v);return}
   const lk=e.target.closest("[data-locked]");if(lk){const n=+lk.dataset.locked;toast(`Check off ${n===1?"the last sub-task":"all "+n+" sub-tasks"} before marking this completed`);return}
   const mb=e.target.closest("[data-mat]");if(mb){cycleMat(mb.dataset.mat);return}
+  const icy=e.target.closest("[data-icycle]");if(icy){cycleInspX(icy.dataset.icycle);return}
   const ib=e.target.closest("[data-isched]");if(ib){cycleInsp(ib.dataset.isched);return}
   const lp=e.target.closest("[data-libpick]");if(lp){const[ctx,id]=lp.dataset.libpick.split("|"),arr=ctx==="wiz"?(wiz.data.libPicks=wiz.data.libPicks||[]):libSel,i=arr.indexOf(id);i<0?arr.push(id):arr.splice(i,1);ctx==="wiz"?renderWiz():render();return}
   const la=e.target.closest("[data-libadd]");if(la){const ids=[...libSel];libSel=null;Promise.all(ids.map(x=>libApply(la.dataset.libadd,x))).then(r=>toast(`Added ${r.reduce((a,b)=>a+b,0)} file${r.reduce((a,b)=>a+b,0)===1?"":"s"} from the library`)).catch(report);render();return}
@@ -3111,6 +3549,7 @@ document.addEventListener("click",e=>{
   const ua=e.target.closest("[data-uai]");if(ua){const[kind,id]=ua.dataset.uai.split("|"),x=xFind(kind,id);if(x){utilAIOff=false;xPatch(kind,id,{utilsAI:null}).then(()=>utilAI(id,kind)).catch(report)}return}
   const uqp=e.target.closest("[data-uqpick]");if(uqp&&utilPick){const r=utilPick.m[+uqp.dataset.uqpick];utilSet(utilPick.kind,utilPick.id,utilPick.k,r);return}
   if(e.target.closest("[data-uqnew]")&&utilPick){utilNew();return}
+  const sln=e.target.closest("[data-subline]");if(sln){subAdd={mode:"search",q:"",i:0,job:view.jobId,line:sln.dataset.subline};render();setTimeout(()=>{const el=$("#subq");if(el)el.focus()},0);return}
   const sqp=e.target.closest("[data-sqpick]");if(sqp&&subAdd){subPick(subAdd.m[+sqp.dataset.sqpick]);return}
   if(e.target.closest("[data-sqnew]")&&subAdd){subNew();return}
   const scr=e.target.closest("[data-scrm]");if(scr){if(confirmTap(scr,"Tap again to remove"))store.patch(view.jobId,{subcons:{[scr.dataset.scrm]:null}}).then(()=>toast("Sub removed")).catch(report);return}

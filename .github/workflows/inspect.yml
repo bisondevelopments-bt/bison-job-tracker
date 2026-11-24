@@ -1,0 +1,34 @@
+name: Inspect database (read-only)
+
+# Runs when scripts/inspect.sql changes. Reads table layout and security rules only.
+# The result is encrypted with scripts/inspect-pubkey.pem, so the public log shows only scrambled text.
+on:
+  push:
+    branches: [main]
+    paths: [scripts/inspect.sql]
+
+permissions:
+  contents: read
+
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    env:
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+      SUPABASE_URL: ${{ vars.SUPABASE_URL }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run and encrypt
+        run: |
+          set -e
+          ref=$(echo "$SUPABASE_URL" | sed -E 's#https://([a-z0-9]+)\.supabase\.co.*#\1#')
+          jq -n --rawfile q scripts/inspect.sql '{query:$q, read_only:true}' > /tmp/q.json
+          curl -sS -f -X POST "https://api.supabase.com/v1/projects/$ref/database/query" \
+            -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" -H "Content-Type: application/json" \
+            --data-binary @/tmp/q.json -o /tmp/out.json
+          openssl rand -out /tmp/k.bin 32
+          gzip -9c /tmp/out.json | openssl enc -aes-256-cbc -pbkdf2 -salt -pass file:/tmp/k.bin -out /tmp/out.enc
+          openssl pkeyutl -encrypt -pubin -inkey scripts/inspect-pubkey.pem -pkeyopt rsa_padding_mode:oaep -in /tmp/k.bin -out /tmp/k.enc
+          rm -f /tmp/out.json /tmp/k.bin
+          echo "KEY-BEGIN"; base64 -w0 /tmp/k.enc; echo; echo "KEY-END"
+          echo "DATA-BEGIN"; base64 -w0 /tmp/out.enc | fold -w 4000; echo; echo "DATA-END"

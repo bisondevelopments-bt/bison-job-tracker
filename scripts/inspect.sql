@@ -18,3 +18,4 @@ select json_build_object(
  'counts', (select json_build_object('jobs',(select count(*) from public.jobs),'jt_docs',(select count(*) from public.jt_docs),'documents',(select count(*) from public.documents))),
  'extensions', (select json_agg(extname) from pg_extension)
 ) as report;
+-- 2026-11-24T03:06:08Z

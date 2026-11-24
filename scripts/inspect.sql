@@ -1,4 +1,4 @@
--- Read-only look at the database layout (no data rows). Results are encrypted before they reach the public log.
+-- Read-only look at the database layout (no data rows). Results are encrypted before they reach the public log. Check: hub go-live
 select json_build_object(
  'tables', (select json_agg(json_build_object('schema',n.nspname,'table',c.relname,'rls',c.relrowsecurity,'rows_est',c.reltuples::bigint) order by n.nspname,c.relname)
             from pg_class c join pg_namespace n on n.oid=c.relnamespace where c.relkind in ('r','p','v') and n.nspname in ('public')),
@@ -12,6 +12,8 @@ select json_build_object(
  'functions', (select json_agg(p.proname||'('||pg_get_function_identity_arguments(p.oid)||') secdef='||p.prosecdef) from pg_proc p join pg_namespace n on n.oid=p.pronamespace where n.nspname='public'),
  'buckets', (select json_agg(json_build_object('id',id,'public',public)) from storage.buckets),
  'realtime', (select json_agg(schemaname||'.'||tablename) from pg_publication_tables where pubname='supabase_realtime'),
- 'users', (select json_agg(json_build_object('email',email,'app',raw_app_meta_data,'user',raw_user_meta_data,'created',created_at,'last',last_sign_in_at)) from auth.users),
+ 'users', (select json_agg(json_build_object('email',email,'last',last_sign_in_at)) from auth.users),
+ 'people', (select json_agg(json_build_object('name',name,'role',role,'work',work_role,'login',auth_user_id is not null)) from public.people),
+ 'counts', (select json_build_object('jobs',(select count(*) from public.jobs),'jt_docs',(select count(*) from public.jt_docs),'documents',(select count(*) from public.documents))),
  'extensions', (select json_agg(extname) from pg_extension)
 ) as report;

@@ -55,11 +55,11 @@ a{color:var(--ink)}
       const step = () => { bar.style.width = Math.round(100 * ++done / total) + "%"; };
       log(`<b>${team.length} people, ${recs.length} records and ${files.length} files to import.</b>`);
 
-      const ACCESS = { "Project manager": "pm", "Field supervisor": "field_supervisor", "Excavation field supervisor": "field_supervisor", "Operations": "admin" };
+      const ACCESS = { "Project manager": "project_manager", "Field supervisor": "field_supervisor", "Excavation field supervisor": "field_supervisor", "Operations": "admin" };
       const existing = (await hub.callFn("hub-admin", { action: "list" })).people;
       for (const m of team) {
         if (!existing.some((p) => p.name.toLowerCase() === String(m.name).toLowerCase())) {
-          await hub.callFn("hub-admin", { action: "save", name: m.name, role: ACCESS[m.role] || "pm", work_role: m.role || "Project manager" });
+          await hub.callFn("hub-admin", { action: "save", name: m.name, role: ACCESS[m.role] || "project_manager", work_role: m.role || "Project manager" });
           log(`Added ${m.name} to People (no sign-in yet).`);
         }
         step();

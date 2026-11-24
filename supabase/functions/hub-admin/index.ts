@@ -2,7 +2,7 @@
 // The invite email comes from the shared Bison Gmail (set up as the sign-in email sender by the deploy).
 import { admin, cors, json, requirePerson } from "../_shared/auth.ts";
 
-const ROLES = ["admin", "pm", "field_supervisor", "accounting"];
+const ROLES = ["admin", "project_manager", "field_supervisor", "accounting"];
 const WORK_ROLES = ["Project manager", "Field supervisor", "Excavation field supervisor", "Operations", ""];
 const SITE = (Deno.env.get("HUB_SITE_URL") || "").replace(/\/?$/, "/");
 const isEmail = (s: string) => /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(s);

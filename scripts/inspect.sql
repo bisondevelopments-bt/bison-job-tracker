@@ -1,4 +1,4 @@
--- Read-only look at the database layout (no data rows). Results are encrypted before they reach the public log. Check: hub go-live
+-- Read-only look at the database layout (no data rows). Results are encrypted before they reach the public log. Check: shared role names
 select json_build_object(
  'tables', (select json_agg(json_build_object('schema',n.nspname,'table',c.relname,'rls',c.relrowsecurity,'rows_est',c.reltuples::bigint) order by n.nspname,c.relname)
             from pg_class c join pg_namespace n on n.oid=c.relnamespace where c.relkind in ('r','p','v') and n.nspname in ('public')),
@@ -14,6 +14,7 @@ select json_build_object(
  'realtime', (select json_agg(schemaname||'.'||tablename) from pg_publication_tables where pubname='supabase_realtime'),
  'users', (select json_agg(json_build_object('email',email,'last',last_sign_in_at)) from auth.users),
  'people', (select json_agg(json_build_object('name',name,'role',role,'work',work_role,'login',auth_user_id is not null)) from public.people),
+ 'checks', (select json_agg(proname order by proname) from pg_proc where pronamespace='public'::regnamespace and proname in ('my_role','is_admin','can_see_costs','can_edit_books','hub_role','hub_is')),
  'counts', (select json_build_object('jobs',(select count(*) from public.jobs),'jt_docs',(select count(*) from public.jt_docs),'documents',(select count(*) from public.documents))),
  'extensions', (select json_agg(extname) from pg_extension)
 ) as report;

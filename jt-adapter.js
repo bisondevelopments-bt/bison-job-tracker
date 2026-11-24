@@ -24,7 +24,7 @@
     lsSet("jt_me", lsGet("jt_person_name")); lsSet("jt_me_set_" + lsGet("jt_person_id"), "1");
   }
 
-  const ROLE_LABEL = { admin: "Admin", pm: "Project manager", field_supervisor: "Field supervisor", accounting: "Accounting" };
+  const ROLE_LABEL = { admin: "Admin", project_manager: "Project manager", field_supervisor: "Field supervisor", accounting: "Accounting" };
   const hub = { me: null, role: null, ready: null };
   window.jtHub = hub;
 

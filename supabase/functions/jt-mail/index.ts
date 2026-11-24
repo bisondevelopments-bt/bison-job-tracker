@@ -15,7 +15,7 @@ const isEmail = (s: string) => /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(s);
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: cors });
-  const who = await requirePerson(req, ["admin", "pm", "field_supervisor"]);
+  const who = await requirePerson(req, ["admin", "project_manager", "field_supervisor"]);
   if (!who) return json({ code: "not_granted", message: "Your role can't send email from the Job Tracker." }, 403);
   try {
     const a = await req.json();

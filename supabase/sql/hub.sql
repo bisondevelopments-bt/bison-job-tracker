@@ -6,7 +6,7 @@
 --
 -- Access roles (people.role):
 --   admin             everything; manages people
---   pm                jobs, tasks, schedules, files (and job costs once BuildTrack joins)
+--   project_manager   jobs, tasks, schedules, files (and job costs once BuildTrack joins)
 --   field_supervisor  jobs, tasks, schedules, files; never financial documents or costs
 --   accounting        jobs read-only here; owns the books in BuildTrack
 
@@ -21,7 +21,7 @@ create table if not exists public.people (
   name          text not null,
   email         text unique,
   phone         text,
-  role          text not null default 'pm' check (role in ('admin','pm','field_supervisor','accounting')),
+  role          text not null default 'project_manager' check (role in ('admin','project_manager','field_supervisor','accounting')),
   work_role     text,            -- Job Tracker screens: Project manager / Field supervisor / Excavation field supervisor / Operations
   active        boolean not null default true,
   created_at    timestamptz not null default now(),
@@ -35,7 +35,7 @@ create or replace function public.hub_me() returns public.people
 language sql stable security definer set search_path = public as $$
   select p.* from public.people p where p.auth_user_id = auth.uid() and p.active limit 1
 $$;
-create or replace function public.hub_role() returns text
+create or replace function public.my_role() returns text
 language sql stable security definer set search_path = public as $$
   select p.role from public.people p where p.auth_user_id = auth.uid() and p.active limit 1
 $$;
@@ -44,7 +44,11 @@ language sql stable security definer set search_path = public as $$
   select p.id from public.people p where p.auth_user_id = auth.uid() and p.active limit 1
 $$;
 create or replace function public.hub_is(roles text[]) returns boolean
-language sql stable as $$ select coalesce(public.hub_role() = any(roles), false) $$;
+language sql stable as $$ select coalesce(public.my_role() = any(roles), false) $$;
+-- The shared checks every Bison app uses (agreed in the hub plan).
+create or replace function public.is_admin() returns boolean language sql stable as $$ select coalesce(public.my_role() = 'admin', false) $$;
+create or replace function public.can_see_costs() returns boolean language sql stable as $$ select coalesce(public.my_role() in ('admin','project_manager','accounting'), false) $$;
+create or replace function public.can_edit_books() returns boolean language sql stable as $$ select coalesce(public.my_role() in ('admin','accounting'), false) $$;
 
 -------------------------------------------------------------------------------
 -- Jobs: one row and one ID per lot/home, from under contract through sale
@@ -189,7 +193,8 @@ create index if not exists activity_row_idx on public.activity_log (tbl, row_id,
 create or replace function public.hub_changed_keys(a jsonb, b jsonb) returns text[]
 language sql immutable as $$
   with k as (
-    select key from jsonb_object_keys(coalesce(a,'{}')) key union select key from jsonb_object_keys(coalesce(b,'{}')) key
+    select key from jsonb_object_keys(case when jsonb_typeof(a) = 'object' then a else '{}'::jsonb end) key
+    union select key from jsonb_object_keys(case when jsonb_typeof(b) = 'object' then b else '{}'::jsonb end) key
   )
   select coalesce(array_agg(r order by r), '{}') from (
     select case
@@ -198,7 +203,8 @@ language sql immutable as $$
     from k
     left join lateral (
       select s as sub from (
-        select s from jsonb_object_keys(a->key) s union select s from jsonb_object_keys(b->key) s
+        select s from jsonb_object_keys(case when jsonb_typeof(a->key) = 'object' then a->key else '{}'::jsonb end) s
+        union select s from jsonb_object_keys(case when jsonb_typeof(b->key) = 'object' then b->key else '{}'::jsonb end) s
       ) x where jsonb_typeof(a->key) = 'object' and jsonb_typeof(b->key) = 'object'
         and (a->key->s) is distinct from (b->key->s)
     ) subs on true
@@ -307,39 +313,39 @@ begin
 end $$;
 
 -- people: everyone on staff sees the team list; only admins add, change or remove people
-create policy people_read  on public.people for select to authenticated using (public.hub_role() is not null);
-create policy people_write on public.people for all    to authenticated using (public.hub_is('{admin}')) with check (public.hub_is('{admin}'));
+create policy people_read  on public.people for select to authenticated using (public.my_role() is not null);
+create policy people_write on public.people for all    to authenticated using (public.is_admin()) with check (public.is_admin());
 
 -- jobs and the Job Tracker's per-job details: staff read; admins, PMs and field supervisors edit; only admins and PMs delete
-create policy jobs_read   on public.jobs for select to authenticated using (public.hub_role() is not null);
-create policy jobs_insert on public.jobs for insert to authenticated with check (public.hub_is('{admin,pm,field_supervisor}'));
-create policy jobs_update on public.jobs for update to authenticated using (public.hub_is('{admin,pm,field_supervisor}')) with check (public.hub_is('{admin,pm,field_supervisor}'));
-create policy jobs_delete on public.jobs for delete to authenticated using (public.hub_is('{admin,pm}'));
+create policy jobs_read   on public.jobs for select to authenticated using (public.my_role() is not null);
+create policy jobs_insert on public.jobs for insert to authenticated with check (public.hub_is('{admin,project_manager,field_supervisor}'));
+create policy jobs_update on public.jobs for update to authenticated using (public.hub_is('{admin,project_manager,field_supervisor}')) with check (public.hub_is('{admin,project_manager,field_supervisor}'));
+create policy jobs_delete on public.jobs for delete to authenticated using (public.hub_is('{admin,project_manager}'));
 
-create policy jtd_read  on public.jt_job_details for select to authenticated using (public.hub_role() is not null);
-create policy jtd_write on public.jt_job_details for all    to authenticated using (public.hub_is('{admin,pm,field_supervisor}')) with check (public.hub_is('{admin,pm,field_supervisor}'));
+create policy jtd_read  on public.jt_job_details for select to authenticated using (public.my_role() is not null);
+create policy jtd_write on public.jt_job_details for all    to authenticated using (public.hub_is('{admin,project_manager,field_supervisor}')) with check (public.hub_is('{admin,project_manager,field_supervisor}'));
 
 -- vendors: staff read; all staff edit (accounting keeps vendor details for bills)
-create policy vendors_read  on public.vendors for select to authenticated using (public.hub_role() is not null);
-create policy vendors_write on public.vendors for all    to authenticated using (public.hub_is('{admin,pm,field_supervisor,accounting}')) with check (public.hub_is('{admin,pm,field_supervisor,accounting}'));
+create policy vendors_read  on public.vendors for select to authenticated using (public.my_role() is not null);
+create policy vendors_write on public.vendors for all    to authenticated using (public.hub_is('{admin,project_manager,field_supervisor,accounting}')) with check (public.hub_is('{admin,project_manager,field_supervisor,accounting}'));
 
 -- buyers: staff read; admins, PMs and accounting edit
-create policy buyers_read  on public.buyers for select to authenticated using (public.hub_role() is not null);
-create policy buyers_write on public.buyers for all    to authenticated using (public.hub_is('{admin,pm,accounting}')) with check (public.hub_is('{admin,pm,accounting}'));
+create policy buyers_read  on public.buyers for select to authenticated using (public.my_role() is not null);
+create policy buyers_write on public.buyers for all    to authenticated using (public.can_see_costs()) with check (public.can_see_costs());
 
 -- documents: field supervisors never see financial ones; only admins, PMs and accounting add or change financial ones
 create policy docs_read on public.documents for select to authenticated
-  using (public.hub_role() is not null and (sensitivity = 'general' or public.hub_is('{admin,pm,accounting}')));
+  using (public.my_role() is not null and (sensitivity = 'general' or public.can_see_costs()));
 create policy docs_write on public.documents for all to authenticated
-  using      (case when sensitivity = 'financial' then public.hub_is('{admin,pm,accounting}') else public.hub_is('{admin,pm,field_supervisor}') end)
-  with check (case when sensitivity = 'financial' then public.hub_is('{admin,pm,accounting}') else public.hub_is('{admin,pm,field_supervisor}') end);
+  using      (case when sensitivity = 'financial' then public.can_see_costs() else public.hub_is('{admin,project_manager,field_supervisor}') end)
+  with check (case when sensitivity = 'financial' then public.can_see_costs() else public.hub_is('{admin,project_manager,field_supervisor}') end);
 
 -- Job Tracker records: staff read; admins, PMs and field supervisors edit
-create policy jtdocs_read  on public.jt_docs for select to authenticated using (public.hub_role() is not null);
-create policy jtdocs_write on public.jt_docs for all    to authenticated using (public.hub_is('{admin,pm,field_supervisor}')) with check (public.hub_is('{admin,pm,field_supervisor}'));
+create policy jtdocs_read  on public.jt_docs for select to authenticated using (public.my_role() is not null);
+create policy jtdocs_write on public.jt_docs for all    to authenticated using (public.hub_is('{admin,project_manager,field_supervisor}')) with check (public.hub_is('{admin,project_manager,field_supervisor}'));
 
 -- activity log: admins read; written only by the database itself
-create policy activity_read on public.activity_log for select to authenticated using (public.hub_is('{admin}'));
+create policy activity_read on public.activity_log for select to authenticated using (public.is_admin());
 
 -- The old shared-login check is no longer used.
 drop function if exists public.jt_allowed() cascade;
@@ -378,11 +384,11 @@ language sql stable security definer set search_path = public as $$
   select exists (select 1 from public.documents d where d.asset_id = p_asset and d.sensitivity = 'financial')
 $$;
 create policy hub_files_read on storage.objects for select to authenticated using (
-  bucket_id = 'documents' and public.hub_role() is not null
-  and (public.hub_is('{admin,pm,accounting}') or not public.hub_asset_financial(storage.objects.name)));
-create policy hub_files_insert on storage.objects for insert to authenticated with check (bucket_id = 'documents' and public.hub_is('{admin,pm,field_supervisor,accounting}'));
-create policy hub_files_update on storage.objects for update to authenticated using (bucket_id = 'documents' and public.hub_is('{admin,pm,field_supervisor,accounting}'));
-create policy hub_files_delete on storage.objects for delete to authenticated using (bucket_id = 'documents' and public.hub_is('{admin,pm}'));
+  bucket_id = 'documents' and public.my_role() is not null
+  and (public.can_see_costs() or not public.hub_asset_financial(storage.objects.name)));
+create policy hub_files_insert on storage.objects for insert to authenticated with check (bucket_id = 'documents' and public.hub_is('{admin,project_manager,field_supervisor,accounting}'));
+create policy hub_files_update on storage.objects for update to authenticated using (bucket_id = 'documents' and public.hub_is('{admin,project_manager,field_supervisor,accounting}'));
+create policy hub_files_delete on storage.objects for delete to authenticated using (bucket_id = 'documents' and public.hub_is('{admin,project_manager}'));
 
 -------------------------------------------------------------------------------
 -- First admin: the existing shared office login becomes an admin until real admins are set up.
@@ -400,3 +406,13 @@ begin
   return 'bootstrap admin set';
 end $$;
 revoke execute on function public.hub_bootstrap(text) from public, anon, authenticated;
+
+-------------------------------------------------------------------------------
+-- Upgrade from the first version, which called project managers 'pm'.
+alter table public.people drop constraint if exists people_role_check;
+update public.people set role = 'project_manager' where role = 'pm';
+alter table public.people alter column role set default 'project_manager';
+alter table public.people add constraint people_role_check check (role in ('admin','project_manager','field_supervisor','accounting'));
+
+-- Renamed to my_role(); nothing uses the old name any more.
+drop function if exists public.hub_role();

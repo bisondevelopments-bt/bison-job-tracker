@@ -49,10 +49,10 @@ dialog textarea{width:100%;min-height:90px;font:13px ui-monospace,monospace;bord
 <div class="toast" id="toast"></div>
 <script>
 (async () => {
-  const ACCESS = [["admin","Admin"],["pm","Project manager"],["field_supervisor","Field supervisor"],["accounting","Accounting"]];
+  const ACCESS = [["admin","Admin"],["project_manager","Project manager"],["field_supervisor","Field supervisor"],["accounting","Accounting"]];
   const WORK = ["Project manager","Field supervisor","Excavation field supervisor","Operations"];
   const STATUS = { active: "Signed in", invited: "Invite sent", no_login: "No sign-in yet", off: "Turned off" };
-  const DEFAULT_WORK = { admin: "Operations", pm: "Project manager", field_supervisor: "Field supervisor", accounting: "" };
+  const DEFAULT_WORK = { admin: "Operations", project_manager: "Project manager", field_supervisor: "Field supervisor", accounting: "" };
   const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   const $ = (s) => document.querySelector(s);
   const toast = (m) => { const t = $("#toast"); t.textContent = m; t.style.display = "block"; clearTimeout(toast.h); toast.h = setTimeout(() => (t.style.display = "none"), 3500); };
@@ -75,7 +75,7 @@ dialog textarea{width:100%;min-height:90px;font:13px ui-monospace,monospace;bord
     <form class="panel add" id="addForm">
       <label>Name<input name="name" required placeholder="Lucas Manning"></label>
       <label>Email<input name="email" type="email" placeholder="lucas@…"></label>
-      <label>Access${sel("role", ACCESS, "pm").replace('data-f="role"', 'name="role"')}</label>
+      <label>Access${sel("role", ACCESS, "project_manager").replace('data-f="role"', 'name="role"')}</label>
       <label>Job Tracker role${sel("work_role", [["", "No Job Tracker screens"], ...WORK.map((w) => [w, w])], "Project manager").replace('data-f="work_role"', 'name="work_role"')}</label>
       <button class="btn primary">Add person</button>
     </form>

@@ -37,7 +37,7 @@ async function freshToken() {
 async function serve(id) {
   await restore();
   if (!auth || !auth.cfg) return new Response("Sign in to the Job Tracker to view this file.", { status: 401 });
-  const get = (token) => fetch(`${auth.cfg.url}/storage/v1/object/authenticated/jt-files/${encodeURIComponent(id)}`, {
+  const get = (token) => fetch(`${auth.cfg.url}/storage/v1/object/authenticated/documents/${encodeURIComponent(id)}`, {
     headers: { Authorization: "Bearer " + token, apikey: auth.cfg.anon },
   });
   let r = auth.token ? await get(auth.token) : null;

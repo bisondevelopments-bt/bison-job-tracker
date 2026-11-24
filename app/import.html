@@ -18,7 +18,7 @@ a{color:var(--ink)}
 </style></head><body>
 <main>
   <h1>Import from the old tracker</h1>
-  <p>Drop the export file (<b>job-tracker-export.zip</b>) here. Everything in it is copied into the live tracker: homes, checklists, contacts, pipeline, notes and uploaded files. Running it again is safe; it updates rather than duplicates.</p>
+  <p>Drop the export file (<b>job-tracker-export.zip</b>) here. Everything in it is copied into the hub: your team (as People), homes, checklists, contacts, pipeline, notes and uploaded files. Admins only. Running it again is safe; it updates rather than duplicates.</p>
   <label class="drop" id="drop">Drop the .zip here, or tap to choose it<input type="file" id="pick" accept=".zip" hidden></label>
   <div class="bar"><i id="bar"></i></div>
   <div id="log">Signing in…</div>
@@ -40,32 +40,51 @@ a{color:var(--ink)}
     if (busy) return; busy = true;
     document.getElementById("log").textContent = "Reading " + file.name + "…";
     try {
+      const hub = window.jtHub;
+      if (hub.role !== "admin") throw new Error("Only an admin can run the import.");
       const zip = await JSZip.loadAsync(file);
       const manifest = JSON.parse(await zip.file("data.json").async("string"));
-      const rows = [];
-      for (const [coll, docs] of Object.entries(manifest.collections || {}))
-        for (const [id, data] of Object.entries(docs)) rows.push({ coll, id, data });
+      const C = manifest.collections || {};
       const files = Object.entries(manifest.files || {});
-      const total = rows.length + files.length; let done = 0;
+      // Order matters: people first (homes refer to them), then vendors, pipeline lots, homes, then the rest.
+      const team = ((C.config || {}).team || {}).members || [];
+      const order = ["contacts", "pipeline", "jobs", ...Object.keys(C).filter((c) => !["contacts", "pipeline", "jobs"].includes(c))];
+      const recs = [];
+      for (const coll of order) for (const [id, data] of Object.entries(C[coll] || {})) if (!(coll === "config" && id === "team")) recs.push([coll, id, data]);
+      const total = team.length + recs.length + files.length; let done = 0;
       const step = () => { bar.style.width = Math.round(100 * ++done / total) + "%"; };
-      log(`<b>${rows.length} records and ${files.length} files to import.</b>`);
-      for (let i = 0; i < rows.length; i += 100) {
-        const chunk = rows.slice(i, i + 100);
-        const { error } = await sb.from("jt_docs").upsert(chunk);
-        if (error) throw error;
-        chunk.forEach(step);
+      log(`<b>${team.length} people, ${recs.length} records and ${files.length} files to import.</b>`);
+
+      const ACCESS = { "Project manager": "pm", "Field supervisor": "field_supervisor", "Excavation field supervisor": "field_supervisor", "Operations": "admin" };
+      const existing = (await hub.callFn("hub-admin", { action: "list" })).people;
+      for (const m of team) {
+        if (!existing.some((p) => p.name.toLowerCase() === String(m.name).toLowerCase())) {
+          await hub.callFn("hub-admin", { action: "save", name: m.name, role: ACCESS[m.role] || "pm", work_role: m.role || "Project manager" });
+          log(`Added ${m.name} to People (no sign-in yet).`);
+        }
+        step();
+      }
+      await window.jtHub.ready;
+      // Reload people so homes link to them.
+      const { data: ppl } = await sb.from("people").select("*");
+      ppl.forEach((p) => hub.tables.people.set(p.id, p));
+
+      let failed = 0;
+      for (const [coll, id, data] of recs) {
+        try { await hub.importRecord(coll, id, data); }
+        catch (e) { failed++; log(`Couldn't import ${coll}/${id}: ${e.message}`, "err"); }
+        step();
       }
       log("Records imported.");
-      let failed = 0;
       for (const [id, meta] of files) {
         const entry = zip.file("files/" + id);
         if (!entry) { failed++; step(); continue; }
         const blob = new Blob([await entry.async("uint8array")], { type: meta.type || "application/octet-stream" });
-        const { error } = await sb.storage.from("jt-files").upload(id, blob, { contentType: blob.type, upsert: true });
+        const { error } = await sb.storage.from("documents").upload(id, blob, { contentType: blob.type, upsert: true });
         if (error) { failed++; log(`Couldn't upload a file (${id}): ${error.message}`, "err"); }
         step();
       }
-      log(failed ? `<b>Done, but ${failed} file(s) didn't copy.</b> Run the import again to retry them.` : `<b>All done.</b> Open the Job Tracker to check it.`, failed ? "err" : "");
+      log(failed ? `<b>Done, but ${failed} item(s) didn't copy.</b> Run the import again to retry them.` : `<b>All done.</b> Next: open People &amp; sign-ins to add emails and send invites.`, failed ? "err" : "");
     } catch (e) {
       log("Import stopped: " + (e.message || e), "err");
     } finally { busy = false; }

@@ -1,7 +1,7 @@
 // Job Tracker email: sends from the shared Bison Gmail using an app password.
 // Secrets: GMAIL_USER (bisondevelopments@gmail.com), GMAIL_APP_PASSWORD, optional MAIL_SIGNATURE.
 import nodemailer from "npm:nodemailer@6.9.14";
-import { cors, json, requireJtUser } from "../_shared/auth.ts";
+import { cors, json, requirePerson } from "../_shared/auth.ts";
 
 const user = Deno.env.get("GMAIL_USER") || "bisondevelopments@gmail.com";
 const transport = nodemailer.createTransport({
@@ -15,8 +15,8 @@ const isEmail = (s: string) => /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(s);
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: cors });
-  const who = requireJtUser(req);
-  if (!who) return json({ code: "not_granted", message: "Sign in to the Job Tracker first." }, 401);
+  const who = await requirePerson(req, ["admin", "pm", "field_supervisor"]);
+  if (!who) return json({ code: "not_granted", message: "Your role can't send email from the Job Tracker." }, 403);
   try {
     const a = await req.json();
     const to = (Array.isArray(a.to) ? a.to : String(a.to || "").split(/[,;\s]+/)).map((x: string) => x.trim()).filter(Boolean);

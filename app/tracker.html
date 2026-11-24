@@ -3256,13 +3256,15 @@ $("#jobForm").addEventListener("submit",async e=>{
     OPTIONS.forEach(o=>{if(!asked(d,o))delete d.opts[o.id]});
     const fromPipe=wiz.fromPipe;$("#jobDlg").close();wiz=null;
     const picks=d.libPicks||[];delete d.libPicks;
-    try{const id=await store.addJob({...d,created:TODAY,tpl:tplStr,state:{},custom:{}});
+    try{// In the hub, a pipeline lot keeps its ID when the build starts: the same job moves from under contract to active.
+      const rec={...d,created:TODAY,tpl:tplStr,state:{},custom:{}};
+      const id=fromPipe&&window.jtHub&&window.jtHub.promote?await window.jtHub.promote(fromPipe,rec):await store.addJob(rec);
       for(const pk of picks)await libApply(id,pk).catch(report);view={mode:"job",jobId:id,tab:pendingDocs.length?"docs":"overview"};pendingFor=id;render();toast(fromPipe?"Build started. Home added and taken off the pipeline":"Home added");
       if(fromPipe){const pp=pipeline.find(q=>q.id===fromPipe);const pd=pp&&pp.docs?Object.fromEntries(Object.entries(pp.docs).filter(([,v])=>v)):null;
         if(pd&&Object.keys(pd).length)await store.patch(id,{docs:pd}).catch(report);
         if(pp&&pp.utils){const pu=Object.fromEntries(Object.entries(pp.utils).filter(([,v])=>v));if(Object.keys(pu).length)await store.patch(id,{utils:pu}).catch(report)}
         if(pp&&pp.notes)await store.patch(id,{board:{["b-"+uid()]:{txt:"From pipeline: "+pp.notes,by:me||"",on:TODAY,at:Date.now()}}}).catch(report);
-        pstore.del(fromPipe).catch(report)}
+        if(!(window.jtHub&&window.jtHub.promote))pstore.del(fromPipe).catch(report)}
       if(pendingDocs.length)uploadPending(id)}catch(err){report(err)}
     return;
   }
@@ -3564,7 +3566,7 @@ document.addEventListener("click",e=>{
     if(a==="newjob")jobDialog(false);
     else if(a==="addpipe")pipeDialog("");
     else if(a==="editjob")jobDialog(true);
-    else if(a==="team")teamDialog();
+    else if(a==="team"){if(window.jtHub){if(window.jtHub.role==="admin")location.href="people.html";else toast("Ask an admin to add or change people")}else teamDialog()}
     else if(a==="close")closeDrawer();
     else if(a==="addsc")addSub();
     else if(a==="upickx"){utilPick=null;render()}

@@ -33,15 +33,55 @@ jobs:
           ref=$(echo "$SUPABASE_URL" | sed -E 's#https://([a-z0-9]+)\.supabase\.co.*#\1#')
           test -n "$ref" || { echo "Set the SUPABASE_URL variable"; exit 1; }
           echo "REF=$ref" >> "$GITHUB_ENV"
-      - name: Set up database and storage
+          echo "SITE=https://${GITHUB_REPOSITORY_OWNER,,}.github.io/${GITHUB_REPOSITORY#*/}/" >> "$GITHUB_ENV"
+          key=$(curl -sS "https://api.supabase.com/v1/projects/$ref/api-keys?reveal=true" -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
+                | jq -r '[.[] | select(.name=="service_role" or .type=="secret")][0].api_key')
+          test -n "$key" && test "$key" != "null" || { echo "Couldn't read the project's server key"; exit 1; }
+          echo "::add-mask::$key"
+          echo "SERVICE_KEY=$key" >> "$GITHUB_ENV"
+      - name: Make sure the office login exists (first admin until everyone has their own)
+        env:
+          TEAM_EMAIL: ${{ vars.TEAM_EMAIL }}
+          TEAM_PASSWORD: ${{ secrets.TEAM_PASSWORD }}
         run: |
-          jq -n --rawfile q supabase/sql/job_tracker.sql '{query:$q}' > /tmp/q.json
-          code=$(curl -sS -o /tmp/out.json -w '%{http_code}' -X POST \
-            "https://api.supabase.com/v1/projects/$REF/database/query" \
-            -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" -H "Content-Type: application/json" \
-            --data-binary @/tmp/q.json)
-          cat /tmp/out.json; echo
-          test "$code" -lt 300
+          set -e
+          if [ -z "$TEAM_EMAIL" ]; then echo "No TEAM_EMAIL variable, skipping"; exit 0; fi
+          api="$SUPABASE_URL/auth/v1/admin/users"
+          id=$(curl -sS "$api?per_page=1000" -H "apikey: $SERVICE_KEY" -H "Authorization: Bearer $SERVICE_KEY" \
+               | jq -r --arg e "$(echo "$TEAM_EMAIL" | tr 'A-Z' 'a-z')" '.users[] | select(.email==$e) | .id')
+          if [ -z "$id" ] && [ -n "$TEAM_PASSWORD" ]; then
+            jq -n --arg e "$TEAM_EMAIL" --arg p "$TEAM_PASSWORD" '{email:$e,password:$p,email_confirm:true}' \
+              | curl -sS -f -o /dev/null -X POST "$api" -H "apikey: $SERVICE_KEY" -H "Authorization: Bearer $SERVICE_KEY" -H "Content-Type: application/json" --data-binary @-
+            echo "Office login created."
+          else echo "Office login already exists."; fi
+      - name: Set up the hub database, rules and storage
+        env:
+          TEAM_EMAIL: ${{ vars.TEAM_EMAIL }}
+        run: |
+          set -e
+          q() { jq -n --arg q "$1" '{query:$q}' > /tmp/q.json
+                code=$(curl -sS -o /tmp/out.json -w '%{http_code}' -X POST "https://api.supabase.com/v1/projects/$REF/database/query" \
+                  -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" -H "Content-Type: application/json" --data-binary @/tmp/q.json)
+                cat /tmp/out.json; echo; test "$code" -lt 300; }
+          q "$(cat supabase/sql/hub.sql)"
+          if [ -n "$TEAM_EMAIL" ]; then q "select public.hub_bootstrap('$(echo "$TEAM_EMAIL" | sed "s/'/''/g")') as result"; fi
+      - name: Sign-in settings (invites only, emails from the Bison Gmail)
+        env:
+          GMAIL_USER: ${{ vars.GMAIL_USER }}
+          GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
+        run: |
+          set -e
+          jq -n --arg site "$SITE" --arg user "$GMAIL_USER" --arg pass "$GMAIL_APP_PASSWORD" '
+            {site_url:$site, uri_allow_list:($site+"**"), disable_signup:true,
+             mailer_subjects_invite:"You are invited to the Bison Job Tracker",
+             mailer_templates_invite_content:"<p>Hi,</p><p>You have been added to the Bison Job Tracker. Tap the button to choose your password:</p><p><a href=\"{{ .ConfirmationURL }}\" style=\"background:#F5B700;color:#1D2733;padding:10px 18px;border-radius:6px;font-weight:700;text-decoration:none\">Set my password</a></p><p>The link works once. If it has expired, ask an admin to resend it.</p><p>Bison Developments</p>",
+             mailer_subjects_recovery:"Set your Bison Job Tracker password",
+             mailer_templates_recovery_content:"<p>Tap the button to choose a new password for the Bison Job Tracker:</p><p><a href=\"{{ .ConfirmationURL }}\" style=\"background:#F5B700;color:#1D2733;padding:10px 18px;border-radius:6px;font-weight:700;text-decoration:none\">Set my password</a></p><p>If you did not ask for this, you can ignore this email.</p><p>Bison Developments</p>"}
+            + (if $pass != "" and $user != "" then {smtp_admin_email:$user, smtp_host:"smtp.gmail.com", smtp_port:"465", smtp_user:$user, smtp_pass:$pass, smtp_sender_name:"Bison Developments", rate_limit_email_sent:30} else {} end)' > /tmp/auth.json
+          code=$(curl -sS -o /tmp/out.json -w '%{http_code}' -X PATCH "https://api.supabase.com/v1/projects/$REF/config/auth" \
+            -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" -H "Content-Type: application/json" --data-binary @/tmp/auth.json)
+          rm -f /tmp/auth.json
+          echo "status $code"; test "$code" -lt 300 || { jq '{message,error}' /tmp/out.json 2>/dev/null || true; exit 1; }
       - name: Store server secrets
         env:
           AI_PROVIDER: ${{ vars.AI_PROVIDER }}
@@ -54,39 +94,16 @@ jobs:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
         run: |
+          HUB_SERVICE_KEY="$SERVICE_KEY"; HUB_SITE_URL="$SITE"
           : > /tmp/secrets.env
-          for k in AI_PROVIDER AI_MODEL_QUICK AI_MODEL_DEFAULT AI_MODEL_COMPLEX GMAIL_USER ANTHROPIC_API_KEY XAI_API_KEY OPENAI_API_KEY GMAIL_APP_PASSWORD; do
+          for k in AI_PROVIDER AI_MODEL_QUICK AI_MODEL_DEFAULT AI_MODEL_COMPLEX GMAIL_USER ANTHROPIC_API_KEY XAI_API_KEY OPENAI_API_KEY GMAIL_APP_PASSWORD HUB_SERVICE_KEY HUB_SITE_URL; do
             v="${!k}"; [ -n "$v" ] && printf '%s=%s\n' "$k" "$v" >> /tmp/secrets.env
           done
-          if [ -s /tmp/secrets.env ]; then supabase secrets set --remote="$REF" --env-file /tmp/secrets.env --yes; fi
+          supabase secrets set --remote="$REF" --env-file /tmp/secrets.env --yes
           rm -f /tmp/secrets.env
       - name: Deploy server functions
         run: |
-          supabase functions deploy jt-ai --remote="$REF" --use-api --yes
-          supabase functions deploy jt-mail --remote="$REF" --use-api --yes
-      - name: Create or update the team login
-        env:
-          TEAM_EMAIL: ${{ vars.TEAM_EMAIL }}
-          TEAM_PASSWORD: ${{ secrets.TEAM_PASSWORD }}
-        run: |
-          set -e
-          if [ -z "$TEAM_EMAIL" ]; then echo "No TEAM_EMAIL variable yet, skipping"; exit 0; fi
-          key=$(curl -sS "https://api.supabase.com/v1/projects/$REF/api-keys?reveal=true" -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
-                | jq -r '[.[] | select(.name=="service_role" or .type=="secret")][0].api_key')
-          test -n "$key" && test "$key" != "null"
-          api="$SUPABASE_URL/auth/v1/admin/users"
-          id=$(curl -sS "$api?per_page=1000" -H "apikey: $key" -H "Authorization: Bearer $key" \
-               | jq -r --arg e "$(echo "$TEAM_EMAIL" | tr 'A-Z' 'a-z')" '.users[] | select(.email==$e) | .id')
-          if [ -z "$id" ]; then
-            test -n "$TEAM_PASSWORD" || { echo "Add the TEAM_PASSWORD secret to create the team login"; exit 1; }
-            jq -n --arg e "$TEAM_EMAIL" --arg p "$TEAM_PASSWORD" '{email:$e,password:$p,email_confirm:true,app_metadata:{jt:true}}' \
-              | curl -sS -f -o /dev/null -X POST "$api" -H "apikey: $key" -H "Authorization: Bearer $key" -H "Content-Type: application/json" --data-binary @-
-            echo "Team login created."
-          else
-            body=$(jq -n --arg p "$TEAM_PASSWORD" 'if $p=="" then {app_metadata:{jt:true}} else {password:$p,app_metadata:{jt:true}} end')
-            echo "$body" | curl -sS -f -o /dev/null -X PUT "$api/$id" -H "apikey: $key" -H "Authorization: Bearer $key" -H "Content-Type: application/json" --data-binary @-
-            echo "Team login updated."
-          fi
+          for f in jt-ai jt-mail hub-admin; do supabase functions deploy "$f" --remote="$REF" --use-api --yes; done
 
   # 2. The website itself, on GitHub Pages.
   site:

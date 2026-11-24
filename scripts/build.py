@@ -45,6 +45,7 @@ def page(src_name, out_name):
 
 page("app/tracker.html", "index.html")
 page("app/import.html", "import.html")
+page("app/people.html", "people.html")
 
 open(os.path.join(SITE, "config.js"), "w").write(
     "window.JT_CONFIG=" + json.dumps({"url": url, "anon": anon, "teamEmail": team}) + ";\n")

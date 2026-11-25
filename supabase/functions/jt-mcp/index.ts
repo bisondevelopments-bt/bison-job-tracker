@@ -12,7 +12,6 @@ import postgres from "npm:postgres@3.4.5";
 import { ImapFlow } from "npm:imapflow@1.0.171";
 import PostalMime from "npm:postal-mime@2.4.4";
 import { extractText, getDocumentProxy } from "npm:unpdf@0.12.1";
-import { Image } from "npm:imagescript@1.3.0";
 import { admin, cors } from "../_shared/auth.ts";
 import * as SCH from "../_shared/schedule.js";
 
@@ -159,7 +158,9 @@ function photoList(j: Row): [string, Row][] {
 // Same size as the app's own uploads: longest side 1600px, JPEG quality 85.
 async function shrinkPhoto(bytes: Uint8Array, type: string): Promise<{ bytes: Uint8Array; type: string }> {
   try {
-    const img = await Image.decode(bytes) as Image;
+    // loaded only when a photo is added, so the connector always starts even if resizing isn't available
+    const { Image } = await import("npm:imagescript@1.3.0");
+    const img = await Image.decode(bytes) as any;
     const k = Math.min(1, 1600 / Math.max(img.width, img.height));
     if (k < 1) img.resize(Math.round(img.width * k), Math.round(img.height * k));
     const out = await img.encodeJPEG(85);

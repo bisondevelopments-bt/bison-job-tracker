@@ -18,7 +18,7 @@ a{color:var(--ink)}
 </style></head><body>
 <main>
   <h1>Import from the old tracker</h1>
-  <p>Drop the export file (<b>job-tracker-export.zip</b>) here. Everything in it is copied into the hub: your team (as People), homes, checklists, contacts, pipeline, notes and uploaded files. Admins only. Running it again is safe; it updates rather than duplicates.</p>
+  <p>Drop the export file (<b>job-tracker-export.zip</b>) here. Everything in it is copied into the hub: your team (as People), homes, checklists, contacts, pipeline, notes and uploaded files. Admins only. Running it again is safe; it updates rather than duplicates. You can also drop a <b>document pack</b> here: it only adds files to homes already in the tracker.</p>
   <label class="drop" id="drop">Drop the .zip here, or tap to choose it<input type="file" id="pick" accept=".zip" hidden></label>
   <div class="bar"><i id="bar"></i></div>
   <div id="log">Signing in…</div>
@@ -44,6 +44,7 @@ a{color:var(--ink)}
       if (hub.role !== "admin") throw new Error("Only an admin can run the import.");
       const zip = await JSZip.loadAsync(file);
       const manifest = JSON.parse(await zip.file("data.json").async("string"));
+      if (manifest.add) return await addDocs(manifest, zip, hub);
       const C = manifest.collections || {};
       const files = Object.entries(manifest.files || {});
       // Order matters: people first (homes refer to them), then vendors, pipeline lots, homes, then the rest.
@@ -88,6 +89,29 @@ a{color:var(--ink)}
     } catch (e) {
       log("Import stopped: " + (e.message || e), "err");
     } finally { busy = false; }
+  }
+
+  // A document pack (for example files pulled from Google Drive): adds files to homes that already exist.
+  // It only adds; nothing already in a home is changed or removed. Running it again replaces the same files, never doubles them.
+  async function addDocs(manifest, zip, hub) {
+    const db = await window.claude.use("db");
+    await hub.ready;
+    const items = manifest.add || [];
+    let done = 0, failed = 0, skipped = 0;
+    log(`<b>${items.length} documents to add to existing homes.</b>`);
+    for (const it of items) {
+      try {
+        if (!hub.tables.jobs.has(it.job)) { skipped++; log(`Skipped "${it.doc.name}": that home isn't in the tracker.`, "err"); continue; }
+        const aid = it.doc.asset, entry = zip.file("files/" + aid);
+        if (!entry) throw new Error("file missing from the pack");
+        const blob = new Blob([await entry.async("uint8array")], { type: it.doc.type || "application/pdf" });
+        const { error } = await sb.storage.from("documents").upload(aid, blob, { contentType: blob.type, upsert: true });
+        if (error) throw new Error(error.message);
+        await db.doc("jobs/" + it.job).update({ docs: { [it.key]: it.doc } });
+      } catch (e) { failed++; log(`Couldn't add "${it.doc.name}": ${e.message || e}`, "err"); }
+      bar.style.width = Math.round(100 * ++done / items.length) + "%";
+    }
+    log(failed ? `<b>Done, but ${failed} document(s) didn't copy.</b> Run it again to retry them.` : `<b>All done.</b> ${items.length - skipped} documents added. Open a home's Docs tab to see them.`, failed ? "err" : "");
   }
 })();
 </script>

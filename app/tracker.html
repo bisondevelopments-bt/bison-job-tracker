@@ -1097,6 +1097,9 @@ dialog.cimdlg{width:min(1180px,96vw)}
 #ai-send{background:var(--blue);color:#fff;border:none;border-radius:8px;padding:0 12px;cursor:pointer;font-size:20px;flex-shrink:0;transition:opacity .15s;height:38px;display:flex;align-items:center;justify-content:center}
 #ai-send:disabled{opacity:.35;cursor:default}
 #ai-mic{background:var(--panel2);color:var(--ink);border:1px solid var(--line);border-radius:8px;width:40px;height:38px;flex-shrink:0;display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0}
+#ai-att{background:var(--panel2);color:var(--ink);border:1px solid var(--line);border-radius:8px;width:40px;height:38px;flex-shrink:0;display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0;font-size:18px}
+#ai-att.has{border-color:var(--blue);background:var(--blue-soft)}
+#ai-attnote{font-size:12px;padding:0 12px 6px;color:var(--ink)}
 #ai-mic.on{background:var(--red);border-color:var(--red);color:#fff;animation:micPulse 1.2s ease-in-out infinite}
 @keyframes micPulse{0%,100%{box-shadow:0 0 0 0 rgba(184,50,39,.45)}50%{box-shadow:0 0 0 7px rgba(184,50,39,0)}}
 #ai-status{padding:6px 12px;font-size:13px;font-weight:600;color:var(--muted);border-top:1px solid var(--line);background:var(--panel2)}
@@ -3907,23 +3910,41 @@ When the user asks to schedule an inspection: find the home (match on name, lot,
   }
   const TOOLS=[{name:"prepare_inspection",description:"Show the user an editable inspection-request email card with Send (via their Gmail), Open in email and Mark scheduled buttons. Nothing is sent until the user taps Send.",
     inputSchema:{type:"object",properties:{home_id:{type:"string"},inspection_key:{type:"string"},to:{type:"string",description:"Inspector email address, or empty if unknown"},subject:{type:"string"},body:{type:"string"},date:{type:"string",description:"Requested date YYYY-MM-DD, or empty"}},required:["home_id","inspection_key","subject","body"]},
-    execute:a=>card(a)}];
+    execute:a=>card(a)},
+    {name:"add_photos",description:"Save the photos the user attached to this message to a home's Photos tab. Only call this when the user has attached photos and wants them filed. Pick the home from the project data (ask if unclear).",
+    inputSchema:{type:"object",properties:{home_id:{type:"string",description:"The home's id from the project data"},caption:{type:"string",description:"Optional short caption for the photos"}},required:["home_id"]},
+    execute:async a=>{
+      if(!aiPics.length)return{error:"No photos are attached to this message. Ask the user to tap the paperclip and attach them."};
+      if(!assetsApi)return{error:"Photo storage isn't available in this view."};
+      const j=jobs.find(x=>x.id===a.home_id)||jobs.find(x=>(x.name||"").toLowerCase()===String(a.home_id||"").toLowerCase());
+      if(!j)return{error:"No home with id "+a.home_id};
+      let ok=0;const fails=[];
+      for(const f of aiPics){try{const b=await shrinkImage(f),r=await assetsApi.upload(b,{type:b.type||"image/jpeg"}),id="ph-"+uid();
+        await store.patch(j.id,{photos:{[id]:{asset:r.id,on:TODAY,at:Date.now(),by:me||"",cap:String(a.caption||"").slice(0,200)}}});ok++}
+        catch(e){fails.push(String((e&&e.message)||e))}}
+      if(ok){aiPicsSaved=true;render()}
+      return{home:j.name,added:ok,failed:fails.length,errors:fails.slice(0,3)};
+    }}];
+  let aiPics=[],aiPicsSaved=false;
+  function aiPicsNote(){const n=document.getElementById("ai-attnote"),a=document.getElementById("ai-att");if(!n)return;
+    n.hidden=!aiPics.length;n.textContent=aiPics.length?`📷 ${aiPics.length} photo${aiPics.length===1?"":"s"} attached — say which home (tap 📎 again to replace)`:"";a.classList.toggle("has",!!aiPics.length)}
   async function send(t){
     const inp=document.getElementById("ai-input"),btn=document.getElementById("ai-send");
     const msg=(t||inp.value||"").trim();if(!msg||busy)return;
     inp.value="";inp.style.height="";busy=true;btn.disabled=true;
-    bubble("user",msg);hist.push({role:"user",content:msg});
+    const pics=aiPics.slice();bubble("user",msg+(pics.length?`  [📷 ${pics.length} photo${pics.length===1?"":"s"}]`:""));hist.push({role:"user",content:msg+(pics.length?`\n(I attached ${pics.length} photo${pics.length===1?"":"s"}. Use add_photos to save them to a home if I asked.)`:"")});aiPicsSaved=false;
     const typing=document.createElement("div");typing.className="ai-typing";typing.innerHTML='<i class="ai-dot"></i><i class="ai-dot"></i><i class="ai-dot"></i>';$m().appendChild(typing);$m().scrollTop=1e9;
     if(!sampleApi){typing.remove();bubble("asst","The assistant isn't available in this view. Open the tracker in Claude and allow it to ask Claude when prompted.");busy=false;btn.disabled=false;return}
     const convo=hist.slice(-14);const first=convo.findIndex(h=>h.role==="user");
     const input=convo.slice(first).map((h,i)=>i===0?{role:"user",content:SYS+"\n\n=== PROJECT DATA ===\n"+ctx()+"\n=== END DATA ===\n\n"+h.content}:h);
     let el=null;bai("thinking",true);
-    try{const r=await sampleApi(input,{cache:false,tools:TOOLS,onText({text}){if(!el){typing.remove();el=bubble("asst","")}el.textContent=text;$m().scrollTop=1e9}});
+    try{let imgs=null;if(pics.length){try{imgs=await Promise.all(pics.slice(0,5).map(f=>shrinkImage(f)))}catch(_){imgs=null}}
+      const r=await sampleApi(input,{cache:false,tools:TOOLS,...(imgs?{images:imgs}:{}),onText({text}){if(!el){typing.remove();el=bubble("asst","")}el.textContent=text;$m().scrollTop=1e9}});
       typing.remove();if(!el)el=bubble("asst",r.text||"Done.");else el.textContent=r.text||el.textContent;
       hist.push({role:"assistant",content:r.text||"(showed an email card)"});speakReply(r.text||"")}
     catch(e){typing.remove();hist.pop();
       bubble("asst",e&&e.code==="not_granted"?"Permission to ask Claude wasn't granted. You can allow it from this page's Permissions menu.":e&&e.code==="rate_limited"?"Too many requests right now — give it a minute.":"Something went wrong. Try again.")}
-    finally{busy=false;btn.disabled=false;bai("thinking",false)}
+    finally{busy=false;btn.disabled=false;bai("thinking",false);if(aiPicsSaved){aiPics=[];aiPicsNote()}}
   }
   const fab=document.getElementById("ai-fab"),panel=document.getElementById("ai-panel");
   function toggle(){const open=panel.hidden;panel.hidden=!open;fab.setAttribute("aria-expanded",String(open));
@@ -3978,6 +3999,7 @@ When the user asks to schedule an inspection: find the home (match on name, lot,
   fab.onclick=toggle;document.getElementById("ai-close").onclick=toggle;
   document.getElementById("ai-clear").onclick=()=>{hist=[];welcome()};
   document.getElementById("ai-send").onclick=()=>send();
+  document.getElementById("ai-files").addEventListener("change",e=>{aiPics=[...e.target.files].filter(f=>/^image\//.test(f.type)||/\.(jpe?g|png|heic|heif|webp)$/i.test(f.name));e.target.value="";aiPicsNote();document.getElementById("ai-input").focus()});
   const inp=document.getElementById("ai-input");
   inp.addEventListener("keydown",e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();send()}e.stopPropagation()});
   inp.addEventListener("input",()=>{inp.style.height="auto";inp.style.height=Math.min(inp.scrollHeight,100)+"px"});
@@ -3993,7 +4015,7 @@ if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",
   <div class="ai-head"><svg class="bai bai-sm" viewBox="2 2 116 116" aria-hidden="true"><circle cx="60" cy="60" r="54" fill="#2F5F8A"/><circle class="bai-ring" cx="60" cy="60" r="56" fill="none" stroke="#F5B700" stroke-width="5" stroke-linecap="round" stroke-dasharray="70 282"/><g class="bai-head"><path d="M30 52 C19 48 17 35 24 28 C26 39 32 43 40 46 Z" fill="#F5B700"/><path d="M90 52 C101 48 103 35 96 28 C94 39 88 43 80 46 Z" fill="#F5B700"/><path d="M38 44 Q60 32 82 44 L86 70 Q84 92 60 96 Q36 92 34 70 Z" fill="#F4F1EA"/><path d="M42 42 Q51 30 60 38 Q69 30 78 42 Q70 50 60 47 Q50 50 42 42 Z" fill="#D9CFB8"/><g class="bai-eyes"><circle cx="49" cy="63" r="5" fill="#1D2733"/><circle cx="71" cy="63" r="5" fill="#1D2733"/></g><ellipse cx="60" cy="82" rx="12" ry="8" fill="#D9CFB8"/><circle cx="55" cy="82" r="2" fill="#1D2733"/><circle cx="65" cy="82" r="2" fill="#1D2733"/></g></svg><h4>Bison AI</h4><button type="button" id="ai-voice" aria-pressed="true" title="Spoken replies on" aria-label="Spoken replies"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H2v6h4l5 4V5z"/><path class="vw" d="M15.5 8.5a5 5 0 0 1 0 7M19 5a10 10 0 0 1 0 14"/><path class="vx" d="M23 9l-6 6M17 9l6 6"/></svg></button><button type="button" id="ai-clear" title="New chat" aria-label="New chat">↺</button><button type="button" id="ai-close" title="Close" aria-label="Close">✕</button></div>
   <div id="ai-msgs" aria-live="polite"></div>
   <div id="ai-status" hidden aria-live="polite"></div>
-  <div id="ai-footer"><button type="button" id="ai-mic" aria-label="Talk" title="Tap to talk"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10a7 7 0 0 0 14 0M12 17v5M8 22h8"/></svg></button><textarea id="ai-input" rows="1" placeholder="Ask about a home, or “schedule plumbing for 123 Main”" aria-label="Message"></textarea><button type="button" id="ai-send" aria-label="Send">↑</button></div>
+  <div id="ai-attnote" hidden></div><div id="ai-footer"><label id="ai-att" title="Attach photos" aria-label="Attach photos">📎<input type="file" id="ai-files" accept="image/*" multiple hidden></label><button type="button" id="ai-mic" aria-label="Talk" title="Tap to talk"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10a7 7 0 0 0 14 0M12 17v5M8 22h8"/></svg></button><textarea id="ai-input" rows="1" placeholder="Ask about a home, or “schedule plumbing for 123 Main”" aria-label="Message"></textarea><button type="button" id="ai-send" aria-label="Send">↑</button></div>
 </div>
 
 </body></html>

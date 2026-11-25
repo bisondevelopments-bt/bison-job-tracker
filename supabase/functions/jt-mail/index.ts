@@ -1,9 +1,9 @@
 // Job Tracker email: sends from the shared Bison Gmail using an app password.
-// Secrets: GMAIL_USER (bisondevelopments@gmail.com), GMAIL_APP_PASSWORD, optional MAIL_SIGNATURE.
+// Secrets: GMAIL_USER (the shared Bison Gmail address), GMAIL_APP_PASSWORD, optional MAIL_SIGNATURE.
 import nodemailer from "npm:nodemailer@6.9.14";
 import { cors, json, requirePerson } from "../_shared/auth.ts";
 
-const user = Deno.env.get("GMAIL_USER") || "bisondevelopments@gmail.com";
+const user = Deno.env.get("GMAIL_USER") || "";
 const transport = nodemailer.createTransport({
   host: "smtp.gmail.com",
   port: 465, // Supabase blocks 25 and 587; 465 (SSL) is allowed.

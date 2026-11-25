@@ -89,7 +89,8 @@ ol{margin:6px 0 0;padding-left:22px}ol li{margin:4px 0}
       </div>
       <section class="panel small"><h2>What it can do</h2>
         Look up homes, tasks, inspections, notes, documents, contacts and the team. Check off tasks and record inspection results (with the same rules as the app: a main task needs its sub-tasks done first).
-        Add notes, to-dos and documents, including files straight from an email in the Bison Gmail. It can't delete anything.
+        Add notes, to-dos, documents and jobsite photos, including files and photos straight from an email in the Bison Gmail.
+        It can remove a document or photo when you ask (Claude checks with you first); it can't delete homes, tasks or notes.
         <p class="muted" style="margin:8px 0 0">If someone's sign-in is turned off on the People page, their link stops working too.</p></section>`;
     $("#make").onclick = async () => {
       if (st.has_link && !confirm("Make a new link? Your old link stops working right away, so you'll need to update it in Claude or Grok.")) return;

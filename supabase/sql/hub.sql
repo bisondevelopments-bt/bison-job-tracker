@@ -209,7 +209,7 @@ language sql immutable as $$
         and (a->key->s) is distinct from (b->key->s)
     ) subs on true
     where (a->key) is distinct from (b->key)
-      and not (jsonb_typeof(a->key) = 'object' and jsonb_typeof(b->key) = 'object' and subs.sub is null)
+      and not coalesce(jsonb_typeof(a->key) = 'object' and jsonb_typeof(b->key) = 'object' and subs.sub is null, false)  -- coalesce: a field that's new (or removed) counts as changed
       and key not in ('updated_at','updated_by')
   ) t
 $$;
@@ -408,6 +408,20 @@ end $$;
 revoke execute on function public.hub_bootstrap(text) from public, anon, authenticated;
 
 -------------------------------------------------------------------------------
+-- Connector links (Claude / Grok). One private link per person; only a scrambled copy (SHA-256) is stored.
+-- Nobody reads this table directly: the connector server checks links with full access, then works as that person.
+create table if not exists public.connector_keys (
+  id           uuid primary key default gen_random_uuid(),
+  person_id    uuid not null references public.people (id) on delete cascade,
+  token_hash   text not null unique,
+  created_at   timestamptz not null default now(),
+  last_used_at timestamptz,
+  revoked_at   timestamptz
+);
+create index if not exists connector_keys_person_idx on public.connector_keys (person_id) where revoked_at is null;
+alter table public.connector_keys enable row level security;
+revoke all on public.connector_keys from anon, authenticated;
+
 -- Upgrade from the first version, which called project managers 'pm'.
 alter table public.people drop constraint if exists people_role_check;
 update public.people set role = 'project_manager' where role = 'pm';

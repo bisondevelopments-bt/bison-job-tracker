@@ -148,6 +148,10 @@
         MENU.push({ go: "people", label: "People & sign-ins", hint: "Add people, set roles, send sign-in invites",
           icon: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0M16 4.5a3.5 3.5 0 0 1 0 7M21.5 20a6.5 6.5 0 0 0-4-6"/></svg>` });
       }
+      if (typeof MENU !== "undefined" && !MENU.some((x) => x.go === "connect")) {
+        MENU.push({ go: "connect", label: "Connect Claude or Grok", hint: "Your private link for AI assistants",
+          icon: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 7H7a5 5 0 0 0 0 10h2M15 7h2a5 5 0 0 1 0 10h-2M8 12h8"/></svg>` });
+      }
       if (typeof MENU !== "undefined" && !MENU.some((x) => x.go === "signout")) {
         MENU.push({ go: "signout", label: "Sign out", hint: `Signed in as ${hub.me.name} (${ROLE_LABEL[hub.role]})`,
           icon: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3M10 17l5-5-5-5M15 12H3"/></svg>` });
@@ -159,6 +163,7 @@
       if (!g) return;
       if (g.dataset.menugo === "people") { e.stopImmediatePropagation(); location.href = "people.html"; }
       if (g.dataset.menugo === "signout") { e.stopImmediatePropagation(); hub.signOut(); }
+      if (g.dataset.menugo === "connect") { e.stopImmediatePropagation(); location.href = "connect.html"; }
     }, true);
     if (hub.role === "accounting") {
       const b = document.createElement("div");

@@ -1,0 +1,46 @@
+name: Check the connector (read-only)
+
+# Runs when scripts/connector-check.mjs changes, or by hand. Makes a temporary connector link for the
+# office login, runs read-only checks, then turns the link off. The result is encrypted with
+# scripts/inspect-pubkey.pem, so the public log shows only scrambled text.
+on:
+  push:
+    branches: [main]
+    paths: [scripts/connector-check.mjs]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    env:
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+      SUPABASE_URL: ${{ vars.SUPABASE_URL }}
+      TEAM_EMAIL: ${{ vars.TEAM_EMAIL }}
+      GMAIL_USER: ${{ vars.GMAIL_USER }}
+      GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20 }
+      - name: Run the check
+        run: |
+          set -e
+          ref=$(echo "$SUPABASE_URL" | sed -E 's#https://([a-z0-9]+)\.supabase\.co.*#\1#')
+          q() { jq -n --arg q "$1" '{query:$q}' | curl -sS -f -X POST "https://api.supabase.com/v1/projects/$ref/database/query" \
+                  -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" -H "Content-Type: application/json" --data-binary @-; }
+          tok=$(openssl rand -base64 32 | tr '+/' '-_' | tr -d '=\n')
+          echo "::add-mask::$tok"
+          hash=$(printf '%s' "$tok" | sha256sum | cut -d' ' -f1)
+          q "insert into public.connector_keys (person_id, token_hash) select id, '$hash' from public.people where lower(email) = lower('$TEAM_EMAIL') and auth_user_id is not null limit 1" > /dev/null
+          npm i --silent --no-audit --no-fund imapflow@1.0.171 > /dev/null
+          CHECK_TOKEN="$tok" node scripts/connector-check.mjs > /tmp/out.json || true
+          q "delete from public.connector_keys where token_hash = '$hash'" > /dev/null
+          openssl rand -out /tmp/k.bin 32
+          gzip -9c /tmp/out.json | openssl enc -aes-256-cbc -pbkdf2 -salt -pass file:/tmp/k.bin -out /tmp/out.enc
+          openssl pkeyutl -encrypt -pubin -inkey scripts/inspect-pubkey.pem -pkeyopt rsa_padding_mode:oaep -in /tmp/k.bin -out /tmp/k.enc
+          rm -f /tmp/out.json /tmp/k.bin
+          echo "KEY-BEGIN"; base64 -w0 /tmp/k.enc; echo; echo "KEY-END"
+          echo "DATA-BEGIN"; base64 -w0 /tmp/out.enc | fold -w 4000; echo; echo "DATA-END"

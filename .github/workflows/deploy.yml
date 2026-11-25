@@ -103,7 +103,11 @@ jobs:
           rm -f /tmp/secrets.env
       - name: Deploy server functions
         run: |
+          # The connector uses the app's own build-schedule code, copied fresh from tracker.html on every deploy.
+          python3 scripts/extract_schedule.py
           for f in jt-ai jt-mail hub-admin; do supabase functions deploy "$f" --remote="$REF" --use-api --yes; done
+          # The connector is reached with each person's private link (no app sign-in), so the gateway's sign-in check is off for it.
+          supabase functions deploy jt-mcp --remote="$REF" --use-api --no-verify-jwt --yes
 
   # 2. The website itself, on GitHub Pages.
   site:

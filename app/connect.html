@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Connect Claude or Grok</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Semi+Condensed:wght@700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#E7EAE8;--panel:#fff;--panel2:#F4F6F5;--ink:#1D2733;--muted:#5C6975;--line:#D2D8D5;--yellow:#F5B700;--yellow-soft:#FFF3C4;--green:#2E7D4F;--green-soft:#DDF0E3;--red:#B83227;--red-soft:#F8DEDA}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#141A20;--panel:#1D252D;--panel2:#232C35;--ink:#E5E9ED;--muted:#9AA6B1;--line:#303C47;--yellow-soft:#3D3310;--green:#5DBB84;--green-soft:#1C3527;--red:#E0685C;--red-soft:#3D1F1C;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#141A20;--panel:#1D252D;--panel2:#232C35;--ink:#E5E9ED;--muted:#9AA6B1;--line:#303C47;--yellow-soft:#3D3310;--green:#5DBB84;--green-soft:#1C3527;--red:#E0685C;--red-soft:#3D1F1C;color-scheme:dark}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 "Barlow",system-ui,sans-serif;padding:20px 16px 60px}
+button,input{font:inherit;color:inherit}
+main{max-width:760px;margin:0 auto}
+.top{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:6px}
+h1{font:700 28px "Barlow Semi Condensed","Barlow",sans-serif;margin:0}
+h2{font:700 19px "Barlow Semi Condensed","Barlow",sans-serif;margin:0 0 8px}
+.back{margin-left:auto;color:var(--ink);font-weight:600}
+p.lead{color:var(--muted);margin:0 0 16px}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:16px 18px;margin-bottom:16px}
+.btn{border:1px solid var(--line);background:var(--panel);border-radius:6px;padding:9px 16px;font-weight:600;cursor:pointer}
+.btn:hover{background:var(--panel2)}.btn.primary{background:var(--yellow);border-color:var(--yellow);color:#1D2733}
+.btn.danger{color:var(--red)}.btn:disabled{opacity:.55;cursor:default}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.link{display:flex;gap:8px;margin:10px 0 6px}
+.link input{flex:1;min-width:0;border:2px solid var(--yellow);border-radius:6px;padding:9px 10px;background:var(--yellow-soft);font-family:ui-monospace,Menlo,monospace;font-size:13px}
+.muted{color:var(--muted)}.small{font-size:14px}
+.warn{background:var(--yellow-soft);border:1px solid var(--yellow);border-radius:8px;padding:10px 12px;font-size:14px;margin-top:8px}
+ol{margin:6px 0 0;padding-left:22px}ol li{margin:4px 0}
+.st{display:inline-block;font-size:13px;font-weight:700;padding:2px 10px;border-radius:10px;border:1px solid var(--line);background:var(--panel2);color:var(--muted)}
+.st.on{background:var(--green-soft);border-color:var(--green);color:var(--green)}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}@media(max-width:640px){.grid{grid-template-columns:1fr}}
+#toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:var(--ink);color:var(--panel);padding:10px 16px;border-radius:6px;font-weight:600;display:none;z-index:9}
+</style></head><body>
+<main id="app">
+  <div class="top"><h1>Connect Claude or Grok</h1><a class="back" href="./">← Back to the Job Tracker</a></div>
+  <p class="lead">Loading…</p>
+</main>
+<div id="toast" role="status"></div>
+<script>
+(async () => {
+  const $ = (s) => document.querySelector(s);
+  const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  const toast = (m) => { const t = $("#toast"); t.textContent = m; t.style.display = "block"; clearTimeout(toast.h); toast.h = setTimeout(() => (t.style.display = "none"), 3500); };
+  const when = (s) => s ? new Date(s).toLocaleString("en-US", { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" }) : "";
+  await window.claude.use("db");
+  const hub = window.jtHub, sb = window.jtSupabase, CFG = window.JT_CONFIG;
+  const ROLE = { admin: "Admin", project_manager: "Project manager", field_supervisor: "Field supervisor", accounting: "Accounting" };
+  const CAN = {
+    admin: "see and change everything",
+    project_manager: "see everything, including costs, and update homes, tasks, notes and documents",
+    field_supervisor: "see homes, tasks and documents (not costs or financial files) and update tasks, notes and documents",
+    accounting: "see everything, including costs, and add financial documents. Homes stay read-only",
+  };
+  async function api(method) {
+    const { data } = await sb.auth.getSession();
+    const r = await fetch(CFG.url + "/functions/v1/jt-mcp/link", { method, headers: { Authorization: "Bearer " + (data.session && data.session.access_token), apikey: CFG.anon } });
+    const j = await r.json().catch(() => ({}));
+    if (!r.ok) throw new Error(j.message || "Couldn't reach the server");
+    return j;
+  }
+  let st = null, fresh = "";
+  async function load() { st = await api("GET"); render(); }
+  function render() {
+    $("#app").innerHTML = `
+      <div class="top"><h1>Connect Claude or Grok</h1><a class="back" href="./">← Back to the Job Tracker</a></div>
+      <p class="lead">Your private connector link lets Claude or Grok read and update the Job Tracker <b>as you</b>, ${esc(hub.me.name)} (${ROLE[hub.role] || hub.role}).
+        Through it, the AI can ${CAN[hub.role] || "use the tracker"}. Everything it changes is signed with your name.</p>
+      <section class="panel">
+        <h2>Your link <span class="st ${st.has_link ? "on" : ""}">${st.has_link ? "On" : "Not made yet"}</span></h2>
+        ${st.has_link ? `<p class="small muted">Made ${when(st.created_at)}${st.last_used_at ? ` · last used ${when(st.last_used_at)}` : " · not used yet"}.</p>` : ""}
+        ${fresh ? `<div class="link"><input id="lnk" readonly value="${esc(fresh)}" aria-label="Your connector link"><button class="btn primary" id="copy">Copy</button></div>
+          <div class="warn"><b>This is the only time the link is shown.</b> Copy it into Claude or Grok now. Treat it like a password: anyone who has it can use the tracker as you. Don't email or text it, and don't post it anywhere.</div>`
+        : `<p class="small">${st.has_link ? "For security the link isn't shown again. If you need it on another app or device, make a new one: the old one stops working, so update it anywhere you'd added it." : "Make your link, then add it to Claude or Grok using the steps below."}</p>`}
+        <div class="row" style="margin-top:12px">
+          <button class="btn ${st.has_link ? "" : "primary"}" id="make">${st.has_link ? "Make a new link (turns off the old one)" : "Make my link"}</button>
+          ${st.has_link ? `<button class="btn danger" id="off">Turn off my link</button>` : ""}
+        </div>
+      </section>
+      <div class="grid">
+        <section class="panel"><h2>Add it to Claude</h2><ol class="small">
+          <li>In Claude (claude.ai or the desktop app) open <b>Settings → Connectors</b>.</li>
+          <li>Choose <b>Add custom connector</b>.</li>
+          <li>Name it <b>Bison Job Tracker</b> and paste your link as the URL. No other settings are needed.</li>
+          <li>In a chat, turn on <b>Bison Job Tracker</b> from the tools menu and ask something like "What's left on 185 Northside?"</li></ol>
+          <p class="small muted">On a Team or Enterprise plan, an owner may need to allow custom connectors first.</p></section>
+        <section class="panel"><h2>Add it to Grok</h2><ol class="small">
+          <li>Go to <b>grok.com/connectors</b>.</li>
+          <li>Choose <b>New Connector → Custom</b>.</li>
+          <li>Paste your link as the server URL and save.</li>
+          <li>Ask Grok about a home, e.g. "Which homes are waiting on a septic final?"</li></ol></section>
+      </div>
+      <section class="panel small"><h2>What it can do</h2>
+        Look up homes, tasks, inspections, notes, documents, contacts and the team. Check off tasks and record inspection results (with the same rules as the app: a main task needs its sub-tasks done first).
+        Add notes, to-dos and documents, including files straight from an email in the Bison Gmail. It can't delete anything.
+        <p class="muted" style="margin:8px 0 0">If someone's sign-in is turned off on the People page, their link stops working too.</p></section>`;
+    $("#make").onclick = async () => {
+      if (st.has_link && !confirm("Make a new link? Your old link stops working right away, so you'll need to update it in Claude or Grok.")) return;
+      $("#make").disabled = true;
+      try { fresh = (await api("POST")).url; st = await api("GET"); render(); toast("Link made. Copy it now."); }
+      catch (e) { toast(e.message); $("#make").disabled = false; }
+    };
+    if ($("#off")) $("#off").onclick = async () => {
+      if (!confirm("Turn off your link? Claude or Grok will lose access until you make a new one.")) return;
+      try { await api("DELETE"); fresh = ""; await load(); toast("Link turned off"); } catch (e) { toast(e.message); }
+    };
+    if ($("#copy")) $("#copy").onclick = async () => {
+      const i = $("#lnk"); i.select();
+      try { await navigator.clipboard.writeText(i.value); toast("Copied"); } catch { document.execCommand("copy"); toast("Copied"); }
+    };
+  }
+  try { await load(); } catch (e) { $("#app").querySelector(".lead").textContent = "Couldn't load: " + e.message; }
+})();
+</script>
+</body></html>

@@ -128,5 +128,7 @@ jobs:
       - uses: actions/upload-pages-artifact@v3
         with:
           path: site
+      # GitHub sometimes can't see a just-uploaded site bundle yet ("Found 0 artifacts"); a short wait avoids that.
+      - run: sleep 20
       - id: deploy
         uses: actions/deploy-pages@v4

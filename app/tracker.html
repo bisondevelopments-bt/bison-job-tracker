@@ -422,13 +422,13 @@ dialog{max-height:92vh;overflow:auto}
 .bnew input{flex:1;min-width:0;border:0;background:none;padding:6px 0;font-size:15px;color:var(--ink)}
 .bnew input:focus{outline:0}.bnew:focus-within{border-color:var(--yellow);border-style:solid}
 .blist{list-style:none;margin:0;padding:0;max-height:260px;overflow:auto}
-.blist li{display:flex;align-items:center;gap:8px;border-top:1px solid var(--line);min-height:34px}
+.blist li{display:flex;align-items:flex-start;gap:8px;border-top:1px solid var(--line);min-height:34px}.blist li>.bmeta,.blist li>button{margin-top:7px}
 .blist li:first-child{border-top:0}
-.bntext{flex:1;min-width:0;border:0;background:none;padding:6px 0;font-size:15px;color:var(--ink);text-overflow:ellipsis}
+.bntext{flex:1;min-width:0;border:0;background:none;padding:6px 0;font:inherit;font-size:15px;line-height:1.4;color:var(--ink);resize:none;overflow:hidden;white-space:pre-wrap;overflow-wrap:anywhere;field-sizing:content}
 .bntext:focus{outline:0;box-shadow:inset 0 -2px 0 var(--yellow)}
 .bmeta{font-size:12px;color:var(--muted);white-space:nowrap}
 .tnote{padding-right:26px}
-.tnlink{all:unset;flex:1;min-width:0;cursor:pointer;font-size:15px;padding:6px 0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tnlink{all:unset;flex:1;min-width:0;cursor:pointer;font-size:15px;line-height:1.4;padding:6px 0;white-space:normal;overflow-wrap:anywhere}
 .tnlink b{font-weight:600;color:var(--blue);margin-right:4px}
 .tnlink:hover{text-decoration:underline}.tnlink:focus-visible{outline:3px solid var(--yellow);outline-offset:2px}
 .bx{border:0;background:none;color:var(--muted);font-size:17px;line-height:1;padding:0 4px;border-radius:4px;opacity:.5}
@@ -2597,6 +2597,13 @@ function cyclePermit(id){
 }
 
 /* ===== Notes: separate sticky notes for one home, each edited in place ===== */
+/* Notes wrap to show the whole note: size each note box to its text (browsers without CSS field-sizing) */
+(function(){if(window.CSS&&CSS.supports&&CSS.supports("field-sizing","content"))return;
+  const fit=el=>{el.style.height="auto";el.style.height=el.scrollHeight+"px"};
+  const all=()=>document.querySelectorAll("textarea.bntext").forEach(fit);
+  new MutationObserver(all).observe(document.documentElement,{childList:true,subtree:true});
+  document.addEventListener("input",e=>{if(e.target.classList&&e.target.classList.contains("bntext"))fit(e.target)});
+  window.addEventListener("resize",all)})();
 function boardList(j){return Object.entries(j.board||{}).filter(([,n])=>n).sort((a,b)=>(b[1].at||0)-(a[1].at||0))}
 let noteDraft="",showOlderNotes=null;
 // notes written on tasks: the side-panel Notes box and the notes added with Ordered / Scheduled / etc.
@@ -2617,7 +2624,7 @@ function boardHTML(j){
    ${list.length?`<ul class="blist">${list.map(n=>n.fromTask?`<li class="tnote">
      <button type="button" class="tnlink" data-open="${j.id}|${n.task.key}" title="Open ${esc(n.label)}"><b>${esc(n.label)}</b> ${esc(n.txt)}</button>
      <span class="bmeta">${esc(n.by||"")}${n.by&&n.on?" · ":""}${n.on?fmt(n.on):""}</span></li>`:`<li>
-     <input class="bntext" id="bn-${n.id}" data-bn="${n.id}" data-keep="bn-${n.id}" value="${esc(n.txt)}" title="${esc(n.txt)}" aria-label="Note">
+     <textarea class="bntext" rows="1" id="bn-${n.id}" data-bn="${n.id}" data-keep="bn-${n.id}" aria-label="Note">${esc(n.txt)}</textarea>
      <span class="bmeta" title="${esc((n.by||"Someone")+", "+fmt(n.on)+(n.edited&&n.edited!==n.on?", edited "+fmt(n.edited):""))}">${esc(n.by||"")}${n.by?" · ":""}${fmt(n.on)}</span>
      <button type="button" class="bpin ${n.pin?"on":""}" data-bpin="${n.id}" aria-pressed="${!!n.pin}" title="${n.pin?"Unpin":"Pin to the top"}">${n.pin?"Pinned":"Pin"}</button>
      <button type="button" class="bx" data-brm="${n.id}" aria-label="Delete note" title="Delete note">×</button></li>`).join("")}</ul>`:""}

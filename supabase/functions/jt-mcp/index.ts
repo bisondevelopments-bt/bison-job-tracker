@@ -289,13 +289,14 @@ const TOOLS: Tool[] = [
   },
   {
     name: "update_task", title: "Update a task",
-    description: "Update one task or sub-task on a home, the same way tapping it in the app does: check it off, mark N/A, set start/end dates, record an inspection result, or mark an inspection requested/scheduled. A main task with sub-tasks can only be checked off once every sub-task is done. Use get_home or find_tasks for task keys.",
+    description: "Update one task or sub-task on a home, the same way tapping it in the app does: check it off, mark N/A, set start/end dates, set a material's estimated delivery date, record an inspection result, or mark an inspection requested/scheduled. A main task with sub-tasks can only be checked off once every sub-task is done. Use get_home or find_tasks for task keys.",
     inputSchema: { type: "object", required: ["home", "task"], properties: {
       home: str("The home's name, address or id."),
       task: str("The task key from get_home (best), or its exact name. For a sub-task by name use 'Task > Sub-task'."),
       done: { type: "boolean", description: "true = check it off, false = un-check." },
       na: { type: "boolean", description: "true = not applicable to this home, false = applies again." },
       start: str("Start date YYYY-MM-DD ('' clears)."), end: str("End date YYYY-MM-DD ('' clears)."),
+      delivery: str("Estimated delivery date YYYY-MM-DD for a material task such as Lumber Package ('' clears). A task not yet marked Ordered is marked Ordered, the same as entering an ETA in the app."),
       inspection: { type: "string", enum: ["pass", "fail", "clear"], description: "Inspection result (inspection sub-tasks only)." },
       inspection_schedule: str("'requested' (send to ops to schedule), a date YYYY-MM-DD (scheduled for that day), or 'clear'."),
       note: str("Optional note to add to the home's notes about this change.") } },
@@ -321,6 +322,15 @@ const TOOLS: Tool[] = [
       }
       if (a.na !== undefined) { set(it.key, { na: !!a.na }); did.push(a.na ? "marked N/A" : "N/A cleared"); }
       for (const f of ["start", "end"]) if (a[f] !== undefined) { if (!isDate(a[f])) fail(`${f} must be YYYY-MM-DD.`); set(it.key, { [f]: a[f] }); did.push(`${f} ${a[f] || "cleared"}`); }
+      if (a.delivery !== undefined) {
+        if (!(it.f || []).includes("ordered")) fail(`"${it.name}" isn't a material task; it has no delivery date.`);
+        if (!isDate(a.delivery)) fail("delivery must be YYYY-MM-DD.");
+        if (a.delivery && !(x.ordered && !x.drop && !x.subsup)) {
+          if (x.drop || x.subsup) fail(`"${it.name}" is already ${x.drop ? "on site" : "sub-supplied"}; no delivery date needed.`);
+          set(it.key, { ready: true, ordered: true, drop: false, subsup: false, ...(x.ready ? {} : { readyOn: today }) }); did.push("marked ordered");
+        }
+        set(it.key, { delivDate: a.delivery }); did.push(`estimated delivery ${a.delivery || "cleared"}`);
+      }
       if (a.inspection) {
         if (!isInsp) fail(`"${it.name}" isn't an inspection.`);
         const v = a.inspection === "clear" ? "" : a.inspection; set(it.key, { pf: v }); did.push(v ? `inspection ${v === "pass" ? "passed" : "failed"}` : "inspection result cleared");
@@ -333,7 +343,7 @@ const TOOLS: Tool[] = [
         else if (isDate(v)) { set(it.key, { isched: "sched", schedDate: v }); did.push(`inspection scheduled for ${v}`); }
         else fail("inspection_schedule must be 'requested', a date YYYY-MM-DD, or 'clear'.");
       }
-      if (!did.length) fail("Nothing to change. Give done, na, start, end, inspection or inspection_schedule.");
+      if (!did.length) fail("Nothing to change. Give done, na, start, end, delivery, inspection or inspection_schedule.");
       // the same follow-on rules as the app (setSub)
       const nowDone = isInsp ? (a.inspection ? a.inspection === "pass" : null) : (a.done !== undefined ? !!a.done : null);
       if (parent && nowDone === false && SCH.S(j, parent.key).done) { set(parent.key, { done: false, doneOn: "" }); did.push(`${parent.name} un-checked as completed`); }

@@ -1,4 +1,4 @@
-// Live check of the Job Tracker connector (read-only). Run by .github/workflows/connector-check.yml.
+// Live check (v2: more detail on email) of the Job Tracker connector (read-only). Run by .github/workflows/connector-check.yml.
 // It uses a temporary link for the office login that the workflow makes and then turns off again.
 // Output goes to stdout as JSON; the workflow encrypts it before it reaches the public log.
 import { ImapFlow } from "imapflow";
@@ -17,7 +17,7 @@ async function tool(name, args = {}) {
   const res = r.j && r.j.result, text = res ? (res.content || []).filter((c) => c.type === "text").map((c) => c.text).join("\n") : r.t;
   return { ms: Date.now() - t0, status: r.status, error: !res || !!res.isError, text, data: res && res.structuredContent, content: res && res.content };
 }
-const safe = async (k, f) => { try { out[k] = await f(); } catch (e) { out[k] = { crash: String(e && e.stack || e).slice(0, 600) }; } };
+const safe = async (k, f) => { try { out[k] = await f(); } catch (e) { out[k] = { crash: String(e && e.message || e).slice(0, 300), step: out._step, response: e && (e.responseText || e.response), code: e && (e.serverResponseCode || e.code), auth: e && e.authenticationFailed }; } };
 
 await safe("initialize", async () => { const r = await rpc("initialize", { protocolVersion: "2025-06-18", capabilities: {}, clientInfo: { name: "check", version: "1" } }); return { status: r.status, server: r.j?.result?.serverInfo, proto: r.j?.result?.protocolVersion, err: r.j?.error || (r.j ? undefined : r.t) }; });
 await safe("tools", async () => { const r = await rpc("tools/list", {}); return r.j?.result?.tools?.map((t) => t.name) || r.t; });
@@ -44,12 +44,13 @@ await safe("bad_link", async () => (await rpc("tools/list", {}, BASE + "/k/not-a
 // Email: find a recent message with a PDF in the Bison Gmail, then ask the connector about it by its Gmail id.
 await safe("email", async () => {
   const c = new ImapFlow({ host: "imap.gmail.com", port: 993, secure: true, auth: { user: process.env.GMAIL_USER, pass: process.env.GMAIL_APP_PASSWORD }, logger: false });
-  await c.connect();
+  out._step = "connect"; await c.connect();
+  out._step = "list"; out.mailboxes = (await c.list()).map((m) => m.path + (m.specialUse ? " " + m.specialUse : ""));
   let gid = null;
   try {
-    const lock = await c.getMailboxLock("[Gmail]/All Mail");
+    out._step = "open"; const all = (await c.list()).find((m) => m.specialUse === "\\All") ; const lock = await c.getMailboxLock(all ? all.path : "INBOX");
     try {
-      const uids = await c.search({ since: new Date(Date.now() - 20 * 86400000) }, { uid: true });
+      out._step = "search"; const uids = await c.search({ since: new Date(Date.now() - 20 * 86400000) }, { uid: true });
       for (const uid of (uids || []).slice(-60).reverse()) {
         const m = await c.fetchOne(String(uid), { bodyStructure: true, emailId: true }, { uid: true });
         const has = JSON.stringify(m.bodyStructure || {}).toLowerCase().includes("pdf");

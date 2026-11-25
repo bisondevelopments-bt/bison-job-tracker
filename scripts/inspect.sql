@@ -1,6 +1,7 @@
--- Read-only: connector request log (no links) and links. Results are encrypted before they reach the public log.
+-- Read-only: homes that have anything recorded on a vapor-barrier task. Results are encrypted before they reach the public log.
 select json_build_object(
- 'requests', (select json_agg(r order by r.id) from (select id, to_char(at at time zone 'America/Chicago','HH24:MI:SS') t, method, path, status, rpc, ua, accept, auth_header from public.connector_requests order by id desc limit 60) r),
- 'links', (select json_agg(json_build_object('who',p.name,'made',k.created_at,'used',k.last_used_at,'off',k.revoked_at)) from public.connector_keys k join public.people p on p.id=k.person_id)
+ 'homes', (select json_agg(json_build_object('home', j.name, 'stage', j.stage, 'opts', d.data->'opts', 'vb', (select json_object_agg(k, v) from jsonb_each(d.data->'state') as e(k, v) where k like '%vapor%')))
+   from public.jobs j join public.jt_job_details d on d.job_id = j.id where (d.data->'state')::text like '%vapor%'),
+ 'templates', (select json_agg(data) from public.jt_docs where coll = 'config' and id = 'templates')
 ) as report;
--- 201944
+-- vapor check

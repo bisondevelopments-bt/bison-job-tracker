@@ -422,6 +422,16 @@ create index if not exists connector_keys_person_idx on public.connector_keys (p
 alter table public.connector_keys enable row level security;
 revoke all on public.connector_keys from anon, authenticated;
 
+-- Connector request log for troubleshooting (no links, no content). Kept 14 days.
+create table if not exists public.connector_requests (
+  id bigint generated always as identity primary key,
+  at timestamptz not null default now(),
+  method text, path text, status int, rpc text, ua text, accept text, auth_header boolean
+);
+alter table public.connector_requests enable row level security;
+revoke all on public.connector_requests from anon, authenticated;
+delete from public.connector_requests where at < now() - interval '14 days';
+
 -- Upgrade from the first version, which called project managers 'pm'.
 alter table public.people drop constraint if exists people_role_check;
 update public.people set role = 'project_manager' where role = 'pm';

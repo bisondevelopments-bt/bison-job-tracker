@@ -520,7 +520,19 @@ async function linkRoute(req: Request, base: string) {
   return resp({ message: "Method not allowed" }, 405);
 }
 
+function logReq(req: Request, path: string, status: number, rpc = "") {
+  const masked = path.replace(/\/k\/[^/]+/, "/k/<link>");
+  sql`insert into public.connector_requests (method, path, status, rpc, ua, accept, auth_header)
+      values (${req.method}, ${masked.slice(0, 200)}, ${status}, ${rpc.slice(0, 200)}, ${(req.headers.get("user-agent") || "").slice(0, 200)}, ${(req.headers.get("accept") || "").slice(0, 120)}, ${!!req.headers.get("authorization")})`.catch(() => {});
+}
+
 Deno.serve(async (req) => {
+  const res = await route(req);
+  try { const u = new URL(req.url); logReq(req, u.pathname, res.status, (res.headers.get("x-rpc") || "")); } catch { /* logging never breaks a request */ }
+  return res;
+});
+
+async function route(req: Request): Promise<Response> {
   if (req.method === "OPTIONS") return new Response("ok", { headers: { ...cors, "Access-Control-Allow-Methods": "GET, POST, DELETE, OPTIONS", "Access-Control-Allow-Headers": cors["Access-Control-Allow-Headers"] + ", mcp-protocol-version, mcp-session-id" } });
   const url = new URL(req.url);
   const i = url.pathname.indexOf("/jt-mcp"), rest = i >= 0 ? url.pathname.slice(i + 7) : url.pathname;
@@ -536,16 +548,17 @@ Deno.serve(async (req) => {
     if (req.method !== "POST") return resp({ message: "Method not allowed" }, 405);
     let body: unknown;
     try { body = await req.json(); } catch { return resp({ jsonrpc: "2.0", id: null, error: { code: -32700, message: "Parse error" } }, 400); }
+    const rpcNames = (Array.isArray(body) ? body : [body]).map((x: any) => x && (x.method === "tools/call" ? "tools/call:" + (x.params && x.params.name) : x.method)).join(",");
     const ctx: Ctx = { me, today: todayCentral() };
     SCH.setToday(ctx.today);
     if (Array.isArray(body)) {
       const out = (await Promise.all(body.map((x) => handleRpc(x as Row, ctx)))).filter(Boolean);
-      return out.length ? resp(out) : new Response(null, { status: 202, headers: cors });
+      return out.length ? resp(out, 200, { "x-rpc": rpcNames }) : new Response(null, { status: 202, headers: { ...cors, "x-rpc": rpcNames } });
     }
     const out = await handleRpc(body as Row, ctx);
-    return out ? resp(out) : new Response(null, { status: 202, headers: cors });
+    return out ? resp(out, 200, { "x-rpc": rpcNames }) : new Response(null, { status: 202, headers: { ...cors, "x-rpc": rpcNames } });
   } catch (e) {
     console.error(e);
     return resp({ jsonrpc: "2.0", id: null, error: { code: -32603, message: "Server error" } }, 500);
   }
-});
+}

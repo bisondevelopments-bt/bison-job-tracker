@@ -33,7 +33,7 @@ jobs:
                   code=$(jq -n --arg q "$1" '{query:$q}' | curl -sS -o /tmp/q.out -w '%{http_code}' -X POST "https://api.supabase.com/v1/projects/$ref/database/query" \
                     -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" -H "Content-Type: application/json" --data-binary @-)
                   [ "$code" = 201 ] || [ "$code" = 200 ] && return 0
-                  echo "database query returned $code: $(head -c 300 /tmp/q.out)"; sleep 5
+                  echo "database query returned $code: $(head -c 300 /tmp/q.out)" >&2; sleep 5
                 done; return 1; }
           tok=$(openssl rand -base64 32 | tr '+/' '-_' | tr -d '=\n')
           echo "::add-mask::$tok"

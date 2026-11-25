@@ -205,8 +205,11 @@ dialog::backdrop{background:rgba(20,26,32,.5)}
 .matbtn i{width:9px;height:9px;border-radius:50%;background:var(--line);flex:none}
 .matbtn.none{color:var(--muted);font-weight:500;background:var(--panel2);border-color:var(--line)}
 .matbtn.none i{background:var(--line)}
-.matbtn.ready{border-color:var(--yellow);background:var(--yellow-soft)}.matbtn.ready i{background:var(--yellow)}
+.matbtn.ready:not(.sch){border-color:var(--yellow);background:var(--yellow);color:#1D2733}.matbtn.ready:not(.sch) i{background:#1D2733}.matbtn.ready:not(.sch):hover{background:var(--yellow);filter:brightness(.95)}
 .matbtn.ordered{border-color:var(--yellow);background:var(--yellow);color:#1D2733}.matbtn.ordered i{background:#1D2733}.matbtn.ordered:hover{background:var(--yellow);filter:brightness(.95)}
+.matbtn.supplied,.matbtn.drop{border-color:var(--green)!important;background:var(--green)!important;color:#fff!important}.matbtn.supplied i,.matbtn.drop i{background:#fff!important}.matbtn.supplied:hover,.matbtn.drop:hover{background:var(--green);filter:brightness(.95)}
+.subsupbtn{color:var(--green);border-color:var(--green)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .matbtn.supplied,:root:not([data-theme="light"]) .matbtn.drop{color:#0E1317!important}:root:not([data-theme="light"]) .matbtn.supplied i,:root:not([data-theme="light"]) .matbtn.drop i{background:#0E1317!important}}:root[data-theme="dark"] .matbtn.supplied,:root[data-theme="dark"] .matbtn.drop{color:#0E1317!important}:root[data-theme="dark"] .matbtn.supplied i,:root[data-theme="dark"] .matbtn.drop i{background:#0E1317!important}
 .matbtn.drop{border-color:var(--green);background:var(--green-soft);color:var(--green)}.matbtn.drop i{background:var(--green)}
 .schcell{display:grid;gap:3px;justify-items:start}
 .schcell:has(.echip){display:flex;flex-wrap:nowrap;align-items:center;gap:8px}.schcell:has(.echip) small{white-space:nowrap}
@@ -552,6 +555,28 @@ dialog#mailDlg{width:min(600px,94vw);box-sizing:border-box}.maildlg{width:auto;m
 .careas summary{cursor:pointer;font:700 18px var(--head);padding:6px 0}
 /* area contacts */
 .areablock{margin-bottom:22px}
+.phtop{display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px;margin-bottom:16px}
+.phadd{cursor:pointer}
+.phdrop{border:2px dashed var(--line);border-radius:8px;padding:9px 16px;color:var(--muted);font-size:14px}.phdrop.over{border-color:var(--yellow);background:var(--yellow-soft)}
+@media (hover:none){.phdrop{display:none}}
+.phday{margin-bottom:18px}.phday h3{font-size:16px;margin-bottom:8px}
+.phgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
+.phthumb{all:unset;cursor:pointer;position:relative;aspect-ratio:1;border-radius:8px;overflow:hidden;background:var(--panel2);border:1px solid var(--line)}
+.phthumb img{width:100%;height:100%;object-fit:cover;display:block}
+.phthumb span{position:absolute;left:0;right:0;bottom:0;padding:14px 8px 6px;font-size:12.5px;color:#fff;background:linear-gradient(transparent,rgba(0,0,0,.65));white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.phthumb:hover img{filter:brightness(.92)}.phthumb:focus-visible{outline:3px solid var(--yellow);outline-offset:2px}
+@media (max-width:560px){.phgrid{grid-template-columns:repeat(3,1fr);gap:4px}}
+dialog.phdlg{width:min(1100px,96vw);max-height:94vh;padding:0;overflow:hidden;background:#111;color:#eee}
+dialog.phdlg[open]{display:flex;flex-direction:column}
+.phhead,.phfoot{display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--panel);color:var(--ink)}
+.phhead span{flex:1}.phhead a.btn{text-decoration:none;color:inherit}
+.phbig{position:relative;flex:1;min-height:0;display:flex;align-items:center;justify-content:center;background:#111}
+.phbig img{max-width:100%;max-height:calc(94vh - 120px);object-fit:contain;display:block}
+.phnav{position:absolute;top:50%;transform:translateY(-50%);width:44px;height:64px;border:0;border-radius:8px;background:rgba(0,0,0,.45);color:#fff;font-size:34px;line-height:1;cursor:pointer}
+.phnav[data-pha=prev]{left:8px}.phnav[data-pha=next]{right:8px}.phnav:disabled{opacity:0;pointer-events:none}
+.phfoot input{flex:1;min-width:0;border:1px solid var(--line);border-radius:6px;padding:7px 10px;background:var(--panel);color:var(--ink);font-size:15px}
+.danger-text{color:var(--red)}
+
 .archbar{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px;margin:10px 0 0;padding:8px 12px;border-radius:8px;background:var(--panel2);border:1px solid var(--line);font-size:14px}
 .archbar.done{background:var(--yellow-soft,#FFF4CC);border-color:var(--yellow)}.archbar span{flex:1 1 280px}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .archbar.done{background:rgba(245,184,0,.12)}}
@@ -808,6 +833,18 @@ table td:nth-child(n+2),table th:nth-child(n+2){border-left:1px solid var(--line
 .ttable tr:has(+ tr.subtr) td{border-bottom-color:transparent!important}
 .ttable tr.subtr:has(+ tr:not(.subtr)) td{border-bottom:1px solid var(--line)!important}
 .ttable tr.subtr+tr:not(.subtr) td{border-top:0}
+/* inspections get an orange outline so they stand out from regular tasks */
+:root{--insp:#E8833A}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--insp:#F29A55}}:root[data-theme="dark"]{--insp:#F29A55}
+/* only the check-box and name cells get a light orange shade */
+:root{--insp-soft:#FDEBDD;--insp-dark:#B4540F}@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--insp-soft:#3A2A1E;--insp-dark:#F29A55}}:root[data-theme="dark"]{--insp-soft:#3A2A1E;--insp-dark:#F29A55}
+/* drawn with inset shadows, not borders, so the next row's border can't hide the bottom line */
+.ttable tr.insprow>td:first-child{background:var(--insp-soft)!important;box-shadow:inset 2px 2px 0 var(--insp-dark),inset 0 -2px 0 var(--insp-dark)}
+.ttable tr.insprow>td:nth-child(2){background:var(--insp-soft)!important;box-shadow:inset -2px 2px 0 var(--insp-dark),inset 0 -2px 0 var(--insp-dark)}
+@media (max-width:640px){.ttable tr.insprow>td:nth-child(-n+2){border:0!important;background:none!important;box-shadow:none!important}.ttable tr.insprow>td.tn{background:var(--insp-soft)!important;border:2px solid var(--insp-dark)!important;border-radius:6px;padding:3px 8px 3px 30px!important}.ttable tr.insprow .tn::before{display:none}}
+.panel.inspanel{border:2px solid var(--insp)}
+.oqrow:has(.oqtag.insp){box-shadow:inset 3px 0 0 var(--insp)}
+
 @media (max-width:640px){
  .ttable tr.subtr:has(+ tr:not(.subtr)) td,.ttable tr:has(+ tr.subtr) td{border-bottom:0!important}
  .ttable tr.subtr:has(+ tr:not(.subtr)){border-bottom:1px solid var(--line)}
@@ -1105,29 +1142,29 @@ const SCHEDULE=[
   ["Install Footers",["done"],["Porch Post Piers",INSP]],
   ["Install Block",["done"],["Seal Block"],{foundation:"crawl",homeType:"site"}],
   ["Vapor Barrier",ORD,[],{foundation:"crawl",homeType:"site"}],
-  ["Plumbing Under-Slab Rough-in",DAT,[INSP],{foundation:"slab",homeType:"site"}],
+  ["Plumbing Under-Slab Rough-in",DAT,["Under-slab plumbing photos",INSP],{foundation:"slab",homeType:"site"}],
   ["Pour Slab",["ready","ordered","drop","start","end","done"],["Gravel","Vapor Barrier"],{foundation:"slab",homeType:"site"}],
   ["Install Septic",DAT,[],{sewer:"septic",homeType:"site"}],["Install Sewer Line",DAT,[],{sewer:"sewer",homeType:"site"}]]},
  {id:"p3",home:"site",name:"Phase 3: Framing & Exterior",dates:true,tasks:[
-  ["Lumber Package",ORD],["Deck Lumber Package",ORD,[],{porch:["wood","both"]}],["Window Package/Doors",ORD],["Roofing",DAT],
+  ["Lumber Package",ORD],["Deck Lumber Package",ORD,[],{porch:["wood","both"]}],["Window Package/Doors",ORD],["Framing",DAT,["Framing rough-in photos",INSP]],["Roofing",DAT],
   ["Install Decks",DAT,["Decorative Posts"],{porch:["wood","both"]}],
   ["Pour Concrete Porches",["ready","ordered","drop","start","end","done"],[],{porch:["concrete","both"]}],
   ["Siding",DAT],["Gutters",DAT],
   ["Water Line",DAT],
-  ["HVAC Rough in",DAT,[INSP]],["Plumbing Rough in",DAT,["Tubs",INSP]],["Electrical Rough in",DAT,[INSP]],
-  ["Insulation",DAT,["Moisture Barrier"]],["Gas Rough in",["na","ordered","pf","done"]],
+  ["HVAC Rough in",DAT,["HVAC rough-in photos",INSP]],["Plumbing Rough in",DAT,["Tubs","Install roofing boots","Plumbing rough-in photos",INSP]],["Electrical Rough in",DAT,["Electrical rough-in photos",INSP]],
+  ["Insulation",DAT,["Moisture Barrier"]],["Gas Rough in",["na","ordered","pf","done"],["Gas rough-in photos"]],
   ["Additional Concrete",["start","end","done"],["HVAC Pads",["Sidewalks",["done"],{extras:"sidewalk"}],["Concrete Drive",["done"],{extras:"drive"}]]]]},
  {id:"p4",home:"site",name:"Phase 4: Interior",dates:true,tasks:[
   ["Drywall",ORD],["Door/Trim",ORD],["Floors",ORD],["Paint Rough in",["done"]],["Cabinets",ORD],
   ["Tile",DAT,[["Tile Shower",["done"],{extras:"tileShower"}],["Tile Bathroom Floors",["done"],{extras:"tileFloor"}],["Tile Backsplash",["done"],{extras:"tileBacksplash"}]],{extras:["tileShower","tileFloor","tileBacksplash"]}],
   ["Fireplace",["ready","ordered","drop","start","end","done"],[],{extras:"fireplace"}],
   ["Electrical Trim out",["done"]],["Electrical State Final",["ready","ordered","pf","done"]],["Insulation Trimout",["done"]],
-  ["HVAC Trim out",["done"]],["HVAC State Final",["ready","ordered","pf","done"]],["Plumbing Trim out",DAT],["Paint Trim Out",DAT],
+  ["HVAC Trim out",["done"]],["HVAC State Final",["done"],[INSP]],["Plumbing Trim out",DAT],["Paint Trim Out",DAT],
   ["Punchout",DAT,["Mailbox","Closet Shelves","Transition Strips","Toiletries","Mirrors","Door Knobs/Stops","Exterior Door Hinges","Confirm all utilities"]],
   ["Appliances",ORD],["Garage Door",["done"]]]},
  {id:"p5",home:"site",name:"Phase 5: Sale Prep",dates:false,tasks:[
   ["Final Clean",DAT],["Exterior Final",DAT,["Final Grade","Final Driveway","Landscaping",["Shrubs",["done"],{extras:"shrubs"}],"Seed and Straw"]],
-  ["Certificate of Occupancy",["done"]],
+  ["Certificate of Occupancy",["done"],[INSP]],
   ["Close Out",["done"],["File NOC","Pick up Dumpster","Pick up Port-a-john","Order Termite Treatment","Pick up ConEx"]]]}
  /* ===== Manufactured homes: phases 3-5 (phases 1-2 are shared) ===== */
  ,{id:"m3",home:"mfg",name:"Phase 3: Site Prep",dates:true,tasks:[
@@ -1295,7 +1332,7 @@ const TPL_DEF={days:120,preDays:7,pipeTodos:["Plans finalized","Selections made"
 let tplStr="",TPL=JSON.parse(JSON.stringify(TPL_DEF));
 function tplParse(str){let o={};try{o=str?JSON.parse(str):{}}catch(e){}return{...JSON.parse(JSON.stringify(TPL_DEF)),...o}}
 // tasks with nothing to order: no "To order" pill (Settings can still turn it on per task)
-const defNoMat=t=>/^(install footers|mark home location|site prep\/excavation|(install )?vapor barrier|exterior final)$/i.test(String(t.name||"").trim());
+const defNoMat=t=>/^(install footers|mark home location|site prep\/excavation|(install )?vapor barrier|exterior final|hvac state final|certificate of occupancy|framing)$/i.test(String(t.name||"").trim());
 // one phase's tasks with the template applied. all=true keeps removed tasks (Settings shows them greyed out)
 function tplPhase(T,p,all){
   const subsOf=(t)=>t.subs.map((s,i)=>{const o=T.s[s.key]||{};return{...s,name:o.name||s.name,ord:o.ord??i*10,hide:!!o.hide}})
@@ -1463,7 +1500,18 @@ function setSub(job,key,f,v){
 }
 
 /* ===== Rendering ===== */
+/* Touch screens (iPad especially): the date picker is attached to its input, and iOS fills in and "changes" the date the
+   moment the picker opens. Saving then re-drawing the page replaced the input and closed the picker before a day could be
+   tapped. So while a date picker is open on a touch device, saves and re-draws wait until it closes. */
+const TOUCH=(navigator.maxTouchPoints||0)>0||matchMedia("(any-pointer:coarse)").matches;
+let renderHeld=false;
+const datePickerOpen=()=>{const a=document.activeElement;return TOUCH&&!!a&&a.tagName==="INPUT"&&a.type==="date"};
+document.addEventListener("change",e=>{const t=e.target;if(TOUCH&&t.tagName==="INPUT"&&t.type==="date"&&!t.__replay&&document.activeElement===t){e.stopImmediatePropagation();t.__dirty=true}},true);
+document.addEventListener("focusout",e=>{const t=e.target;if(!(t&&t.tagName==="INPUT"&&t.type==="date"))return;
+  setTimeout(()=>{if(t.__dirty){t.__dirty=false;t.__replay=true;t.dispatchEvent(new Event("change",{bubbles:true}));t.__replay=false}
+    if(renderHeld&&!datePickerOpen()){renderHeld=false;render()}},0)},true);
 function render(){
+  if(datePickerOpen()){renderHeld=true;return}
   const a=document.activeElement,keep=a&&a.dataset&&a.dataset.keep?{k:a.dataset.keep,v:a.value,s:(()=>{try{return[a.selectionStart,a.selectionEnd]}catch(_){return null}})()}:null;
   const sc=$("main").scrollTop,tb=$(".todobox"),tsc=tb?tb.scrollTop:0;
   renderSide();renderMain();refreshDrawer();scrollOrders();packHome();if(typeof ccOpen==="function"&&ccOpen()&&!ccDraft)ccPaint();
@@ -1659,7 +1707,7 @@ function homeHTML(){
     else if(inspStage(y)===1)insp.push({j,t,s,tag:"To schedule",cls:"wait",d:"8"})})}));
   insp.sort((a,b)=>a.d.localeCompare(b.d));
   const o=opsItems(),oc=k=>k==="check"?o.check.reduce((a,c)=>a+c.left.length,0):o[k].length;
-  const mc=[0,0,0,0];act.forEach(j=>allItems(j).forEach(t=>{if(!isNA(j,t)&&!isDone(j,t))mc[matStage(S(j,t.key))]++}));
+  const mc=[0,0,0,0,0];act.forEach(j=>allItems(j).forEach(t=>{if(!isNA(j,t)&&!isDone(j,t))mc[matStage(S(j,t.key))]++}));
   const ph={};act.forEach(j=>{const s=stats(j),n=s.next?phaseOf(s.next.key).name.replace(/^Phase \d+: /,""):"Complete";ph[n]=(ph[n]||0)+1});
   const urgent=act.flatMap(needsToday).sort((a,b)=>a.rank-b.rank);
   const short=n=>esc(String(n||"").replace(/,.*$/,""));
@@ -1748,7 +1796,7 @@ function headerMeta(j){
 
 /* ===== Archive: finished homes leave the sidebar, Home, Ops queue and counts, but stay readable from Menu > Archived homes ===== */
 const canArchive=()=>!isSup(me)&&!isExc(me);
-const homeDone=(j,s)=>(s||stats(j)).pct>=100||!!S(j,"p5-certificate-of-occupancy").done;
+const homeDone=(j,s)=>(s||stats(j)).pct>=100||!!S(j,"p5-certificate-of-occupancy").done||S(j,"p5-certificate-of-occupancy--inspection").pf==="pass";
 function archBanner(j,s){
   if(j.archived)return`<div class="archbar"><span><b>Archived</b>${j.archivedOn?" on "+fmt(j.archivedOn):""}${j.archivedBy?" by "+esc(j.archivedBy):""}. It's off everyone's lists; nothing here was deleted.</span>${canArchive()?`<button type="button" class="btn sm" data-arch="restore">Restore home</button>`:""}</div>`;
   if(canArchive()&&homeDone(j,s))return`<div class="archbar done"><span><b>This home is finished.</b> Archive it to take it off your screens. You can still open it any time.</span><button type="button" class="btn sm primary" data-arch="archive">Archive home</button></div>`;
@@ -1776,10 +1824,10 @@ function jobHTML(){
   const j=jobs.find(x=>x.id===view.jobId),s=stats(j);
   let h=`<div class="top"><div class="toprow">${renaming===j.id?`<input id="nameEdit" class="nameedit" data-keep="home-name" aria-label="Home name" value="${esc(j.name)}">`:`<h2><button type="button" class="namebtn" data-rename="${j.id}" title="Click to rename">${esc(j.name)}<span class="pen" aria-hidden="true">Edit</span></button></h2>`}<div class="topright">${dueChip(j)}${statusDisplay(j)}</div></div>
   ${headerMeta(j)}${archBanner(j,s)}
-  <div class="tabs">${["overview","list","timeline","subs","docs"].map(t=>`<button data-tab="${t}" class="${view.tab===t?"on":""}">${{overview:"Overview",list:"Tasks",board:"Board",timeline:"Timeline",subs:"Subs"+(subList(j).length?` (${subList(j).length})`:""),docs:"Docs"+(docList(j).length?` (${docList(j).length})`:"")}[t]}</button>`).join("")}
+  <div class="tabs">${["overview","list","timeline","subs","docs","photos"].map(t=>`<button data-tab="${t}" class="${view.tab===t?"on":""}">${{overview:"Overview",list:"Tasks",board:"Board",timeline:"Timeline",subs:"Subs"+(subList(j).length?` (${subList(j).length})`:""),docs:"Docs"+(docList(j).length?` (${docList(j).length})`:""),photos:"Photos"+(photoList(j).length?` (${photoList(j).length})`:"")}[t]}</button>`).join("")}
   <div class="right">${view.tab==="list"?`<label class="toggle"><input type="checkbox" id="hideDone" ${hideDone?"checked":""}> Hide done</label>`:""}<button class="btn" data-act="editjob">Edit home</button></div></div></div><div class="body">`;
   if(view.tab==="board")view.tab="list";
-  h+=view.tab==="list"?listHTML(j):view.tab==="subs"?subsHTML(j):view.tab==="docs"?docsHTML(j):view.tab==="overview"?overviewTabHTML(j):timelineHTML(j);
+  h+=view.tab==="photos"?photosHTML(j):view.tab==="list"?listHTML(j):view.tab==="subs"?subsHTML(j):view.tab==="docs"?docsHTML(j):view.tab==="overview"?overviewTabHTML(j):timelineHTML(j);
   return h+`</div>`;
 }
 
@@ -1787,26 +1835,26 @@ function jobHTML(){
 
 // Material toggle: grey "Ready to order" (not requested) -> yellow Ready to order (sent to operations) -> Ordered -> On site -> back to grey
 // tasks that never need materials ordered: no Ready to order pill
-const MAT_STEPS=[["","Ready to order"],["ready","Ready to order"],["ordered","Ordered"],["drop","On site"]];
+const MAT_STEPS=[["","Ready to order"],["ready","Ready to order"],["ordered","Ordered"],["drop","On site"],["supplied","Supplied"]];   // 4 = the sub brings the material
 // the task list's Material column shows the short form so the Task column gets the room
 const pillShort=l=>l.replace(/^Ready to /,"To ").replace(/^Inspection scheduled$/,"Scheduled");
-function matStage(x){return x.drop?3:x.ordered?2:x.ready?1:0}
+function matStage(x){return x.subsup?4:x.drop?3:x.ordered?2:x.ready?1:0}
 function matBtn(j,t){
-  const i=matStage(S(j,t.key)),[c,l]=MAT_STEPS[i],tip=["Tap to send to operations to order","Tap when ordered","Tap when it's on site","Tap to clear"][i];
+  const i=matStage(S(j,t.key)),[c,l]=MAT_STEPS[i],tip=["Tap to send to operations to order","Tap when ordered","Tap when it's on site","Tap to clear","Sub-supplied. Tap to clear"][i];
   return`<button type="button" class="matbtn ${c||"none"}" data-mat="${j.id}|${t.key}" title="${tip}" aria-label="Material for ${esc(t.name)}: ${i?l:"not requested"}. ${tip}"><i></i>${pillShort(l)}</button>`;
 }
 /* two dates side by side in the pop-up */
 function cycleMat(ref){
   const[jid,key]=ref.split("|"),j=jobs.find(x=>x.id===jid);if(!j)return;
-  setMat(jid,key,(matStage(S(j,key))+1)%4);
+  const st=matStage(S(j,key));setMat(jid,key,st===4?0:(st+1)%4);
 }
 function setMat(jid,key,n){
   const j=jobs.find(x=>x.id===jid);if(!j)return;const was=matStage(S(j,key));
-  const p={ready:n>=1,ordered:n>=2,drop:n>=3};
+  const p={ready:n>=1&&n<4,ordered:n>=2&&n<4,drop:n===3,subsup:n===4};if(n===4)p.subsupOn=TODAY;
   if(n>=1&&was<1)p.readyOn=TODAY;
   if(n===3&&was<3)p.dropOn=TODAY;
   store.patch(jid,{state:{[key]:p}}).then(()=>{
-    if(n===2&&was<2)askNote(jid,key,"Ordered","e.g. 84 Lumber, order #4471",[{f:"orderDate",label:"Date ordered",def:TODAY},{f:"delivDate",label:"Estimated delivery"}]);
+    if(n===2&&was<2)askNote(jid,key,"Ordered","e.g. 84 Lumber, order #4471",[{f:"orderDate",label:"Date ordered",def:TODAY},{f:"delivDate",label:"Estimated delivery"}],{label:"Sub-supplied",tip:"The sub brings this material, so nothing to order",run:()=>setMat(jid,key,4)});
     if(n===3&&was<3)askNote(jid,key,"On site","e.g. Dropped at the back of the lot");
   }).catch(report);
 }
@@ -1835,7 +1883,7 @@ function taskPct(j,t){
   if(t.subs.length)return Math.round(100*t.subs.filter(s=>subDone(j,s)).length/t.subs.length);
   const x=S(j,t.key);
   if(x.sched==="completed")return 90;
-  if(x.drop)return 75;if(x.ordered)return 50;if(x.ready)return 25;
+  if(x.drop||x.subsup)return 75;if(x.ordered)return 50;if(x.ready)return 25;
   if(x.start&&x.end&&x.start<=TODAY){const tot=diff(x.start,x.end)+1;return Math.min(95,Math.round(100*(diff(x.start,TODAY)+1)/tot))}
   return 0;
 }
@@ -1871,7 +1919,7 @@ function rowHTML(j,t){
   if(t.subs.length)bits.push(t.subs.filter(s=>subDone(j,s)).length+" of "+t.subs.length+" sub-tasks");
   if(late)bits.push(diff(x.end,TODAY)+"d past end date");
   const pct=st==="na"?null:taskPct(j,t);
-  return`<tr class="${st}" data-open="${j.id}|${t.key}">
+  return`<tr class="${st} ${t.f.includes("pf")?"insprow":""}" data-open="${j.id}|${t.key}">
    <td>${completeBox(j,t,st)}</td>
    <td class="tn">${esc(t.name)}${t.custom?` <button type="button" class="linkbtn plain renbtn" data-crename="${j.id}|${t.key}">Rename</button>`:""}${noteIcon(x)}${bits.length?`<small>${esc(bits.join(" · "))}</small>`:""}</td>
    <td>${st==="na"?`<span class="dim">—</span>`:OPS_TASKS.has(t.key)?(CLOSE_KEYS.has(t.key)?closeoutBtn(j,t):`<span class="opstag">Handled by ops</span>`):noMat(t)?"":`<div class="schcell">${matBtn(j,t)}${matStage(x)===2?dateLine(x,"delivDate","Delivery",false):""}</div>`}</td>
@@ -2429,10 +2477,11 @@ function ordersHTML(j){
   const items=allItems(j).filter(t=>!isNA(j,t)&&!OPS_TASKS.has(t.key)&&(t.f.includes("ready")||matStage(S(j,t.key))>0)).map((t,i)=>({t,x:S(j,t.key),i}));
   const old=[],recent=[],ordered=[],none=[];
   for(const it of items){const st=matStage(it.x);
-    if(st===3)((it.x.dropOn&&diff(it.x.dropOn,TODAY)<ORDERS_KEEP)?recent:old).push(it);else if(st===2)ordered.push(it);else none.push(it)}
+    if(st===4)old.push(it);else if(st===3)((it.x.dropOn&&diff(it.x.dropOn,TODAY)<ORDERS_KEEP)?recent:old).push(it);else if(st===2)ordered.push(it);else none.push(it)}
   old.sort((a,b)=>(a.x.dropOn||"")<(b.x.dropOn||"")?-1:1);recent.sort((a,b)=>(a.x.dropOn||"")<(b.x.dropOn||"")?-1:1);
   ordered.sort((a,b)=>(a.x.delivDate||"9")<(b.x.delivDate||"9")?-1:1);none.sort((a,b)=>(matStage(b.x)-matStage(a.x))||a.i-b.i);   // requested before not ordered
   const status=x=>{const st=matStage(x);
+    if(st===4)return`<span class="ostat onsite">Sub-supplied</span>`;
     if(st===3)return`<span class="ostat onsite">On site${x.dropOn?" · "+fmt(x.dropOn):""}</span>`;
     if(st===2){const late=x.delivDate&&x.delivDate<TODAY;return`<span class="ostat ordered ${late?"late":""}">Ordered${x.delivDate?` · ETA ${fmt(x.delivDate)}`:" · no ETA"}</span>`}
     if(st===1)return`<span class="ostat req">Requested</span>`;
@@ -2466,11 +2515,11 @@ function permitSaved(p,id){const last=stepsFor(id).length-1;if(oldTrade(p,id)){c
 // inspections on the Tasks tab move the permit along (one way: the permit can also be set by hand, never lower than its inspections)
 // rough: a rough-in inspection passed -> Rough-in passed. final: a final inspection requested/scheduled -> Final pulled; passed -> Final passed.
 const PERMIT_LINKS={
-  building:{final:["p5-certificate-of-occupancy"]},
+  building:{final:["p5-certificate-of-occupancy","p5-certificate-of-occupancy--inspection"]},
   sewer:{final:["m4-connect-septic--inspection","m4-connect-sewer--inspection"]},
   electrical:{rough:["p3-electrical-rough-in--inspection"],final:["p4-electrical-state-final","m4-connect-electric--inspection"]},
   plumbing:{rough:["p3-plumbing-rough-in--inspection"]},
-  hvac:{rough:["p3-hvac-rough-in--inspection"],final:["p4-hvac-state-final","m4-install-hvac--inspection"]}
+  hvac:{rough:["p3-hvac-rough-in--inspection"],final:["p4-hvac-state-final","p4-hvac-state-final--inspection","m4-install-hvac--inspection"]}
 };
 function permitFromTasks(j,id){
   const L=PERMIT_LINKS[id]||{},last=stepsFor(id).length-1,keys=new Set(allItems(j).flatMap(t=>[t.key,...t.subs.map(s=>s.key)]));let st=permitApplied(j,id)?1:0;
@@ -2494,18 +2543,18 @@ function permitsHTML(j){
 }
 /* ===== Inspections: rough-in and other inspections on this home, read from the task list ===== */
 // Fixed order: footers, (under-slab), septic/sewer, HVAC, plumbing, electrical, (gas), framing, final.
-const INSP_ORDER=["footers","underslab","sewer","hvac","plumbing","electrical","gas","framing","other","final"];
+const INSP_ORDER=["footers","underslab","sewer","hvac","plumbing","electrical","gas","framing","other","statefinal","final"];
 const MANUAL_INSP=["Not scheduled","Scheduled","Passed"];
-function inspCat(key){return /install-footers/.test(key)?"footers":/under-slab/.test(key)?"underslab":/septic|sewer/.test(key)?"sewer":/hvac/.test(key)?"hvac":/plumbing/.test(key)?"plumbing":/electric/.test(key)?"electrical":/gas/.test(key)?"gas":"other"}
+function inspCat(key){return /state-final/.test(key)?"statefinal":/-framing$/.test(key)?"framing":/install-footers/.test(key)?"footers":/under-slab/.test(key)?"underslab":/septic|sewer/.test(key)?"sewer":/hvac/.test(key)?"hvac":/plumbing/.test(key)?"plumbing":/electric/.test(key)?"electrical":/gas/.test(key)?"gas":"other"}
 // manual rows are stored as insx.<id> = {st:0|1|2, on}; framing falls back to an old framing permit that had reached Rough-in passed
 function manualSt(j,id){const fi=(j.insx||{})[id];if(fi)return+fi.st||0;const fp=(j.permits||{})[id]||{};return id==="framing"&&fp.stage!==undefined&&fp.sv!==2&&+fp.stage>=2?2:0}
 function inspRows(j){
   const out=[],site=optVal(j,"homeType")!=="mfg",sw=optVal(j,"sewer");
   for(const t of allItems(j)){if(isNA(j,t))continue;
     if(t.f&&t.f.includes("pf")&&/rough/i.test(t.name))out.push({cat:inspCat(t.key),t,key:t.key,name:t.name});
-    for(const s of t.subs||[])if(s.f&&s.f.includes("pf"))out.push({cat:inspCat(t.key),t,key:s.key,name:/^(call in )?inspection$/i.test(s.name)?t.name.replace(/^(Install|Connect) /,"").replace(/^Electric$/,"Electrical"):t.name+" · "+s.name})}
+    for(const s of t.subs||[])if(s.f&&s.f.includes("pf")&&t.key!=="p5-certificate-of-occupancy")out.push({cat:inspCat(t.key),t,key:s.key,name:/^(call in )?inspection$/i.test(s.name)?t.name.replace(/^(Install|Connect) /,"").replace(/^Electric$/,"Electrical"):t.name+" · "+s.name})}
   if(!out.some(r=>r.cat==="sewer"))out.push({cat:"sewer",manual:"sewer",name:sw==="sewer"?"Sewer":"Septic"});
-  if(site)out.push({cat:"framing",manual:"framing",name:"Framing"});
+  if(site&&!out.some(r=>r.cat==="framing"))out.push({cat:"framing",manual:"framing",name:"Framing"});
   const co=allItems(j).find(t=>t.key==="p5-certificate-of-occupancy");
   out.push(co?{cat:"final",co,name:"Final"}:{cat:"final",manual:"final",name:"Final"});
   return out.map((r,i)=>({...r,i})).sort((a,b)=>INSP_ORDER.indexOf(a.cat)-INSP_ORDER.indexOf(b.cat)||a.i-b.i);
@@ -2515,9 +2564,14 @@ function inspectionsHTML(j){
     if(r.manual){const st=manualSt(j,r.manual),d=((j.insx||{})[r.manual]||{}).on||"";done=st===2;
       lab=MANUAL_INSP[st]+(st&&d?" · "+fmt(d):"");cls=["s0","s2","s4"][st];
       btn=`data-icycle="${r.manual}" title="${st<2?"Tap to mark "+MANUAL_INSP[st+1].toLowerCase():"Tap to clear"}"`}
-    else if(r.co){const x=S(j,r.co.key);done=!!x.done;lab=done?"Passed"+(x.doneOn?" · "+fmt(x.doneOn):""):"Not passed";cls=done?"s4":"s0";
-      btn=`data-open="${j.id}|${r.co.key}" title="Passes when Certificate of Occupancy is checked off"`}
-    else{const x=S(j,r.key);done=x.pf==="pass";
+    else if(r.co){const x=S(j,r.co.key),y=S(j,r.co.key+"--inspection");done=!!x.done||y.pf==="pass";const on=y.doneOn||x.doneOn;
+      if(done){lab="Passed"+(on?" · "+fmt(on):"");cls="s4"}
+      else if(y.pf==="fail"){lab="Failed";cls="sbad"}
+      else if(y.isched&&y.isched!=="req"){lab="Scheduled"+(y.schedDate?" · "+fmt(y.schedDate):"");cls=y.schedDate&&y.schedDate<TODAY?"sbad":"s2"}
+      else if(y.isched==="req"){lab="Sent to ops";cls="s1"}
+      else{lab="Not scheduled";cls="s0"}
+      btn=`data-open="${j.id}|${r.co.key}" title="Certificate of Occupancy inspection"`}
+    else{const x=S(j,r.key);done=x.pf==="pass"||(r.cat==="framing"&&!x.pf&&manualSt(j,"framing")===2);
       if(done){lab="Passed"+(x.doneOn?" · "+fmt(x.doneOn):"");cls="s4"}
       else if(x.pf==="fail"){lab="Failed";cls="sbad"}
       else if(x.isched&&x.isched!=="req"){lab="Scheduled"+(x.schedDate?" · "+fmt(x.schedDate):"");cls=x.schedDate&&x.schedDate<TODAY?"sbad":"s2"}
@@ -2525,7 +2579,7 @@ function inspectionsHTML(j){
       else{lab="Not scheduled";cls="s0"}
       btn=`data-open="${j.id}|${r.t.key}" title="Open ${esc(r.t.name)}"`}
     return`<li class="${done?"pdone":""}"><span class="pnm"><b>${esc(r.name)}</b></span><button type="button" class="pstat ${cls}" ${btn}>${esc(lab)}</button></li>`});
-  return`<section class="panel"><h3>Inspections</h3><ul class="ostlist plist2">${rows.join("")}</ul></section>`;
+  return`<section class="panel inspanel"><h3>Inspections</h3><ul class="ostlist plist2">${rows.join("")}</ul></section>`;
 }
 function cycleInspX(id){
   const j=jobs.find(x=>x.id===view.jobId);if(!j)return;const n=(manualSt(j,id)+1)%MANUAL_INSP.length;
@@ -2603,7 +2657,7 @@ function overviewTabHTML(j){
   const its=allItems(j).filter(t=>!isNA(j,t));
   const up=its.filter(t=>{const e=S(j,t.key).end;return!isDone(j,t)&&e&&e>=TODAY&&diff(TODAY,e)<=14}).sort((a,b)=>S(j,a.key).end.localeCompare(S(j,b.key).end));
   const item=(t,right)=>`<li data-open="${j.id}|${t.key}"><span>${esc(t.name)}</span>${right}</li>`;
-  const mc=[0,0,0,0];its.forEach(t=>{if(!isDone(j,t))mc[matStage(S(j,t.key))]++});
+  const mc=[0,0,0,0,0];its.forEach(t=>{if(!isDone(j,t))mc[matStage(S(j,t.key))]++});
   const sc=[0,0,0];its.forEach(t=>sc[schStage(S(j,t.key))]++);
   return optsBanner(j)+todayHTML(needsToday(j),false)+`<div class="ovgrid hmas">
    <div class="ovstack">${permitsHTML(j)}${inspectionsHTML(j)}</div>
@@ -2633,6 +2687,53 @@ function overviewTabHTML(j){
 const DOC_CATS=["Permits","Plans","Contracts","Invoices","Inspections","Photos","Other"];
 const DOC_TYPES=["application/pdf","image/png","image/jpeg","image/gif","image/webp"];
 let assetsApi=null,docDraft={cat:"Permits",name:"",url:""},uploading=false;
+
+/* ===== Photos tab: job-site photos, newest day first; tap one to see it big, add a caption, or delete ===== */
+function photoList(j){return Object.entries(j.photos||{}).filter(([,v])=>v&&v.asset).sort((a,b)=>(b[1].at||0)-(a[1].at||0))}
+let phUp=0;
+function photosHTML(j){
+  const list=photoList(j),groups=new Map();
+  for(const[id,p]of list){const d=p.on||"";if(!groups.has(d))groups.set(d,[]);groups.get(d).push([id,p])}
+  const can=!!assetsApi;
+  let h=`<div class="phtop">${can?`<label class="btn primary phadd">+ Add photos<input type="file" id="phFiles" accept="image/*" multiple hidden></label>
+    <div class="phdrop" data-phdrop="1">or drop photos here</div>`:`<p class="dim" style="margin:0">Photos can be added from the shared tracker link (not this preview).</p>`}
+    ${phUp?`<span class="dim small" role="status">Uploading ${phUp} photo${phUp===1?"":"s"}…</span>`:""}</div>`;
+  if(!list.length)return h+`<div class="empty"><h3>No photos yet</h3><p>Add site photos from your phone or computer. On a phone you can take one with the camera.</p></div>`;
+  for(const[d,ps]of groups){
+    h+=`<section class="phday"><h3>${d?esc(fmt(d)):"Undated"} <span class="dim small">${ps.length} photo${ps.length===1?"":"s"}</span></h3><div class="phgrid">${ps.map(([id,p])=>`<button type="button" class="phthumb" data-phopen="${id}" aria-label="Open photo${p.cap?": "+esc(p.cap):""}"><img src="${esc("/_blob/"+p.asset)}" alt="${esc(p.cap||"Site photo")}" loading="lazy">${p.cap?`<span>${esc(p.cap)}</span>`:""}</button>`).join("")}</div></section>`}
+  return h;
+}
+async function addPhotos(files){
+  const j=jobs.find(x=>x.id===view.jobId);files=files.filter(f=>/^image\//.test(f.type)||/\.(jpe?g|png|heic|heif|webp)$/i.test(f.name));
+  if(!j||!files.length)return;if(!assetsApi){toast("Photos can only be added from the shared tracker link");return}
+  phUp+=files.length;render();let ok=0;
+  for(const f of files){try{const b=await shrinkImage(f),r=await assetsApi.upload(b,{type:b.type||"image/jpeg"}),id="ph-"+uid();
+      await store.patch(j.id,{photos:{[id]:{asset:r.id,on:TODAY,at:Date.now(),by:me||"",cap:""}}});ok++}catch(e){report(e)}finally{phUp--;}}
+  render();if(ok)toast(`${ok} photo${ok===1?"":"s"} added`);
+}
+let phView=null;
+function phShow(id){
+  const j=jobs.find(x=>x.id===view.jobId);if(!j)return;const list=photoList(j),i=list.findIndex(([k])=>k===id);if(i<0)return;const[,p]=list[i];phView=id;
+  let d=document.getElementById("phDlg");
+  if(!d){d=document.createElement("dialog");d.id="phDlg";d.className="phdlg";document.body.appendChild(d);
+    d.addEventListener("close",()=>{phView=null});
+    d.addEventListener("click",e=>{if(e.target===d){d.close();return}const b=e.target.closest("[data-pha]");if(!b)return;const a=b.dataset.pha;
+      if(a==="close")d.close();else if(a==="prev"||a==="next")phStep(a==="next"?1:-1);
+      else if(a==="del"&&confirmTap(b,"Tap again to delete")){const jj=jobs.find(x=>x.id===view.jobId),pp=jj&&(jj.photos||{})[phView];if(!pp)return;const pid=phView;d.close();
+        store.patch(jj.id,{photos:{[pid]:null}}).then(()=>{toast("Photo deleted");if(assetsApi)assetsApi.delete(pp.asset).catch(()=>{})}).catch(report)}});
+    d.addEventListener("change",e=>{if(e.target.id==="phCap"&&phView){const v=e.target.value.trim();store.patch(view.jobId,{photos:{[phView]:{cap:v}}}).then(()=>toast("Caption saved")).catch(report)}});
+    d.addEventListener("keydown",e=>{if(e.target.id==="phCap")return;if(e.key==="ArrowRight")phStep(1);if(e.key==="ArrowLeft")phStep(-1)})}
+  d.innerHTML=`<div class="phhead"><span class="dim small">${esc(j.name)} · ${i+1} of ${list.length}</span><a class="btn sm" href="${esc("/_blob/"+p.asset)}" target="_blank" rel="noopener">Open full size</a><button type="button" class="btn sm" data-pha="close">Close</button></div>
+   <div class="phbig"><button type="button" class="phnav" data-pha="prev" aria-label="Previous photo" ${i?"":"disabled"}>‹</button><img src="${esc("/_blob/"+p.asset)}" alt="${esc(p.cap||"Site photo")}"><button type="button" class="phnav" data-pha="next" aria-label="Next photo" ${i<list.length-1?"":"disabled"}>›</button></div>
+   <div class="phfoot"><input id="phCap" value="${esc(p.cap||"")}" placeholder="Add a caption (e.g. Footer forms before pour)" aria-label="Caption"><span class="dim small">${esc([p.by,p.on?fmt(p.on):""].filter(Boolean).join(" · "))}</span><button type="button" class="btn sm danger-text" data-pha="del">Delete</button></div>`;
+  if(!d.open)d.showModal();
+}
+function phStep(n){const j=jobs.find(x=>x.id===view.jobId);if(!j||!phView)return;const list=photoList(j),i=list.findIndex(([k])=>k===phView),k=list[i+n];if(k)phShow(k[0])}
+document.addEventListener("click",e=>{const t=e.target.closest&&e.target.closest("[data-phopen]");if(t){e.stopPropagation();phShow(t.dataset.phopen)}},true);
+document.addEventListener("change",e=>{if(e.target.id==="phFiles"){const f=[...e.target.files];e.target.value="";addPhotos(f)}});
+document.addEventListener("dragover",e=>{const z=e.target.closest&&e.target.closest("[data-phdrop]");if(z){e.preventDefault();z.classList.add("over")}});
+document.addEventListener("dragleave",e=>{const z=e.target.closest&&e.target.closest("[data-phdrop]");if(z)z.classList.remove("over")});
+document.addEventListener("drop",e=>{const z=e.target.closest&&e.target.closest("[data-phdrop]");if(!z)return;e.preventDefault();z.classList.remove("over");if(e.dataTransfer)addPhotos([...e.dataTransfer.files])});
 function docList(j){return Object.entries(j.docs||{}).filter(([k,v])=>v).sort((a,b)=>(b[1].order||0)-(a[1].order||0))}
 function docHref(d){return d.asset?"/_blob/"+d.asset:d.url}
 function sizeTxt(n){return!n?"":n>1048576?(n/1048576).toFixed(1)+" MB":Math.max(1,Math.round(n/1024))+" KB"}
@@ -3032,7 +3133,7 @@ function subRowHTML(j,t,s){
     ?`<span class="cbox sm"><input type="checkbox" disabled ${done?"checked":""} aria-label="${esc(s.name)} ${done?"passed":"not passed yet"}"></span>`
     :`<label class="cbox sm"><input type="checkbox" data-j="${j.id}" data-k="${s.key}" data-f="done" ${x.done?"checked":""} aria-label="${esc(s.name)}"></label>`;
   const res=isInsp?pf(j,s.key):done?`<span class="st done">Done</span>`:"";
-  return`<tr class="subtr ${done?"done":""}" data-open="${j.id}|${t.key}">
+  return`<tr class="subtr ${done?"done":""} ${isInsp?"insprow":""}" data-open="${j.id}|${t.key}">
    <td></td>
    <td class="tn"><span class="subwrap">${box}<span>${esc(s.name)}${noteIcon(x)}</span></span></td>
    <td>${isInsp?`<div class="schcell">${inspBtn(j,s)}${inspStage(x)===2?dateLine(x,"schedDate","For",x.pf==="pass"):""}</div>`:""}</td><td>${estDate(j,s,"start",!done&&!!x.start&&x.start<TODAY&&!x.end)}</td><td>${estDate(j,s,"end",!done&&!!x.end&&x.end<TODAY)}</td>
@@ -3294,12 +3395,13 @@ $("#jobForm").addEventListener("click",e=>{
 
 /* ===== Note pop-up after a status change (optional; Skip closes it) ===== */
 let noteFor=null;
-function askNote(jid,key,what,ph,date){
+function askNote(jid,key,what,ph,date,extra){
   const j=jobs.find(x=>x.id===jid),t=j&&(allItems(j).find(x=>x.key===key)||allItems(j).flatMap(x=>x.subs.map(s=>({...s,parent:x}))).find(x=>x.key===key));if(!t)return;
   let dlg=document.getElementById("noteDlg");
   if(!dlg){dlg=document.createElement("dialog");dlg.id="noteDlg";document.body.appendChild(dlg);
     dlg.addEventListener("submit",e=>{e.preventDefault();saveNote()});
-    dlg.addEventListener("click",e=>{if(e.target.dataset.act==="noteskip"){noteFor=null;dlg.close()}});
+    dlg.addEventListener("click",e=>{if(e.target.dataset.act==="noteskip"){noteFor=null;dlg.close()}
+      if(e.target.dataset.act==="noteextra"){const f=dlg.__extra;noteFor=null;dlg.close();if(f)f()}});
     dlg.addEventListener("cancel",()=>{noteFor=null})}
   const ds=!date?[]:Array.isArray(date)?date:[date];
   noteFor={jid,key,what,date:ds};
@@ -3307,8 +3409,10 @@ function askNote(jid,key,what,ph,date){
    <h3>${esc(what)}</h3>
    ${ds.length?`<div class="notedates">${ds.map((d,i)=>`<label class="f">${esc(d.label)}<input type="date" id="noteDate${i}" value="${esc(S(j,key)[d.f]||d.def||"")}"></label>`).join("")}</div>`:""}
    <label class="f">Add a note (optional)<input id="noteText" autocomplete="off" placeholder="${esc(ph)}"></label>
-   <div class="acts"><button type="button" class="btn" data-act="noteskip">Skip</button><button class="btn primary">Save</button></div></form>`;
-  dlg.showModal();setTimeout(()=>{const i=document.getElementById(ds.length?"noteDate"+(ds.length-1):"noteText");if(i)i.focus()},30);
+   <div class="acts">${extra?`<button type="button" class="btn subsupbtn" data-act="noteextra" title="${esc(extra.tip||"")}" style="margin-right:auto">${esc(extra.label)}</button>`:""}<button type="button" class="btn" data-act="noteskip">Skip</button><button class="btn primary">Save</button></div></form>`;
+  dlg.__extra=extra&&extra.run;
+  // on tablets and phones, focusing a date box would pop its picker open over the pop-up, so don't auto-focus there
+  dlg.showModal();setTimeout(()=>{if(TOUCH){document.activeElement&&document.activeElement.blur&&document.activeElement.blur();return}const i=document.getElementById(ds.length?"noteDate"+(ds.length-1):"noteText");if(i)i.focus()},30);
 }
 function saveNote(){
   const dlg=document.getElementById("noteDlg"),txt=(document.getElementById("noteText").value||"").trim();
@@ -3686,7 +3790,7 @@ $("#menuBtn").addEventListener("click",()=>$("#side").classList.toggle("open"));
 /* ===== Start ===== */
 render();
 (async()=>{
-  if(window.claude&&window.claude.use)window.claude.use("assets").then(a=>{assetsApi=a;if(view.tab==="docs")render()}).catch(()=>{});
+  if(window.claude&&window.claude.use)window.claude.use("assets").then(a=>{assetsApi=a;if(view.tab==="docs"||view.tab==="photos")render()}).catch(()=>{});
   try{db=window.claude&&window.claude.use?await window.claude.use("db"):null}catch(e){db=null}
   if(!db){offline=true;render();return}
   const fail=err=>{console.error(err);if(err.code==="revoked"||err.code==="not_granted"){offline=true;db=null;loaded=true;render()}};
@@ -3727,6 +3831,7 @@ function initBisonAI(){
         const x=S(j,t.key),ms=matStage(x);
         if(ms===1)L.push(`Material ready to order: ${t.name}`);
         if(ms===2)L.push(`Material ordered: ${t.name}${x.delivDate?` (delivery ${x.delivDate})`:""}`);
+        if(ms===4)L.push(`Material supplied by the sub: ${t.name}`);
         for(const s of t.subs||[]){if(!s.f||!s.f.includes("pf"))continue;const y=S(j,s.key),st=inspStage(y);
           const lbl=y.pf==="pass"?"PASSED":y.pf==="fail"?"FAILED":st===2?`SCHEDULED${y.schedDate?" "+y.schedDate:""}`:st===1?"READY TO SCHEDULE":"not requested";
           L.push(`Inspection "${s.name}" (phase ${t.name}) [inspection_key=${s.key}]: ${lbl}`)}

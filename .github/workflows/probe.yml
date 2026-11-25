@@ -1,0 +1,16 @@
+name: Probe public sign-in discovery URLs
+# Shows what an AI app sees when it checks the connector address for a sign-in service. Public info only.
+on: { workflow_dispatch: {} }
+permissions: { contents: read }
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    env: { SUPABASE_URL: "${{ vars.SUPABASE_URL }}" }
+    steps:
+      - run: |
+          B="$SUPABASE_URL"
+          for p in /.well-known/oauth-protected-resource /.well-known/oauth-protected-resource/functions/v1/jt-mcp/k/x /.well-known/oauth-authorization-server /.well-known/oauth-authorization-server/functions/v1/jt-mcp/k/x /.well-known/openid-configuration /functions/v1/jt-mcp/k/x/.well-known/oauth-protected-resource /auth/v1/.well-known/oauth-authorization-server /.well-known/oauth-authorization-server/auth/v1; do
+            echo "=== GET $p"; curl -s -o /tmp/b -w 'status %{http_code}\n' "$B$p"; head -c 600 /tmp/b; echo
+          done
+          echo "=== GET function (bad key)"; curl -s -i "$B/functions/v1/jt-mcp/k/not-a-real-link-not-a-real-link-xyz" | head -20
+          echo "=== POST function (bad key)"; curl -s -i -X POST -H 'content-type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{}}' "$B/functions/v1/jt-mcp/k/not-a-real-link-not-a-real-link-xyz" | head -20

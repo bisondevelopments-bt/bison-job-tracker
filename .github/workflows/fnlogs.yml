@@ -15,7 +15,7 @@ jobs:
           ref=$(echo "$SUPABASE_URL" | sed -E 's#https://([a-z0-9]+)\.supabase\.co.*#\1#')
           sql="select timestamp, request.method as method, request.pathname as path, response.status_code as status, h.user_agent as ua, h.accept as accept from function_edge_logs cross join unnest(metadata) as m cross join unnest(m.request) as request cross join unnest(m.response) as response cross join unnest(request.headers) as h where request.pathname like '%jt-mcp%' order by timestamp desc limit 80"
           start=$(date -u -d '-3 hours' +%Y-%m-%dT%H:%M:%SZ); end=$(date -u +%Y-%m-%dT%H:%M:%SZ)
-          curl -sS -G "https://api.supabase.com/v1/projects/$ref/analytics/endpoints/logs.all" -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
+          curl -sS -G "https://api.supabase.com/v1/projects/$ref/analytics/endpoints/logs" -H "Authorization: Bearer $SUPABASE_ACCESS_TOKEN" \
             --data-urlencode "sql=$sql" --data-urlencode "iso_timestamp_start=$start" --data-urlencode "iso_timestamp_end=$end" \
             | sed -E 's#/k/[A-Za-z0-9_-]{6}[A-Za-z0-9_-]*#/k/<link>#g' > /tmp/out.json
           openssl rand -out /tmp/k.bin 32

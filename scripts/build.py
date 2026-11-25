@@ -24,8 +24,8 @@ HEAD = f"""<meta name="theme-color" content="#1D2733">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Job Tracker">
 <link rel="manifest" href="manifest.webmanifest">
-<link rel="apple-touch-icon" href="icon-180.png">
-<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-180.png?v=2">
+<link rel="icon" href="icon-192.png?v=2">
 <script src="config.js"></script>
 <script src="{SUPABASE_JS}"></script>
 <script src="jt-adapter.js"></script>
@@ -57,8 +57,8 @@ for f in os.listdir(os.path.join(ROOT, "static")):
 json.dump({
     "name": "Bison Job Tracker", "short_name": "Job Tracker", "start_url": "./", "scope": "./",
     "display": "standalone", "background_color": "#1D2733", "theme_color": "#1D2733",
-    "icons": [{"src": "icon-192.png", "sizes": "192x192", "type": "image/png"},
-              {"src": "icon-512.png", "sizes": "512x512", "type": "image/png"}],
+    "icons": [{"src": "icon-192.png?v=2", "sizes": "192x192", "type": "image/png"},
+              {"src": "icon-512.png?v=2", "sizes": "512x512", "type": "image/png"}],
 }, open(os.path.join(SITE, "manifest.webmanifest"), "w"))
 open(os.path.join(SITE, ".nojekyll"), "w").close()
 print("Built", sorted(os.listdir(SITE)))

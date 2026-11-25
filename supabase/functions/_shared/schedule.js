@@ -13,7 +13,6 @@ const SCHEDULE=[
   ["Site prep/excavation",["done"],[["Install Property Marker",["done"],undefined,"sign-mailbox"],"Cut in driveway","Rough in Grade","Mark Water Meter","Temp Pole","Mark Power Line/HVAC","Set up Delivery Location"]],
   ["Install Footers",["done"],["Porch Post Piers",INSP]],
   ["Install Block",["done"],["Seal Block"],{foundation:"crawl",homeType:"site"}],
-  ["Vapor Barrier",ORD,[],{foundation:"crawl",homeType:"site"}],
   ["Plumbing Under-Slab Rough-in",DAT,["Under-slab plumbing photos",INSP],{foundation:"slab",homeType:"site"}],
   ["Pour Slab",["ready","ordered","drop","start","end","done"],["Gravel","Vapor Barrier"],{foundation:"slab",homeType:"site"}],
   ["Install Septic",DAT,[],{sewer:"septic",homeType:"site"}],["Install Sewer Line",DAT,[],{sewer:"sewer",homeType:"site"}]]},

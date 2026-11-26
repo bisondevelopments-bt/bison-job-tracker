@@ -418,6 +418,51 @@ end $$;
 drop trigger if exists notifications_stamp on public.notifications;
 create trigger notifications_stamp before insert on public.notifications for each row execute function public.notif_stamp();
 
+-- Automatic notice: a new lot under contract tells the field supervisors (address, closing, home type,
+-- expected start, PM). Fires when a pipeline deal is added (in the app, by a skill or an import) or a lead
+-- moves to under contract; at most one per deal. Plans added to the deal later are attached to it.
+create or replace function public.notif_new_deal(p_job text) returns void
+language plpgsql security definer set search_path = public as $$
+declare j public.jobs; d text; plans record; lines text[] := '{}';
+begin
+  select * into j from public.jobs where id = p_job;
+  if j.id is null or j.stage <> 'under_contract' then return; end if;
+  if exists (select 1 from public.notifications where job_id = j.id and source = 'New deal') then return; end if;
+  if j.street is not null and j.street <> j.name then lines := lines || ('Address: ' || j.street || coalesce(', ' || j.city, '')); end if;
+  lines := lines || concat_ws(' · ',
+    'Closing ' || coalesce(to_char(j.closing_date, 'Mon FMDD'), 'not set'),
+    case j.home_type when 'mfg' then 'Doublewide' when 'site' then 'Site-built' else 'Home type not set' end);
+  lines := lines || concat_ws(' · ',
+    'Expected start ' || coalesce(to_char(j.expected_start, 'Mon FMDD'), 'not set'),
+    'PM ' || (select name from public.people where id = j.pm_id),
+    'Supervisor ' || (select name from public.people where id = j.supervisor_id));
+  select id, asset_id, name, mime_type into plans from public.documents
+    where job_id = j.id and category = 'Plans' and sensitivity = 'general' order by added nulls last limit 1;
+  insert into public.notifications (title, detail, job_id, attachment, to_roles, source, posted_by_name)
+  values ('New lot under contract: ' || j.name, array_to_string(lines, E'\n'), j.id,
+    case when plans.id is null then null else jsonb_build_object('document_id', plans.id, 'asset_id', plans.asset_id, 'name', plans.name, 'type', plans.mime_type) end,
+    array['field_supervisor'], 'New deal', 'Job Tracker');
+end $$;
+create or replace function public.notif_deal_trg() returns trigger
+language plpgsql security definer set search_path = public as $$
+begin
+  if new.stage = 'under_contract' and (tg_op = 'INSERT' or old.stage is distinct from new.stage) then perform public.notif_new_deal(new.id); end if;
+  return new;
+end $$;
+drop trigger if exists jobs_new_deal_notice on public.jobs;
+create trigger jobs_new_deal_notice after insert or update of stage on public.jobs for each row execute function public.notif_deal_trg();
+create or replace function public.notif_plans_trg() returns trigger
+language plpgsql security definer set search_path = public as $$
+begin
+  if new.category = 'Plans' and new.sensitivity = 'general' then
+    update public.notifications set attachment = jsonb_build_object('document_id', new.id, 'asset_id', new.asset_id, 'name', new.name, 'type', new.mime_type)
+     where job_id = new.job_id and source = 'New deal' and attachment is null;
+  end if;
+  return new;
+end $$;
+drop trigger if exists documents_plans_notice on public.documents;
+create trigger documents_plans_notice after insert on public.documents for each row execute function public.notif_plans_trg();
+
 -- keep it tidy: notices go away after 120 days
 delete from public.notifications where created_at < now() - interval '120 days';
 

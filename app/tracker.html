@@ -434,6 +434,14 @@ dialog{max-height:92vh;overflow:auto}
 .nlist .btn{flex:none;padding:6px 12px;font-size:14px}
 .nearlier{margin-top:4px}.nearlier summary{cursor:pointer;font-size:14px;font-weight:600;color:var(--muted);padding:6px 0}
 .nearlier li{opacity:.75}
+/* Home: right column holds Notifications above Notes */
+.hright{grid-column:3;grid-row:1/span 2;display:flex;flex-direction:column;gap:12px;min-width:0}
+.hright .nbox{margin:0}
+@media (min-width:821px){.hometop:has(.hright .nbox){align-items:start;grid-template-rows:auto 1fr}}
+.hright .nbox>.nlist{max-height:52vh;overflow:auto;overscroll-behavior:contain}
+.hright .notes-tile{grid-column:auto;grid-row:auto}
+.hright .notes-tile:not(.open){flex:1 1 0;height:auto;min-height:120px}
+@media (max-width:820px){.hright{grid-column:1/-1;grid-row:auto}.hright .notes-tile:not(.open){flex:none;min-height:0}}
 /* notes (compact) */
 .board{display:grid;gap:6px;align-content:start}
 .board h3{margin:0 0 2px}
@@ -1666,7 +1674,8 @@ function pipeDialog(id){
    <div class="two"><label class="f">Subdivision<input name="subdivision" list="pSubList" placeholder="Blank for a scattered lot" value="${esc(x.subdivision||"")}"><datalist id="pSubList">${subs.map(v=>`<option value="${esc(v)}">`).join("")}</datalist></label>
     <label class="f">Address<input name="address" placeholder="If known" value="${esc(x.address||"")}"></label></div>
    <div class="two"><label class="f">Under contract since<input type="date" name="contract" value="${esc(x.contract||TODAY)}"></label><label class="f">Expected start<input type="date" name="expStart" value="${esc(x.expStart||"")}"></label></div>
-   <label class="f">Closing date<input type="date" name="closing" value="${esc(x.closing||"")}"></label>
+   <div class="two"><label class="f">Closing date<input type="date" name="closing" value="${esc(x.closing||"")}"></label>
+    <label class="f">Type of home<select name="homeType"><option value="">Not set</option><option value="site" ${x.homeType==="site"?"selected":""}>Site-built</option><option value="mfg" ${x.homeType==="mfg"?"selected":""}>Doublewide (manufactured)</option></select></label></div>
    <div class="two"><label class="f">Project manager${sel("pm",pms(),x.pm||(me&&roleOf(me)==="Project manager"&&!id?me:""))}</label><label class="f">Field supervisor${sel("super",sups(),x.super||"")}</label></div>
    <label class="f">Notes<textarea name="notes" style="min-height:70px" placeholder="Buyer, plan, anything the crew should know">${esc(x.notes||"")}</textarea></label>
    <div class="acts"><button type="button" class="btn" data-pact="cancel">Cancel</button><button class="btn primary">${id?"Save changes":"Add to pipeline"}</button></div></form>`;
@@ -1674,7 +1683,7 @@ function pipeDialog(id){
 }
 async function pipeSave(e){
   e.preventDefault();const f=e.target,fd=new FormData(f),id=f.dataset.pid,g=k=>(fd.get(k)||"").trim();
-  const d={name:g("name"),subdivision:g("subdivision"),address:g("address"),contract:g("contract"),expStart:g("expStart"),closing:g("closing"),pm:g("pm"),super:g("super"),notes:g("notes")};
+  const d={name:g("name"),subdivision:g("subdivision"),address:g("address"),contract:g("contract"),expStart:g("expStart"),closing:g("closing"),homeType:g("homeType"),pm:g("pm"),super:g("super"),notes:g("notes")};
   if(!d.name)return;f.closest("dialog").close();
   try{if(id){await pstore.patch(id,d);toast("Saved")}
     else{const todos={};TPL.pipeTodos.forEach((t,i)=>{todos["p"+uid()]={text:t,done:false,order:i}});
@@ -1747,7 +1756,7 @@ function homeHTML(){
     <div class="tile"><span>Homes underway</span><b>${act.length}</b><small>${by.track.length} on track · ${by.risk.length} at risk · ${by.behind.length} behind</small></div>
     ${(()=>{const pl=pipeSorted(),nx=pl.find(p=>p.expStart&&p.expStart>=TODAY);return`<button type="button" class="tile tlink" data-go="pipeline"><span>Homes in pipeline</span><b>${pl.length}</b><small>${nx?`Next start ${fmt(nx.expStart)} · ${esc(String(nx.name).replace(/,.*$/,""))}`:pl.length?"No start dates set":"Nothing under contract yet"}</small></button>`})()}
     <div class="ht-today">${todayHTML(urgent.slice(0,12),true)}${more(urgent.length,12)}</div>
-    ${notesTileHTML(act)}
+    <div class="hright">${notesTileHTML(act)}</div>
    </div></div>
    <div class="body">
    <div class="ovgrid hmas" style="margin-top:12px">
@@ -4077,6 +4086,7 @@ function notifBoxHTML(){
     ${earlier.length?`<details class="nearlier"><summary>Earlier (${earlier.length})</summary><ul class="nlist">${earlier.map(n=>notifItem(n,NOTIF.reads.get(n.id))).join("")}</ul></details>`:""}</section>`}
 // near the top: right under the greeting/date (Home) or the title row (Ops queue)
 function notifPlace(m){const h=notifBoxHTML();if(!h)return;const t=m.querySelector(".top");if(!t)return;
+  const r=t.querySelector(".hometop .hright");if(r){r.insertAdjacentHTML("afterbegin",h);return}  // Home: right column, above Notes
   const a=t.querySelector(":scope > .meta")||t.querySelector(":scope > .oqtop");if(a)a.insertAdjacentHTML("afterend",h);else t.insertAdjacentHTML("afterend",h)}
 function notifPaint(){const el=document.getElementById("nbox");if(el){const keep=el.querySelector("details[open]");el.outerHTML=notifBoxHTML();if(keep){const d=document.querySelector("#nbox details");if(d)d.open=true}}
   else if(NOTIF.ready&&(view.mode==="home"||view.mode==="ops")){const m=document.getElementById("main");if(m)notifPlace(m)}}

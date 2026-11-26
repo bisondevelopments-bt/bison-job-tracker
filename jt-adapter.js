@@ -301,6 +301,7 @@
     if (!blank(r.contract_date)) o.contract = r.contract_date;
     if (!blank(r.closing_date)) o.closing = r.closing_date;
     if (!blank(r.expected_start)) o.expStart = r.expected_start;
+    if (!blank(r.home_type)) o.homeType = r.home_type;
     const pm = personName(r.pm_id) || d.pm, su = personName(r.supervisor_id) || d.super;
     if (pm) o.pm = pm; else delete o.pm;
     if (su) o.super = su; else delete o.super;
@@ -330,6 +331,7 @@
       else if (kind === "pipe" && k === "address") core.street = nul(v);
       else if (kind === "pipe" && k === "contract") core.contract_date = nul(v);
       else if (kind === "pipe" && k === "expStart") core.expected_start = nul(v);
+      else if (kind === "pipe" && k === "homeType") core.home_type = nul(v);
       else rest[k] = v;
     }
     return { core, rest, docs };

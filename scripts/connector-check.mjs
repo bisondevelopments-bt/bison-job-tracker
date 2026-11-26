@@ -38,6 +38,7 @@ await safe("get_document", async () => {
   return { ms: r.ms, error: r.error, name: d.name, chars: r.text.length, has_link: /link works/.test(r.text), start: r.text.slice(0, 160).replace(/https?:\S+/g, "<link>") };
 });
 await safe("list_contacts", async () => { const r = await tool("list_contacts", {}); return r.error ? r.text : { count: r.data.count }; });
+await safe("list_notices", async () => { const r = await tool("list_notices", { include_cleared: true }); return r.error ? r.text : { count: r.data.count }; });
 await safe("list_people", async () => { const r = await tool("list_people", {}); return r.error ? r.text : r.data.people.length; });
 await safe("bad_link", async () => (await rpc("tools/list", {}, BASE + "/k/not-a-real-link-not-a-real-link-xyz")).status);
 

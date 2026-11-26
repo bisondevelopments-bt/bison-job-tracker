@@ -351,12 +351,83 @@ create policy activity_read on public.activity_log for select to authenticated u
 drop function if exists public.jt_allowed() cascade;
 
 -------------------------------------------------------------------------------
+-- Notifications: notices for people, posted by people or by Claude skills.
+-- A notice goes to specific people and/or roles ('everyone', 'admin' = operations, 'project_manager',
+-- 'field_supervisor', 'accounting'). Cost notices are never visible to field supervisors (only to
+-- roles that can see costs), even if someone addresses one to them. Each person clears ("Got it")
+-- a notice for themselves only (notification_reads).
+-------------------------------------------------------------------------------
+create table if not exists public.notifications (
+  id             uuid primary key default gen_random_uuid(),
+  title          text not null check (length(title) between 1 and 200),
+  detail         text,
+  job_id         text references public.jobs (id) on delete set null,
+  attachment     jsonb,                                  -- {document_id, asset_id, name, type}
+  to_people      uuid[] not null default '{}',
+  to_roles       text[] not null default '{}' check (to_roles <@ array['everyone','admin','project_manager','field_supervisor','accounting']::text[]),
+  urgent         boolean not null default false,
+  cost           boolean not null default false,
+  source         text,                                   -- the skill that posted it, e.g. 'Under-contract handoff'
+  posted_by      uuid references public.people (id) on delete set null default public.hub_person_id(),
+  posted_by_name text,
+  created_at     timestamptz not null default now(),
+  check (cardinality(to_people) > 0 or cardinality(to_roles) > 0)
+);
+create index if not exists notifications_created_idx on public.notifications (created_at desc);
+create table if not exists public.notification_reads (
+  notification_id uuid not null references public.notifications (id) on delete cascade,
+  person_id       uuid not null references public.people (id) on delete cascade default public.hub_person_id(),
+  cleared_at      timestamptz not null default now(),
+  primary key (notification_id, person_id)
+);
+alter table public.notifications enable row level security;
+alter table public.notification_reads enable row level security;
+grant select, insert, delete on public.notifications to authenticated;
+grant select, insert, delete on public.notification_reads to authenticated;
+
+-- is this notice addressed to me? (used by the rules below and by the app)
+create or replace function public.notif_for_me(n public.notifications) returns boolean
+language sql stable as $$
+  select (not n.cost or public.can_see_costs())
+     and ('everyone' = any(n.to_roles) or public.my_role() = any(n.to_roles) or public.hub_person_id() = any(n.to_people))
+$$;
+
+drop policy if exists notif_read on public.notifications;
+create policy notif_read on public.notifications for select to authenticated
+  using ((not cost or public.can_see_costs()) and (public.notif_for_me(notifications) or posted_by = public.hub_person_id() or public.is_admin()));
+drop policy if exists notif_post on public.notifications;
+create policy notif_post on public.notifications for insert to authenticated
+  with check (public.my_role() is not null and posted_by = public.hub_person_id() and (not cost or public.can_see_costs()));
+drop policy if exists notif_remove on public.notifications;
+create policy notif_remove on public.notifications for delete to authenticated
+  using (public.is_admin() or posted_by = public.hub_person_id());
+
+drop policy if exists notif_reads_own on public.notification_reads;
+create policy notif_reads_own on public.notification_reads for all to authenticated
+  using (person_id = public.hub_person_id()) with check (person_id = public.hub_person_id());
+
+-- the poster's name is filled in by the database, not trusted from the caller
+create or replace function public.notif_stamp() returns trigger
+language plpgsql security definer set search_path = public as $$
+begin
+  new.posted_by := public.hub_person_id();
+  new.posted_by_name := coalesce((select name from public.people where id = new.posted_by), new.posted_by_name);
+  new.created_at := now();
+  return new;
+end $$;
+drop trigger if exists notifications_stamp on public.notifications;
+create trigger notifications_stamp before insert on public.notifications for each row execute function public.notif_stamp();
+
+-- keep it tidy: notices go away after 120 days
+delete from public.notifications where created_at < now() - interval '120 days';
+
+-------------------------------------------------------------------------------
 -- Live updates
 -------------------------------------------------------------------------------
 do $$
 declare t text;
 begin
-  foreach t in array array['people','jobs','jt_job_details','vendors','documents','jt_docs'] loop
+  foreach t in array array['people','jobs','jt_job_details','vendors','documents','jt_docs','notifications','notification_reads'] loop
     execute format('alter table public.%I replica identity full', t);
     if not exists (select 1 from pg_publication_tables where pubname = 'supabase_realtime' and schemaname = 'public' and tablename = t) then
       execute format('alter publication supabase_realtime add table public.%I', t);

@@ -25,6 +25,12 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with: { node-version: 20 }
+      - name: Check the Gmail app password's format (never shows it)
+        run: |
+          p="$GMAIL_APP_PASSWORD"; n=${#p}; s=$(printf '%s' "$p" | tr -d ' ')
+          echo "stored value: $n characters; without spaces: ${#s}"
+          if printf '%s' "$s" | grep -qE '^[a-z]{16}$'; then echo "looks like a Google app password: yes"; else echo "looks like a Google app password: NO (should be 16 lowercase letters)"; fi
+          echo "Gmail user set: $([ -n "$GMAIL_USER" ] && echo yes || echo no), ends with @gmail.com: $(printf '%s' "$GMAIL_USER" | grep -q '@gmail.com$' && echo yes || echo no)"
       - name: Run the check
         run: |
           set -e
